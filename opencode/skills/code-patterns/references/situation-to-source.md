@@ -48,6 +48,15 @@ user-facing surface.
 - Deming, *Out of the Crisis* — management by visible figures alone as a named deadly
   disease.
 
+**House deviation, on method rather than reporting.** A mechanical check cannot stand in
+for a semantic judgment. Byte-identity, checksums, and diff size answer "are these the
+same bytes", never "do these say the same thing" — so they cannot decide whether two
+notes duplicate each other, whether migrated content preserved its meaning, or whether a
+construction matches its specification. Work whose question is semantic is read, not
+hashed. The mirror failure is doing by hand what a symbolic tool does exactly: a
+rename across hundreds of call sites belongs to an LSP or `ast-grep`, not to a fan-out of
+agents editing text.
+
 **House deviation.** Reported numbers must be computed at build time or served as data,
 never written by hand into a surface, and must be quantities the audience values —
 theorems and definitions for a mathematics project, not lines of code.

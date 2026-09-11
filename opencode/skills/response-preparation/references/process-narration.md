@@ -65,7 +65,10 @@ Every one of these appears repeatedly in this system's transcripts:
 3. **Narrate a failure** instead of repairing it.
 4. **List remaining work** instead of dispatching it to subagents.
 5. **Manufacture a blocker.** An uninstalled package, free disk space, a syntax error, a
-   dev preview that is down, an unpushed checkpoint — none of these is a blocker.
+   dev preview that is down, an unpushed checkpoint — none of these is a blocker. Nor is
+   any state the current phase predicts: a red suite mid-refactor, a failed import partway
+   through a migration, a symlink into another repository. `handling-corrections` covers
+   expected states.
 6. **Manufacture a decision.** Asking the user to order two tracks that produce the same
    artifact; asking for sign-off on work already audited; asking what the plan states.
 7. **Wrap ceremony around a triviality.** Full PR process for a wiring fix; machinery

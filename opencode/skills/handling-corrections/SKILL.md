@@ -251,8 +251,43 @@ compliance announcements. Correct routing is the compliance surface.
 Do not pivot immediately to a fix while leaving debris from the mistake.
 Check what was damaged first.
 
-Do not reflexively revert or overcorrect (thrashing).
 Do not use `git restore` or `git checkout` — these are destructive in noisy repos.
+
+## Corrections Are Forward Edits
+
+The reflex on being corrected is to undo, and reversal is the single most common action
+behind the sharpest reactions in the transcript record. It is nearly always wrong, and it
+is wrong in three distinguishable ways.
+
+- **Reverting correct output because the method was wrong.** Told that a mass edit should
+  have used symbolic tooling rather than text substitution, the reflex is to undo the edit
+  and redo it "properly" — which reproduces the artifact you already have, at full cost.
+  The outcome was never the defect. Keep the artifact, use the right method from here, and
+  if the method genuinely leaves part of the result untrustworthy, name that part and
+  verify it rather than discarding everything.
+- **Reverting incomplete work because it was called incomplete.** Being told a task was cut
+  short is an instruction to finish it. Rolling back destroys the finished fraction and
+  commits you to producing it again later. Reverting also cannot make an incomplete record
+  accurate — that is laundering under a different name.
+- **Overcorrecting scope.** One item flagged is one item flagged. Acting on all of them is
+  a fresh destructive action nobody authorized, usually harder to reverse than the original
+  error, and it converts a small correction into a larger incident.
+
+**A correction names a direction, not a rollback.** The next edit moves forward from the
+current state. Reversal is correct only when the artifact is wrong and cannot be repaired
+forward, when the user literally asked for it, or when unpushed work collides with another
+session's.
+
+## Expected States Are Not Emergencies
+
+A second reflex: treating a condition the current phase predicts as a crisis. A red test
+suite mid-refactor, a failed import 30% through a migration, a symlink into another
+repository, free disk fluctuating, a partially-migrated tree — these are what the work in
+progress looks like. Reporting one as an obstacle, halting for it, or "fixing" it while
+the refactor is unfinished is the same defect as reverting: motion that is not forward.
+
+Before treating a state as a problem, ask what the plan says the repository should look
+like right now. If the state is what the plan predicts, it is not news.
 
 ## Anti-Laundering Rules
 
