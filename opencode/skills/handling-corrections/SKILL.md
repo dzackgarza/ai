@@ -34,6 +34,12 @@ Classify the correction before choosing a response:
   game-development, design, writing, subagent-delegation — before answering. The answer
   is never "understood"; it is the corrected artifact plus the write-down in the document
   that owns the domain.
+- **Confusion report:** the user says they do not understand something in the artifact,
+  the design, or a decision. A confusion has no truth value, so agreeing with it is
+  incoherent and signals that no analysis happened. It is evidence of a mismatch and says
+  nothing about which side is wrong. Recover the decision and its provenance before any
+  edit: [references/confusion-reports.md](references/confusion-reports.md) carries the
+  four cases, the authority order, and the gradient test.
 - **Comprehensibility correction:** the user reports that your text was word salad,
   incoherent, rambling, or unreadable. Repair your encoding, never the reader's assumed
   expertise. Re-explaining fundamentals, defining terms, or restating what the user just

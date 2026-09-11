@@ -347,6 +347,7 @@ When the situation in the left column is present, load the right column before a
 | Substantive completion report, progress or status update, handoff, or remaining-work synthesis | `response-preparation`, and its `references/process-narration.md` |
 | About to flag something, call something a blocker, ask the user to decide, stop mid-plan, or report work that remains | `response-preparation/references/process-narration.md` — nearly all of these are the narration tic, not information |
 | Correction that needs causal explanation, changes scope/authority, or implies destructive action | `handling-corrections` |
+| User reports not understanding a decision, design, or artifact | `handling-corrections/references/confusion-reports.md` — a confusion has no truth value and cannot be agreed with; recover the decision and its provenance before editing |
 | Negative finding, failed search, document/transcript/log summary, or any conclusion from a partial read | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Reviewing a concrete agent-produced deliverable or adjudicating a specific completion claim whose correctness is under review | `reviewing-subagent-work` and its `references/review-guidelines.md` |
 | Reviewing LLM-produced code, tests, QC, or documentation for LLM-specific implementation-quality patterns | `reviewing-llm-code`, `anti-slop` |
