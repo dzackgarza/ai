@@ -321,7 +321,9 @@ writing.
   contradiction, existence, definitions, theorems
 
 - `references/exposition-style.md` — Pedagogical writing style, problem presentation,
-  solution structure (single problem-solution scale)
+  solution structure (single problem-solution scale). Opens with the standard opinionated
+  literature — Halmos, Serre, Knuth, Mermin on displayed equations, Higham, Krantz, Su —
+  and closes with the anti-patterns observed here that no human writer produces
 
 - `references/report-architecture.md` — Document-scale architecture for expert-audience
   reports, notes, specs, and surveys: theorem-driven (not status-driven) organization,

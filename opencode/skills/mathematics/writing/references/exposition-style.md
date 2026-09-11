@@ -1,6 +1,43 @@
 # Exposition Style
 
-Dzack-specific pedagogical writing style for mathematical content.
+Dzack-specific pedagogical writing style for mathematical content. The house rules below
+sit on top of an opinionated literature; read from it rather than reasoning about
+mathematical prose from first principles.
+
+## The standard references
+
+Mathematical writing is one of the best-served subjects in the profession's own
+literature, and every one of these authors argues for positions rather than listing
+conventions.
+
+- **Halmos, "How to Write Mathematics"** — in Steenrod, Halmos, Schiffer & Dieudonné,
+  *How to Write Mathematics* (AMS, 1973; from *l'Enseignement Mathématique*, 1970). The
+  canonical essay, by the AMS Committee on Expository Writing. Say something and have one
+  thing to say; the spiral plan of organization; write for a reader who must be able to
+  reconstruct your thought; the best notation is no notation. Start here.
+- **Serre, "How to write mathematics badly"** (Harvard Basic Notions seminar, 2003) — the
+  same subject inverted into a catalogue of failures, which is the form that transfers
+  fastest. Video and a transcript are both available.
+- **Knuth, Larrabee & Roberts, *Mathematical Writing*** (Stanford CS209, 1987; MAA Notes
+  14) — thirty-one lectures with guests including Halmos and Lamport, plus a minidictionary
+  of usage. The full text is free from Knuth's Stanford page.
+- **Mermin, "What's Wrong with These Equations?"**, *Physics Today* 42(10), 1989 — the
+  three rules for displayed mathematics inside prose: number every displayed equation
+  (Fisher's rule); refer to it by a phrase and not only a number (the Good Samaritan
+  rule); a displayed equation is part of a sentence and takes its punctuation (the Math is
+  Prose rule). The governing reference for how equations sit in text.
+- **Higham, *Handbook of Writing for the Mathematical Sciences***, 3rd ed. (SIAM, 2020) —
+  the reference work, cited as recommended style by the AMS Author Handbook and the SIAM
+  Style Manual.
+- **Krantz, *A Primer of Mathematical Writing***, 2nd ed. (AMS) — grammar, syntax and
+  usage at length, plus the surrounding professional practice.
+- **Su, "Guidelines for Good Mathematical Writing"** (MAA Focus, 2015) — three free pages,
+  the fastest useful read, and the right thing to hand a contributor.
+- **The AMS Author Handbook and the SIAM Style Manual** — the house-style authorities when
+  a convention is actually in dispute.
+
+The anti-patterns recorded at the end of this file are the ones observed here that these
+sources do not name explicitly, usually because no human writer produces them.
 
 ## Core Principles
 
