@@ -64,6 +64,10 @@ that requires code.
   Thorzen) — content pipeline work on an open-world RPG specifically.
 - The Blender Manual on Linked Libraries and Library Overrides, for the authoring side's
   own model of shared, overridable data.
+- [references/pipeline-topologies.md](references/pipeline-topologies.md) — who owns what
+  across authoring tools (Aseprite, Tiled, Blender, the engine), the interchange formats
+  that are the real interface, and search patterns for finding how other teams wired
+  theirs.
 
 **Project decisions already made.** The 3D model is the upstream source of truth: level
 content is built by editing it — tiling layers, collision, empty objects for placement —
