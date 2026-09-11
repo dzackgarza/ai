@@ -29,9 +29,11 @@ Classify the correction before choosing a response:
   the real fork. Do not guess the desired implementation.
 - **Comprehension challenge:** the user asks what you understand, reports not
   understanding your output, says you seem confused, or repeats an instruction already
-  given. Load [[understanding-challenges/SKILL|understanding-challenges]] and run its
-  interlock first; it names the proposition and the durable write-down that discharges
-  the correction. Return here only for scope, authority, or destructive consequences.
+  given. The missing knowledge belongs to the domain in front of you, not to a general
+  faculty: load that domain's skill and its mental-model reference — mathematics, lean4,
+  game-development, design, writing, subagent-delegation — before answering. The answer
+  is never "understood"; it is the corrected artifact plus the write-down in the document
+  that owns the domain.
 - **High-consequence pivot:** the likely response is destructive, irreversible,
   externally visible, touches unknown-provenance work, or needs new authority. Stop and
   obtain the missing decision after presenting only the evidence the user needs.

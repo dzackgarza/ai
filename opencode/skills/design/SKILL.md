@@ -645,6 +645,32 @@ adding them.
 
 When copy is necessary but not final, mark it as draft or placeholder.
 
+## Interface Conventions
+
+An application interface is judged against the conventions its users already have.
+Inventing a control where a platform convention exists reads as a defect to anyone who
+uses similar software, however reasonable the invention looked while building it.
+
+- **Do not build a control for something the interface already does.** Tab strips
+  scroll; adding clickable left and right arrows duplicates a gesture the user has.
+  Sidebars that open and close on their own do not also need a toggle button. Every
+  redundant control is a thing to learn, position, and maintain.
+- **Use the platform's standard component where one exists.** A secondary panel is a
+  sidebar with the same affordances, placement, and behavior as the primary one — not a
+  free-floating icon invented for that side.
+- **Volume needs navigation.** A page that dumps an entire collection with no
+  pagination, no search, and no index is not a simple design; it is an unusable one.
+  Decide the retrieval story — pagination, search, a standard database or index view —
+  before the layout.
+- **Lead with what the reader came for.** A description that opens with internal
+  implementation choices — the runtime, the build kernel, the tooling — tells the
+  audience nothing about what the thing does for them. Those choices are not the
+  product. State what a reader gets, in their vocabulary.
+- **Never hard-code a metric into a surface.** Counts stated in prose are wrong the day
+  after they are written. Populate them at build time or serve them as data. And choose
+  a metric the audience values: for a mathematics site that means theorems or
+  definitions, never lines of code.
+
 ## [[anti-slop/SKILL|Anti-Slop]] Rules
 
 Avoid common AI design sludge:

@@ -164,3 +164,30 @@ message bodies because they trigger shell escaping hazards.
   vague summarization, generic regression-to-the-mean wording, missing concrete
   procedure, or weakened prohibition is a defect. Rectify it immediately before
   deleting, retiring, or relying on the old source.
+
+### Migration Means Everything Arrives
+
+A migration moves the content of a source into a destination. It is not an opportunity
+to curate, and its decision criterion is never quality, activity, or completeness.
+
+- **The criterion is enrichment.** If material enriches what the destination holds, it
+  migrates — copied, or synthesized alongside existing material that covers the same
+  ground. Nothing else decides.
+- **Unfinished is not disposable.** In-progress exploration, a partial program, an
+  unresolved disagreement between a paper's count and a computation — these are the
+  research. A discrepancy that is not yet explained is a reason to migrate, not a reason
+  to drop: it is the finding.
+- **Doctrine governs new additions, not migrations.** Rules that constrain what may be
+  added to a repository do not license discarding existing material on its way in.
+  Testing migrated content against such criteria is a category error, and the reasoning
+  that produces it ("dead", "abandoned", "unfinished") should stop the migration and
+  raise the question instead.
+- **A migration ends with the source gone.** Synthesize the source into durable form in
+  the destination — text, figures, code, macros, everything — and then the source ceases
+  to exist. Keeping a maintained copy alongside the destination means the migration did
+  not happen; there are now two owners of one fact.
+- **Scale a migration by its loop body.** Listing the files, batching them, judging each
+  batch against the destination, and copying or synthesizing is a simple repeated
+  operation. It does not need a fan-out for an import-path change that an AST tool
+  performs directly, and it does not need baselines or test runs in the middle of a
+  structural move.

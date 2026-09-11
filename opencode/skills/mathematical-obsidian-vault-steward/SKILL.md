@@ -132,6 +132,33 @@ Use this adversarial check:
 - If hiding the title, frontmatter, links, and provenance leaves no real mathematical
   payload, it is not a durable standalone note.
 
+## A Study Vault Is Authored Literature
+
+A mathematical reference vault is a written text broken into pages for navigation,
+cross-referencing, citation, and reuse. It is not a database of cards, and its pages
+are not records. The Stacks Project is the model: a pedagogical work whose tags exist
+to make it navigable, not a collection of tags that happens to contain mathematics.
+
+What follows from that, when organizing:
+
+- **Organize as a study aid, by what a reader doing this work needs.** Sometimes that
+  means grouping related topics onto one page; sometimes breaking a topic into its own
+  page; sometimes collecting important or large results together for quick review;
+  sometimes a drilldown page for one technique. A compendium of counterexamples is a
+  page because having the counterexamples together is useful while studying — the same
+  reason such books exist.
+- **Definitions, theorems, and examples are content, not containers.** They are inlined
+  into pages in whatever way serves the reader. Do not treat card structure, note type,
+  or provenance metadata as intrinsically important; it is scaffolding, and for a study
+  vault it is mostly irrelevant.
+- **Never optimize page count in either direction.** A reference work exists to hold
+  more retrievable material, so reporting a reduced page count as an improvement
+  reports a loss as a gain. Merging pages is right when it helps a reader, and wrong
+  when it was done to move a number.
+
+Before any reorganization, state the reader and the task they are doing. That is what
+decides granularity — not uniformity, not tidiness, and not any count.
+
 ## Mathematical Integrity Rules
 
 - Never change the meaning of a statement silently.

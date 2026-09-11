@@ -639,6 +639,38 @@ than trusting the delegate to self-correct:
 Always dispatch a fresh subagent per task + two-stage review (spec then quality) = high
 quality, fast iteration.
 
+### A New Subagent Knows Nothing
+
+Fresh context means *empty* context. A just-started subagent does not know the plan,
+the architecture, the vocabulary, the policies, the acceptance criteria, or which of
+several plausible readings of its task is the intended one. Everything it needs must be
+in its prompt or reachable from a path in its prompt.
+
+The prompt therefore names, at minimum:
+
+- the plan or issue that defines correctness, **by path**, not by title;
+- the constraints that would otherwise be discovered by violating them;
+- the acceptance statement — what will be checked, and against what;
+- the vocabulary that is repo-specific, or the document that defines it.
+
+A task card that reads correctly to you can be unactionable to the agent receiving it,
+because you are reading it with the session in mind. Dispatching a bounded task with no
+pointer to the plan and then reviewing the result against the plan makes the failure
+yours, not the subagent's.
+
+### Coordination Is Not Work
+
+Messages that tell an agent what it just did are overhead. Confirming a promotion the
+agent itself recorded, restating a schedule the agent set, or asking it to report
+completion so it can be handed the next item — each costs a full turn and moves nothing.
+
+- Send a message only when the recipient learns something it does not have.
+- Do not serialize work that has no dependency. Give an agent the whole queue, or the
+  rule for taking the next item, instead of handing out one item at a time and waiting.
+- Underestimating what an agent can do unsupervised produces the same volume of messages
+  as real coordination, with none of the effect. Check whether the traffic you are
+  planning exists because the work needs it, or because it looks like management.
+
 ### Forced Two-Stage Review Cycle
 
 Never accept implementation without independent verification:

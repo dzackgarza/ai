@@ -28,6 +28,14 @@ only when its distinct trigger is materially present.
 
 - [[mathematics/writing/writing|writing]] — rigorous mathematical prose, notation, LaTeX, and formalization targets; proofs default to Lamport-style structured proofs in every medium. Sub-routes to LaTeX compile QA.
 
+## Objects in code
+
+- [[mathematics/objects-in-code/objects-in-code|objects-in-code]] — how mathematical objects are
+  represented: presentation versus object, universal properties, the generality a
+  formulation must survive, structure versus property, and the vocabulary that signals a
+  wrong model. Load before naming a class, choosing a return type, or writing a
+  construction. Sub-routes to categorical architecture for functor-based kernels.
+
 ## Domain knowledge
 
 - [[mathematics/lattices/lattices|lattices]] — lattices, quadratic forms, and discrete subgroups: conventions and domain constraints.

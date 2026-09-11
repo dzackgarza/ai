@@ -345,8 +345,6 @@ When the situation in the left column is present, load the right column before a
 | Any git or GitHub operation — staging, commits, deletion, branches, PRs, issues | `git-guidelines` |
 | Substantive completion report, progress or status update, handoff, or remaining-work synthesis | `response-preparation` |
 | Correction that needs causal explanation, changes scope/authority, or implies destructive action | `handling-corrections` |
-| User questions comprehension ("do you understand X", "you understand X, right", "I don't understand why you...", "you seem confused", "did you not understand"), or repeats an instruction already given | `understanding-challenges` |
-| About to introduce a technical noun the user did not use, propose an architecture, or report a count/metric | `understanding-challenges` (Preemptive Checks) |
 | Negative finding, failed search, document/transcript/log summary, or any conclusion from a partial read | `epistemic-integrity`; add `reading-transcripts` for conversation logs |
 | Reviewing a concrete agent-produced deliverable or adjudicating a specific completion claim whose correctness is under review | `reviewing-subagent-work` and its `references/review-guidelines.md` |
 | Reviewing LLM-produced code, tests, QC, or documentation for LLM-specific implementation-quality patterns | `reviewing-llm-code`, `anti-slop` |
@@ -362,10 +360,13 @@ When the situation in the left column is present, load the right column before a
 | User requests a roadmap, PRD, cross-agent plan, review track, issue tree, or proof-bearing coordination structure | `project-initialization`, `plan`, `agent-memory`, `git-guidelines`, then `plan/references/externalization.md` |
 | Substantive implementation depending on repository-wide state | `project-initialization`, then only the owners it routes to |
 | Choosing formats, runners, stacks, storage, secrets/env handling, CLI tools, or provisioning | `system-conventions`, `tool-provisioning-and-environment-hygiene` |
+| Migrating content between repos, docs, or vaults; retiring a source after synthesis | `system-conventions` (**Migration Means Everything Arrives**) |
 | Editing any JSON or YAML file | `config-file-editing` — never raw-edit config files |
 | Working with justfiles or project tasks | `justfile` |
 | Mathematical work of any kind (computation, research, writing, lattices) | `mathematics` (note: a "lattice" here is a bilinear-form lattice, never cryptographic) |
-| Theorem proving, formalization, counterexample search | `lean4` |
+| Code that represents a mathematical object — naming a class, choosing a return type, writing a construction, categories/functors/kernels | `mathematics/objects-in-code`, and its `references/categorical-architecture.md` for functor-based kernels |
+| Theorem proving, formalization, counterexample search | `lean4` (its **Before Formalizing Anything** section is mandatory) |
+| Game work: engine code, level content, interaction systems, animation, art direction, Blender-to-engine pipeline | `game-development` |
 | Writing or editing any SKILL.md | `creating-skills`, `writing-for-agent-audiences` |
 | Markdown/prose rewrites | `writing-for-agent-audiences`, `writing-clearly-and-concisely` |
 | PDFs (read, extract, convert) | `reading-pdfs` |
@@ -397,12 +398,12 @@ When the situation in the left column is present, load the right column before a
   persist durable expectations per the Memory section.
 - **A question about what you understand is a defect report.** The asker
   already knows the answer; the interrogative marks a proposition your output
-  denies. "Understood", "you're right", and any claim to have learned
+  denies, and it is nearly always a proposition of the *domain* you are
+  working in. "Understood", "you're right", and any claim to have learned
   something are banned answers: a model carries nothing across sessions, so
-  only a file does. Name the proposition in the user's own precision, cite the
-  `file:line` in your work that contradicts it, and write it into the document
-  that owns it. `understanding-challenges` owns the interlock and the catalog
-  of what such questions have actually meant.
+  only a file does. Load the domain skill's mental-model reference, name the
+  proposition in the user's own precision, and write it into the document that
+  owns the domain — never into a general document about misunderstanding.
 - **Externalize once, after convergence.** Converge scope and interpretation
   in one local draft before creating coordinated external state (branch, PR,
   issue edits, synchronized vault copies). Pre-promotion corrections are

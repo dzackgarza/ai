@@ -227,6 +227,37 @@ def test_weyl_group_order_e8(generator):
     assert group.order() == 696729600
 ```
 
+## A Test Asserts Mathematics, Not the Implementation
+
+The test suite is not an engineering artifact that records what the code does. It
+asserts every true mathematical statement that the repository's language can express.
+This is the single most common wrong model in mathematical testing, and it produces
+tests that are worthless in exactly the cases that matter.
+
+- **Probes do not decide assertions.** Running the construction to see what the library
+  currently returns, and then asserting that, tests nothing: it stamps the
+  implementation with its own output. What the library computes today is not the point.
+- **State the fact, then let it fail.** If the statement is true and expressible —
+  "Ab is a concrete category", "this subset functor is defined on the finite subsets of
+  any set" — it is asserted. A true statement the implementation gets wrong is a
+  durable failure, and that is precisely the value: it becomes the regression test that
+  guards the eventual fix.
+- **Never weaken an assertion to match current behavior.** When an upstream library
+  returns a mathematically false answer, or fails to terminate, the assertion stays
+  true. Record it as a strict expected failure tied to a filed upstream issue, so it
+  fails loudly again the moment upstream is fixed. Rewriting the assertion to the false
+  answer destroys the only record that the answer is false.
+- **Explaining what a test does not assert is the inverted model.** A test that could
+  state a known mathematical fact and declines to — because stating it would fail — has
+  cut off the most valuable part of the distribution of facts. The gap is the finding.
+- **Timid assertions are not conservative.** Comparing ranks, invariant tuples,
+  cardinalities, or presentation data in place of the statement you mean is covered in
+  [[mathematics/objects-in-code/objects-in-code|objects in code]]: such a test passes on
+  objects the claim is false for, so it asserts nothing.
+- **Do not assert a catalogue against a second hand-written copy of itself.** Declaring
+  available objects in one file and asserting their names in another compares two lists
+  a human wrote. Assert mathematical properties of the catalogue's members instead.
+
 ---
 
 ## Non-Negotiable Constraints
