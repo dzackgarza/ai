@@ -137,6 +137,10 @@ instance is seen by everyone and costs the most. The forms:
   without it. Unfalsifiable as written, and identical whether or not it was checked.
   `mathematics/writing/references/exposition-style.md` carries the worked specimen.
 
+- **Rating your own output.** Calling a finding more valuable than the task it
+  interrupted, or a fix more important than the one requested. The ranking is against
+  your own work and interests nobody; if the finding matters, its content shows that.
+
 **House rule.** Copy earns its place by conveying content the reader does not have. An
 assertion about the work — its size, rigor, completeness, honesty, or novelty — is not
 content; the artifact either demonstrates the property or does not have it. Names
@@ -172,6 +176,33 @@ should be deleted rather than rewritten. In mathematical prose this failure has 
 entry, including why the standard literature has positive instruments for every claim it
 gestures at: `mathematics/writing/references/exposition-style.md`.
 
+## The autobiographical register
+
+**Pattern.** Writing about yourself as a character in the work. Its most persistent form
+is confession performed as wit: *I also did the thing I spent this morning writing rules
+against.* Also: narrating your intentions earlier in the session, your failure to live up
+to them, what you are about to do, and in what order you will report it.
+
+Three things make this worse than plain confession, which is at least legible:
+
+- **It is coy.** The sentence above does not name what was done, so the reader decodes a
+  riddle to reach a fact that should have been stated.
+- **It is constructed.** The ironic reversal is a literary gesture, and the effort that
+  went into the phrasing is effort that did not go into the fact.
+- **It is about the agent.** An operational report has no room for an arc — what you
+  resolved this morning, what you then did, how you feel about the gap. The reader is
+  tracking the system, not you.
+
+Adjacent and equally common: announcing an action in flight (*the pushes are firing
+now*), and announcing the schedule of your own future reporting (*the report will follow
+the pushes, not precede them* — which is also a truism in negative-parallelism cadence).
+The reader learns nothing from either until the action lands.
+
+**House rule.** State what is true of the system now, and what the reader must do about
+it. Your intentions, your reversals, your sequencing, and your self-assessment have a
+durable home — the commit body, the traps file, the memory vault — and it is never the
+report.
+
 ## Copy that describes the work instead of the result
 
 **Pattern.** Recounting what was tried, what failed, how many rounds it took, what was
@@ -182,7 +213,7 @@ version does not include X" instead of removing X.
 **House rule.** This is `process narrative` and `Removal Means Deletion` in the global
 AGENTS.md, which owns both. Each urge has a durable home — commit body, traps file, repo
 docs, issues, memory vault — and the reply is not it. The mechanism behind the tic, its
-thirteen shapes, and the signal-against-noise test are in
+fifteen shapes, and the signal-against-noise test are in
 `response-preparation/references/process-narration.md`.
 
 ## Agreement in place of work

@@ -81,6 +81,11 @@ Every one of these appears repeatedly in this system's transcripts:
 11. **Recite policy** that the repository's own documents already state.
 12. **Flag and defer**: raise a concern, propose nothing, end the turn.
 13. **Confess**: disclose a shortfall in chat instead of recording or repairing it.
+14. **Announce an action in flight**, or the order in which you will report later. The
+    reader learns nothing until it lands.
+15. **Write yourself into the report** — your earlier intentions, your reversal, your
+    self-assessment, a finding ranked against your own task. `technical-copy` covers the
+    autobiographical register.
 
 ## Confession is not a control
 
