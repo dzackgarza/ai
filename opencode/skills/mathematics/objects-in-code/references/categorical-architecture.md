@@ -5,8 +5,15 @@ categorical kernel, a catalogue of categories with objects and morphisms, leaves
 declare new categories. Parent:
 [[mathematics/objects-in-code/objects-in-code|objects in code]].
 
-The mental model below is what such kernels are for. Code that contradicts it is not
-a style deviation; it reintroduces by hand the obligation the kernel exists to remove.
+Read first, since the kernel is a response to a documented design and its known limits:
+the Sage reference manual's *Category Framework* and its primer on categories, the
+thematic tutorial `coercion_and_categories`, and `sage.categories.primer` — in
+particular what `super_categories` does and where it falls short. nLab covers the
+2-categorical vocabulary below (2-cell, pseudofunctor, strict versus lax).
+
+The mental model below is what such kernels are for, and is house architecture rather
+than documented convention. Code that contradicts it is not a style deviation; it
+reintroduces by hand the obligation the kernel exists to remove.
 
 ## Structure Functors Are the Inheritance Mechanism
 

@@ -38,12 +38,12 @@ Do not negotiate this locally.
 
 ## Core Rules
 
-- Settle design questions from first principles before reaching for domain detail: one
-  fact one owner, behavior with what it governs, concern seams where the audience
-  changes, the representation is never the thing, the level where the statement is true,
-  interfaces that state obligations, composition before construction, purpose before
-  design, the standard pattern before invention, and whoever changes it next.
-  `references/first-principles.md` teaches each one across domains.
+- Before deciding where a behavior lives, what a number means, what a document is for,
+  or how general a formulation should be, read the field's own treatment of it.
+  `references/situation-to-source.md` routes each of these situations to the
+  authoritative text — Parnas on decomposition, Ousterhout on deep modules, Austin on
+  measurement dysfunction, Diátaxis on document purpose — and records only the house
+  deviations from them.
 - Read the surrounding code first. Match the repo's established module boundaries,
   naming, and validation patterns unless they violate a loaded hard policy.
 - Preserve the smallest useful interface. Do not add managers, processors, adapters,
@@ -70,8 +70,8 @@ Do not negotiate this locally.
 
 Read only the relevant reference:
 
-- `references/first-principles.md` — the cross-domain design principles above, each
-  taught with instances from code, mathematics, games, and documents.
+- `references/situation-to-source.md` — situations with known-bad priors, each routed to
+  the authoritative literature, plus the house deviations from it.
 - `references/names.md` — naming and intention-revealing symbols.
 - `references/functions.md` — function size, arguments, side effects, command/query split.
 - `references/comments.md` — when comments are useful and when they are residue.

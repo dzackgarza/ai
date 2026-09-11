@@ -18,10 +18,10 @@ Route to exactly one primary subskill based on the requested tool or workflow:
 
 ## Before Formalizing Anything
 
-*Principles: the standard solution already exists; the representation is not the thing
-(a theorem is not a definition, and a typechecking definition is not a correct one);
-scope follows the dependency graph, not the statement.
-`code-patterns/references/first-principles.md` states them generally.*
+Read before starting: *Mathematics in Lean*; the mathlib4 contribution guide and its
+naming and style conventions; the mathlib overview of what is already formalized. Search
+mathlib with Loogle, LeanSearch, or Moogle before defining anything, and check the Lean
+Zulip for prior attempts at the same object.
 
 These are the mistakes that cost the most on a formalization task, in the order they
 usually occur.

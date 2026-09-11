@@ -1,58 +1,107 @@
 ---
 name: objects-in-code
-description: Use when writing, reviewing, or reviewing tests for code that represents mathematical objects — modules, morphisms, categories, functors, rings, posets, products. Teaches the house mental model: an object is not its presentation, constructions come from universal properties, and every formulation is written at the generality that survives dropping a hypothesis. Load before naming a class, choosing a return type, or deciding how to test a mathematical claim.
+description: Use when writing, reviewing, or testing code that represents mathematical objects — modules, morphisms, categories, functors, rings, posets, products, parents and elements. Hooks the situations where agent priors produce mathematically incoherent code (objects confused with presentations, constructions invented instead of taken from universal properties, values dropped into Python containers) and routes each to the Sage and category-theory literature that settles it.
 ---
 # Mathematical Objects in Code
 
-The recurring defect in mathematical code here is not a bug. It is a wrong mental
-model of what the object *is*, which then produces code that is locally plausible and
-mathematically incoherent. This leaf teaches the model.
-
-Each section is one general design principle as it lands in mathematics; the principles
-themselves, with their instances in other domains, are in
-`code-patterns/references/first-principles.md`. The mapping is exact — the
-representation is not the thing, the level where the statement is true, compose before
-you construct, behavior belongs with what it governs, one fact one owner, the standard
-pattern already exists — which is why recognizing one of these here should transfer,
-and why recognizing it only here means it was not learned.
+Mathematical code here goes wrong when the object in the model is not the object in the
+mathematics. The correct models are documented — in Sage's own category framework
+documentation and in standard category theory — so this file routes to those and records
+only the house deviations, which no external source states.
 
 Related: [[mathematics/objects-in-code/references/categorical-architecture|categorical architecture]] for
 kernels built on functors and dynamic inheritance;
 [[mathematics/research/mathematical-testing/mathematical-testing|mathematical testing]] for what a
-test of such an object may assert.
+test of such an object may assert; `code-patterns/references/situation-to-source.md` for
+the general design subjects.
 
-## 1. The Representation Is Not the Thing
+## Parents, elements, and where a method belongs
 
-A module is not a matrix. A morphism is not its matrix. A group is not a
-presentation. A lattice is not a Gram matrix. Presentations are coordinates chosen for
-a computation; the object is what survives changing them.
+**Situation.** Deciding whether something is a parent, an element, or a category; writing
+a free function that takes an object and returns a construction on it; hand-wiring
+initializer chains; wondering how a method reaches an object at all.
 
-The concrete failure this produces: taking a morphism, extracting its matrix, and
-building a second morphism from that matrix. The result is unauditable — nothing in
-the code records which bases were in play, so nothing can check that the composite
-means anything.
+**Read.**
 
-- Compare objects by isomorphism, never by tuples of invariants. Equal invariants are
-  a consequence of isomorphism, not a definition of it, and the implication runs one
-  way. Two non-isomorphic objects can agree on every invariant you computed.
-- Compare morphisms by universal properties they satisfy, not by matrix entries.
-- When the data genuinely determines the object on the nose, say so on the nose: if
-  `S = S'`, then `Free_R(S) = Free_R(S')` — the same object, equal, not merely
-  isomorphic. Do not weaken a strict equality to an isomorphism test because the
-  isomorphism test is the one you know how to write.
-- Coordinates should be *hard* to reach. If a construction needs a basis, that is a
-  fact worth flagging at the call site, not a convenience to expose.
+- *How to implement new algebraic structures in Sage* (Sage thematic tutorial,
+  `thematic_tutorials/coercion_and_categories`) — the category framework and coercion
+  model worked through one complete example.
+- *Tutorial: Implementing Algebraic Structures* (Sage thematic tutorial,
+  `thematic_tutorials/tutorial-implementing-algebraic-structures`).
+- The Sage reference manual, *Category Framework* — `ParentMethods`, `ElementMethods`,
+  axioms, and how methods are installed by category.
+- `sage.structure.parent` and `sage.structure.element`.
 
-## 2. Stay Inside the Mathematical Universe
+**House deviation.** A construction on an object is a method of that object:
+`A.localization(f)`, not `Localization(A, f)`. A method true of everything at a
+categorical level is defined at that level, not copied into members.
 
-Once a value becomes a `tuple`, a `list`, or an `int` length, it has left the
-category you were working in and no further statement about it is a mathematical
-statement. `len`, indexing, and tuple unpacking are the visible symptoms.
+## Objects versus presentations
 
-A valence that is an element of the product monoid `NN^k` is not a Python tuple that
-happens to hold numbers. If the repository has no object for it yet, the missing
-object is the defect. The minimum acceptable repair is a named semantic type at a
-single centralized site, documented with the mathematics it denotes:
+**Situation.** About to compare two objects; about to extract a matrix, basis, generator
+list, or invariant tuple; about to build a morphism out of coordinates.
+
+**Read.**
+
+- Riehl, *Category Theory in Context* (free from the author) — isomorphism, universal
+  properties, and why a construction is determined rather than chosen.
+- nLab: universal property, structure versus property, forgetful functor, and the
+  entries for the specific structures in play.
+
+**House deviation.** Compare by isomorphism, never by tuples of invariants — equal
+invariants follow from isomorphism and do not imply it. Never extract a matrix from a
+morphism and build another morphism from it; nothing then records which bases were in
+play. When data determines the object on the nose, state the equality on the nose: if
+`S = S'` then `Free_R(S) = Free_R(S')`. Coordinates should be hard to reach, and a
+construction that needs a basis should say so at the call site.
+
+## Products, limits, slices, and other universal constructions
+
+**Situation.** Implementing a product, coproduct, fiber product, quotient, slice, or
+graded piece; writing separate interfaces for products and fiber products; hard-coding
+`first` and `second` projections.
+
+**Read.**
+
+- Riehl, *Category Theory in Context*, on limits and colimits — including the cartesian
+  product as the fiber product over the terminal object, and uniqueness up to unique
+  isomorphism.
+- Sage's category framework documentation on `CartesianProducts`, `Subquotients`, and the
+  other covariant functorial constructions, which is the framework's own answer to where
+  such constructions live.
+
+**House deviation.** `C * D` returns a product for any arguments — categories, objects,
+morphisms — living in the common category of its factors or a routed common ancestor, and
+carrying that category's methods plus projections and morphism lifting. When an API falls
+out as a composition of existing primitives, that is the result, not a shortfall.
+
+## Generality
+
+**Situation.** A test or function that works because the objects at hand are free,
+finite, commutative, or projective; treating an example offered as illustration as a
+ruling.
+
+**Read.** The relevant structure's own entry in a standard algebra reference — Lang,
+*Algebra*, or the Stacks Project for the commutative-algebraic and categorical statements
+— to find the hypotheses the statement actually needs.
+
+**House deviation.** The direction is toward formulations that survive dropping
+finiteness, freeness, projectivity, commutativity, rings to semirings, groups to monoids.
+Injectivity is `f.kernel() == 0`, never a comparison of ranks, which is correct only for
+free modules and says so nowhere. Name the hypothesis your argument uses, drop it, and see
+what fails.
+
+## Values that leave the mathematics
+
+**Situation.** A method about to return a `tuple`, `list`, or `int`; reaching for `len`
+or indexing; needing a type for something the repository has no object for.
+
+**House deviation** (this one is local policy, not a documented convention). Once a value
+is a Python container it has left the category and nothing further said about it is a
+mathematical statement. If the repository has no object for the thing — an element of the
+product monoid `NN^k`, say — the missing object is the defect. The minimum acceptable
+repair is one named semantic type at a centralized site, documented with the mathematics
+it denotes:
 
 ```python
 # In the centralized typing layer:
@@ -61,98 +110,16 @@ ProductOfNaturalNumbers = Any  # an element (n_1, ..., n_k) of the product monoi
 def tensor_valence(self) -> ProductOfNaturalNumbers: ...
 ```
 
-That is worse than a real object and far better than `tuple[int, ...]`: it names what
-is meant, it localizes the compromise to one line, and it is greppable when the real
-object arrives. The same rule governs `Any` generally — when ambiguity is genuine,
-create the type that means what you intend and alias it once.
+That is worse than a real object and far better than `tuple[int, ...]`: it names what is
+meant, localizes the compromise, and is greppable when the real object arrives.
 
-## 3. Write at the Level Where the Statement Is True
+## Vocabulary
 
-House style runs toward formulations that keep working when a hypothesis is dropped:
-finiteness, freeness, projectivity, commutativity, rings to semirings, groups to
-monoids. An argument that silently uses the special case in front of you is not a
-weaker proof of the general claim — it is a proof of a different claim.
+**Situation.** About to introduce a noun that is not standard mathematics — a carrier, a
+role, a receiver, a retained composite.
 
-The canonical instance: testing injectivity by comparing ranks of kernels. It is
-correct only because the modules at hand are free, the code says nothing about that,
-and it breaks silently on the first torsion module. Write the statement that is true
-in general:
+**Read.** nLab or the Stacks Project for the standard name of the thing you are modelling.
 
-```python
-def is_injective(f):
-    return f.kernel() == 0            # or: f.kernel().is_isomorphism(Modules(R).ZeroModule())
-```
-
-Before committing a mathematical function or assertion, name the hypothesis your
-argument uses, drop it, and see what fails. If the answer is "everything", the
-formulation is timid and belongs at higher generality.
-
-## 4. Compose Before You Construct: Universal Properties
-
-Universal objects are unique up to unique isomorphism, so there is exactly one
-construction to implement, and constructing it twice returns the same object.
-
-- `C * D` returns a product, whatever the arguments are — categories, objects,
-  morphisms. It lives in the common category of its factors (or a routed common
-  ancestor: a finite set times a set is a set). It has every method that category's
-  objects have, plus projections and the ability to lift morphisms.
-- The cartesian product is the fiber product over the terminal object. A design with
-  separate interfaces for products and fiber products has duplicated one notion; a
-  design with hard-coded `first` and `second` projections has fixed an arbitrary
-  indexing that the universal property does not supply.
-- A slice `C/X` is a category. Its API — the structure morphism, the transported
-  methods — comes from structure functors on that category, recovered by composing
-  constructions that already exist, not from new bespoke wiring.
-
-When a desired API falls out as a composition of existing primitives, that is the
-good outcome: less code to write, and the result inherits correctness from the
-primitives instead of asserting its own.
-
-## 5. Build the Most Structured Object, Then Forget
-
-`ZZ` is simultaneously a ring, a rank-1 `ZZ`-module, a rank-1 `ZZ`-algebra, a monoid,
-a group, and a set. These are not competing classifications to choose between. Every
-ring `R` is a rank-1 `R`-algebra and a rank-1 `R`-module.
-
-Construct the object with the maximal structure it actually has, and let the routing
-present it as the forgotten structure where that is what is wanted. Code that picks
-one classification and builds a separate object per view has multiplied the object
-and will need equalities between the copies that nothing can supply.
-
-## 6. Structure Versus Property
-
-A poset is not a relation. It is a set equipped with the *data* of a relation. That
-makes "poset" a structure, not a property, and structures are declared by giving the
-data and the functors that carry it, never by asserting a predicate.
-
-The same distinction decides how a leaf is written: a category whose objects are sets
-with extra data defines that data and the functors to the categories it wants methods
-from. Note that a forgetful direction need not be unique — a poset category can admit
-two different functors to sets that do not agree — and when two paths to the same
-target exist, something must say whether they are equal. An implicit assumption that
-every such diamond commutes is a mathematical assertion made by omission.
-
-## 7. Behavior Belongs With What It Governs
-
-`A.localization(f)`, not `Localization(A, f)`. A construction performed on an object
-is a method of that object: it dispatches on the object's actual category, it is
-discoverable from the object, and it cannot be applied to something that does not
-support it. A free function takes the construction out of the mathematical structure
-and puts it in a module namespace, where nothing routes it.
-
-Declare a catalogue of available objects once, in the place that owns it. Do not
-declare it in one file and assert its contents in another — the assertion then tests
-that two hand-written lists agree, which is a statement about typing, not mathematics.
-
-## 8. The Standard Vocabulary Is the Standard Model
-
-If you need a noun that is not standard mathematics — a "carrier", a "receiver", a
-"role", a "retained composite" — the design is wrong. The noun exists because the
-architecture has a thing that mathematics does not name, which means the architecture
-has a thing that should not exist. Deleting the word is not the repair; the structure
-that demanded it is the repair.
-
-Standard vocabulary is available for everything real here: object, morphism,
-underlying set, structure functor, forgetful functor, fiber, section, 2-cell. Use it,
-and when a user names one of these, build that thing rather than a proxy with a
-different name.
+**House deviation.** An invented noun means the architecture contains something
+mathematics does not name, which means it should not exist. Deleting the word repairs
+nothing; the structure that demanded it is the defect.

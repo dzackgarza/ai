@@ -229,8 +229,10 @@ def test_weyl_group_order_e8(generator):
 
 ## A Test Asserts Mathematics, Not the Implementation
 
-*Principle: the representation is not the thing. A test is a statement of mathematics;
-the implementation's current output is a representation of nothing but itself.*
+Read on properties as the unit of specification: Claessen & Hughes, *QuickCheck*
+(ICFP 2000), and the Hypothesis documentation on choosing properties and shrinking.
+Sage's own doctest and `TestSuite` documentation covers how a category's axioms are
+exercised on a parent, which is the framework's answer to "what should this assert".
 
 The test suite is not an engineering artifact that records what the code does. It
 asserts every true mathematical statement that the repository's language can express.

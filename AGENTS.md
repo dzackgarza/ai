@@ -360,6 +360,7 @@ When the situation in the left column is present, load the right column before a
 | User requests a roadmap, PRD, cross-agent plan, review track, issue tree, or proof-bearing coordination structure | `project-initialization`, `plan`, `agent-memory`, `git-guidelines`, then `plan/references/externalization.md` |
 | Substantive implementation depending on repository-wide state | `project-initialization`, then only the owners it routes to |
 | Choosing formats, runners, stacks, storage, secrets/env handling, CLI tools, or provisioning | `system-conventions`, `tool-provisioning-and-environment-hygiene` |
+| Deciding where a behavior lives, what a reported number means, what a document is for, or how general a formulation should be | `code-patterns` → `references/situation-to-source.md`, which routes each to the field's own literature |
 | Migrating content between repos, docs, or vaults; retiring a source after synthesis | `system-conventions` (**Migration Means Everything Arrives**) |
 | Editing any JSON or YAML file | `config-file-editing` — never raw-edit config files |
 | Working with justfiles or project tasks | `justfile` |
@@ -396,14 +397,15 @@ When the situation in the left column is present, load the right column before a
   you..." → load `handling-corrections`. A critique that requests no course
   change is an analysis request, not authorization to edit. Afterwards,
   persist durable expectations per the Memory section.
-- **A question about what you understand is a defect report.** The asker
-  already knows the answer; the interrogative marks a proposition your output
-  denies, and it is nearly always a proposition of the *domain* you are
-  working in. "Understood", "you're right", and any claim to have learned
-  something are banned answers: a model carries nothing across sessions, so
-  only a file does. Load the domain skill's mental-model reference, name the
-  proposition in the user's own precision, and write it into the document that
-  owns the domain — never into a general document about misunderstanding.
+- **A question about what you understand marks a bad region, not a knowledge
+  gap.** The output that prompted it came from priors formed on casual writing
+  about the subject rather than on its literature, and reasoning harder from
+  inside that region produces more of the same. The response is to change what
+  is in context: load the skill for the domain in play, follow it to the
+  authoritative source it names — the manual, the specification, the standard
+  text, the reference documentation — and work from there. "Understood" and any
+  claim to have learned something are banned answers; nothing is carried
+  between sessions, so if a hook is missing, add the hook.
 - **Externalize once, after convergence.** Converge scope and interpretation
   in one local draft before creating coordinated external state (branch, PR,
   issue edits, synchronized vault copies). Pre-promotion corrections are

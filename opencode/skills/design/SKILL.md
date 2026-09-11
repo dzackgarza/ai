@@ -647,9 +647,12 @@ When copy is necessary but not final, mark it as draft or placeholder.
 
 ## Interface Conventions
 
-*Principles: the standard pattern already exists; derive from purpose and audience; the
-representation is not the thing. `code-patterns/references/first-principles.md` states
-them generally.*
+Before inventing a control, a panel, or a page structure, read the platform's own
+specification: the Apple Human Interface Guidelines, the GNOME Human Interface
+Guidelines, or Material Design, whichever the target resembles; Nielsen Norman's ten
+usability heuristics for the general case; and Diátaxis (diataxis.fr) for what a given
+document or page is for. `code-patterns/references/situation-to-source.md` carries the
+metrics and document-purpose subjects.
 
 An application interface is judged against the conventions its users already have.
 Inventing a control where a platform convention exists reads as a defect to anyone who

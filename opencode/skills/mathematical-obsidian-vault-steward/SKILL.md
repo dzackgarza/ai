@@ -134,8 +134,12 @@ Use this adversarial check:
 
 ## A Study Vault Is Authored Literature
 
-*Principles: derive from purpose and reader; the representation is not the thing —
-here, page count is not size and metadata is not content.*
+Read the models before reorganizing: the Stacks Project's introduction and conventions,
+for an authored mathematical text broken into tags for navigation, citation and reuse;
+Wikipedia's Manual of Style on article structure and summary style, for when a topic
+splits or merges; Diátaxis (diataxis.fr) for what a page is for. Austin's *Measuring and
+Managing Performance in Organizations* covers why a count like page total becomes the
+target once it is reported.
 
 A mathematical reference vault is a written text broken into pages for navigation,
 cross-referencing, citation, and reuse. It is not a database of cards, and its pages
