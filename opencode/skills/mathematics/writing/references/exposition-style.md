@@ -192,11 +192,27 @@ specimen, and everything wrong with one clause:
 > The rank condition is stated for a *complete intersection* presentation, and that
 > hypothesis is not decorative.
 
-- **"not decorative"** makes a precise, checkable claim — the conclusion is false without
-  the hypothesis — and then declines to make it. The sentence is unfalsifiable as
-  written, and it reads identically whether or not the writer ever checked. Emphasis is
-  standing in for content. Its relatives: "crucially", "importantly", "it is worth
-  stressing that", "this is not a technicality", "genuinely necessary".
+- **"not decorative"** is a negative parallelism: it asserts by denying a property nobody
+  claimed. No one proposed that the hypothesis was decoration, so the sentence resolves
+  nothing while producing the shape of a correction. It also plants the notion it denies.
+  Its relatives: "crucially", "importantly", "it is worth stressing that", "this is not a
+  technicality", "genuinely necessary", "far from trivial".
+
+  **Standard mathematical writing almost never does this, for three structural reasons.**
+
+  1. **Hypotheses are load-bearing by construction.** A theorem's hypotheses are exactly
+     what its proof consumes, and sharpening a theorem *is* the removal of the ones that
+     are decorative. So the claim is true a priori — which is precisely why it can be
+     written without checking anything, and why it conveys nothing when true.
+  2. **The literature has positive instruments for the intended claim, and all of them
+     exhibit rather than assert.** "The hypothesis is necessary", followed by the example
+     where the conclusion fails. "Sharp." "Cannot be weakened to." A remark carrying the
+     counterexample. Mathematicians do not tell a reader that a hypothesis matters; they
+     hand over the object that breaks without it.
+  3. **Negation in mathematics carries a truth value.** "f is not continuous", "the
+     converse fails", "no such X exists" — each has a proof. "Not decorative" negates
+     nothing about any object; it is commentary on the author's own exposition, which
+     standard prose reserves for remarks that do real work.
 - **"The rank condition"** takes a definite article with no referent. Which condition, on
   what object? The phrase points at something that existed only in the writer's context.
 - **"is stated for"** is passive and sourceless. A theorem in a cited paper, a definition

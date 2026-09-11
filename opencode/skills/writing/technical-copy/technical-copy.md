@@ -148,6 +148,30 @@ discovery, or course change that is muttered mid-task and never surfaced is the 
 defect from the other side: the reader again does not get what they need. Announce
 decisions; do not announce yourself.
 
+## Denying a property nobody claimed
+
+**Pattern.** A claim made by rejecting a position no one holds: "this is not decorative",
+"not merely a wrapper", "not a stylistic choice", "this isn't just about performance",
+"far from trivial", "no accident that". The negative parallelism in
+[[writing/humanization/humanization|humanization]] #9 — "it's not just X, it's Y" — with
+the second half dropped, which makes it harder to catch in technical prose because the
+surrounding sentences carry real content.
+
+It is attractive because it produces the *shape* of an argument: a position rejected, a
+correction issued, a reader set straight. There is no proposition on either side of it.
+Nobody proposed the thing being denied, so nothing is resolved, and the writer can
+produce it without having checked anything.
+
+It also plants what it denies. Writing "not decorative" puts decoration in the reader's
+head, exactly as writing "do not do X" inserts X — the mechanism `Removal Means Deletion`
+in AGENTS.md owns.
+
+**House rule.** State the positive claim, and state it as something checkable. If the
+positive claim turns out to be trivially true, the sentence was carrying nothing and
+should be deleted rather than rewritten. In mathematical prose this failure has its own
+entry, including why the standard literature has positive instruments for every claim it
+gestures at: `mathematics/writing/references/exposition-style.md`.
+
 ## Copy that describes the work instead of the result
 
 **Pattern.** Recounting what was tried, what failed, how many rounds it took, what was
