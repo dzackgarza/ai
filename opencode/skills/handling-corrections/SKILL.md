@@ -34,6 +34,11 @@ Classify the correction before choosing a response:
   game-development, design, writing, subagent-delegation — before answering. The answer
   is never "understood"; it is the corrected artifact plus the write-down in the document
   that owns the domain.
+- **Comprehensibility correction:** the user reports that your text was word salad,
+  incoherent, rambling, or unreadable. Repair your encoding, never the reader's assumed
+  expertise. Re-explaining fundamentals, defining terms, or restating what the user just
+  read adds condescension to the original defect. The two independent reader axes, and
+  this whiplash, are in [[writing/technical-copy/technical-copy|technical copy]].
 - **High-consequence pivot:** the likely response is destructive, irreversible,
   externally visible, touches unknown-provenance work, or needs new authority. Stop and
   obtain the missing decision after presenting only the evidence the user needs.

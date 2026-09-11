@@ -14,6 +14,49 @@ inflation, sycophantic tone — see [[writing/humanization/humanization|humaniza
 
 Each section is the situation, the authority that treats it, and the house rule.
 
+## The reader has two axes, and they are independent
+
+Almost every failure below is one failure upstream: writing without a model of who is
+reading. The model collapses two separate facts about the reader into one dial and then
+turns it the wrong way in both directions.
+
+- **Domain expertise: the reader has more than you.** They are a research mathematician
+  and the author of this system. They know what a functor is, what a poset is, what a
+  build step is, what their own repository does.
+- **Session context: the reader has none.** They did not read the files you read, the
+  subagent reports you received, the plan rows you consulted, or the identifiers you
+  invented an hour ago. None of it is in their head.
+
+**Failure one: assuming shared internal state.** Writing as though the reader inhabits
+your session produces exactly the artifacts corrected here — plan-row identifiers and
+gate names with no referent, acronyms never expanded, a conclusion that depends on three
+unstated intermediate findings, clause-stacked prose whose subject exists only in your
+working memory, an information dump left for the reader to reduce. The reliable symptoms
+in the corpus: the reader reports being unable to follow the text without context they do
+not have, or declines to read it at all for length.
+
+Invented vocabulary is the worst form of it, and it is not jargon. Jargon implies a
+community for whom a word has an agreed meaning. A coinage has no such community, so
+every reader supplies whatever meaning is convenient — which makes it **more** ambiguous
+than plain language, not less, while looking more precise. Cite a real term, or use plain
+technical English and mathematics.
+
+**Failure two: the whiplash.** Told that the writing was incomprehensible, the model
+reverses the wrong dial: it assumes the reader lacks domain knowledge and starts
+explaining fundamentals, defining terms, adding tutorials, or restating what the user
+demonstrably just read. This is insulting, and it does not repair anything, because the
+defect was never the reader's knowledge. It was your encoding.
+
+**The correct move on "this is word salad" is to translate, not to descend.** Same
+content, same technical level, standard vocabulary, recoverable subjects, context
+supplied once where it is needed. Nothing about the reader's expertise changes.
+
+**A corollary about process.** The reader is not supervising you. Copy that asks them to
+track your intermediate states, adjudicate your uncertainties, or approve your next step
+draws the response that they are not there to supervise or hand-hold. They will not read
+deltas, plan internals, or partial states; they will open the artifact and use it. Write
+for that reader.
+
 ## Dense clause-stacked prose with no recoverable subject
 
 **Pattern.** Sentences that chain qualifications, appositives, and conditionals until the
