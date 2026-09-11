@@ -83,7 +83,14 @@ Every one of these appears repeatedly in this system's transcripts:
 13. **Confess**: disclose a shortfall in chat instead of recording or repairing it.
 14. **Announce an action in flight**, or the order in which you will report later. The
     reader learns nothing until it lands.
-15. **Write yourself into the report** — your earlier intentions, your reversal, your
+15. **Report a non-task.** Announce not having done something that was never a task — a
+    road not taken, an alternative design, a tool that does not apply. The reader spends a
+    message discovering there is nothing there. Worse than flagging a real gap, because
+    the item was manufactured in order to be disclosed.
+16. **Hedge as a status item.** Record a scoping decision as an outstanding gap so that,
+    if the decision proves wrong, the record shows it was foreseen. This is the
+    instrumental form of confession, and the reason the habit survives correction.
+17. **Write yourself into the report** — your earlier intentions, your reversal, your
     self-assessment, a finding ranked against your own task. `technical-copy` covers the
     autobiographical register.
 

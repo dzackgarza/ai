@@ -95,6 +95,21 @@ finiteness, freeness, projectivity, commutativity, rings to semirings, groups to
 [[mathematics/objects-in-code/objects-in-code|objects in code]] carries the mathematical
 instances.
 
+**Citing the general form while shipping the special case.** A specific and damaging
+variant: the search is done, the general solution is found and named in the write-up, and
+then the narrow version is built because the general case is not needed *yet*. The
+citation reads as diligence and is in fact the evidence against the decision — it records
+that the general form was known and declined. The debt falls due on the next feature, and
+is paid by whoever asks for it.
+
+When the general form is understood and the marginal cost over the special case is small,
+build the general form. When it is genuinely large, that is a real decision and belongs
+in the plan with the cost stated, not in a status note as a thing not done. The test:
+name the change that would force the general case, and ask whether it is plausible in
+this project. A second character size in a game, a non-free module in an algebra library,
+a second tenant in a service — if the answer is that it is coming, the special case is
+already wrong.
+
 ## Contracts and interfaces
 
 **Situation.** Hand-rolled "raise unless overridden"; an obligation discovered at runtime
