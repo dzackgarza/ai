@@ -1,14 +1,14 @@
 {
   "name": "OpenRouter",
   "models": {
-    "openrouter/free": {
-      "name": "Free Models Router"
-    },
     "cohere/north-mini-code:free": {
       "name": "Cohere North Mini Code (free)"
     },
     "nvidia/nemotron-3-ultra-550b-a55b:free": {
       "name": "Nemotron 3 Ultra 550B (free)"
+    },
+    "openrouter/free": {
+      "name": "Free Models Router"
     },
     "poolside/laguna-s-2.1:free": {
       "name": "laguna-s-2.1:free"
