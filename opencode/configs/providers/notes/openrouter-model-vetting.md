@@ -236,3 +236,28 @@ listed in the catalog, but every call returns HTTP 404 "Provider returned
 error". Paid base `nvidia/nemotron-3-super-120b-a12b` still resolves. Same
 "Dead Endpoints" shape as the llama-3.3-70b and gpt-oss-120b free tiers. The
 `:free` route on kilo is a separate gateway and still passes.
+
+* * *
+
+## 2026-09-12 Catalog Sweep
+
+Whitelist removal: `stealth/ox-alpha` — no longer in the live catalog (HTTP 404 "Thank you for participating in the Stealth Ox Alpha testing period. This model was ZAI's GLM-5.3 Flash. Use it now: https://openrouter.ai/z-ai/glm-5.3-flash"). Promotional window closed. Paid base `z-ai/glm-5.3-flash` still listed separately.
+
+New free models blacklisted (7 unaccounted free models flagged by `validate_openrouter`; all probed live at 2026-09-12 via `openrouter.ai/api/v1/chat/completions` with `OPENROUTER_API_KEY`):
+
+- `inclusionai/ling-3.0-flash-fin:free` — 124B total / 5.1B active MoE, finance-specialized Ling 3.0 Flash variant. Chat probe succeeds (reasoning-only response for "Reply with exactly OK" is expected from this thinking model) and a `tools=[search_files]` probe returns a well-formed `{"query":"auth"}` tool call. Tool-capable but domain-specialized; not vetted for general agentic loops. Blacklisted pending broader evaluation; usable for pure-text finance tasks via `opencode run` without tools if needed.
+
+- `inclusionai/ling-3.0-flash-sante:free` — 124B total / 5.1B active MoE, health/medicine-specialized Ling 3.0 Flash variant. Same probe results as fin: chat OK, tool call well-formed. Same triage.
+
+- `inclusionai/ling-3.0-flash-vl:free` — 124B total / 5.5B active MoE, vision-enriched Ling 3.0 Flash variant (text+image+video->text). Same probe results as fin/sante: chat OK, tool call well-formed. Same triage.
+
+- `nex-agi/nex-n2.5-mini:free` — Qwen3.5 MoE agentic coding model (256 experts, 40 layers, 2048 hidden). Chat probe succeeds ("OK"). Tool probe with default `reasoning.effort=high` intermittently returns no `tool_calls` (reasoning-only), but with `effort=none/low` returns a well-formed `search_files` call. Behavior depends on reasoning config, so the default agentic harness would see flaky tool use. Blacklisted pending a dedicated vetting run that pins reasoning effort and checks JSON schema validity across multiple prompts.
+
+- `nex-agi/nex-n2.5-pro:free` — Larger sibling (512 experts, 60 layers, 4096 hidden, FP8 quantized). Same shape as mini: chat OK, tool call present with `effort=none/low` and usually with `high` (one high-effort probe succeeded). Same flaky-default concern; blacklisted pending the same dedicated vetting.
+
+- `thinkingmachines/inkling-small:free` — 276B total / 12B active MoE (open-weight multimodal). Gate-restricted: every chat probe returns HTTP 403 "is only available on agentic harnesses. Try plugging it into a coding agent or productivity app listed on https://openrouter.ai/apps". Not invocable via the raw OpenRouter chat API that OpenCode uses, so it cannot pass the minimal chat completion check while whitelisted. Same category as expired free periods but for gating rather than expiry. Blacklisted as not directly invocable.
+
+- `thinkingmachines/inkling:free` — 975B total / 41B active MoE flagship. Same HTTP 403 gate as the small variant. Same triage.
+
+Validator clean after this sweep: no unaccounted free models; remaining whitelisted models pass live chat checks (one rate-limited upstream is informational only).
+

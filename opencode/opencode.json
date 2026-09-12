@@ -1685,9 +1685,6 @@
         },
         "poolside/laguna-xs-2.1:free": {
           "name": "laguna-xs-2.1:free"
-        },
-        "stealth/ox-alpha": {
-          "name": "Ox Alpha (Stealth, free)"
         }
       },
       "whitelist": [
@@ -1695,8 +1692,7 @@
         "nvidia/nemotron-3-ultra-550b-a55b:free",
         "openrouter/free",
         "poolside/laguna-s-2.1:free",
-        "poolside/laguna-xs-2.1:free",
-        "stealth/ox-alpha"
+        "poolside/laguna-xs-2.1:free"
       ],
       "blacklist": [
         "01-ai/yi-1.5-34b-chat",
@@ -1920,6 +1916,9 @@
         "inception/mercury-coder",
         "inclusionai/ling-2.6-1t",
         "inclusionai/ling-2.6-flash",
+        "inclusionai/ling-3.0-flash-fin:free",
+        "inclusionai/ling-3.0-flash-sante:free",
+        "inclusionai/ling-3.0-flash-vl:free",
         "inclusionai/ling-3.0-tiny:free",
         "inclusionai/ring-2.6-1t",
         "inclusionai/ring-2.6-1t:free",
@@ -2061,6 +2060,8 @@
         "neversleep/noromaid-20b",
         "neversleep/noromaid-mixtral-8x7b-instruct",
         "nex-agi/deepseek-v3.1-nex-n1",
+        "nex-agi/nex-n2.5-mini:free",
+        "nex-agi/nex-n2.5-pro:free",
         "nothingiisreal/mn-celeste-12b",
         "nousresearch/deephermes-3-llama-3-8b-preview",
         "nousresearch/deephermes-3-mistral-24b-preview",
@@ -2342,6 +2343,8 @@
         "thedrummer/valkyrie-49b-v1",
         "thenlper/gte-base",
         "thenlper/gte-large",
+        "thinkingmachines/inkling-small:free",
+        "thinkingmachines/inkling:free",
         "thudm/glm-4-32b",
         "thudm/glm-4-9b",
         "thudm/glm-4.1v-9b-thinking",
