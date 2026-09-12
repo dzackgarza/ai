@@ -6,10 +6,10 @@ Source: `https://openrouter.ai/api/v1/models` (live, 2026-09-12) filtered to `pr
 
 ## Summary
 
-Live free models: 22.
-Free vision-capable (accepts `image` or `video` input, per `architecture.input_modalities`): 11.
+Live free models: 18 (22 priced $0 minus 4 BYOK `is_byok:true` which require Google AI Studio key and are not free without BYOK).
+Free vision-capable (accepts `image` or `video` input, per `architecture.input_modalities`, non-BYOK): 7.
 Whitelisted total: 5 (only `openrouter/free` advertises image input, but it is a router, not a model; no vision model is whitelisted).
-Blacklisted vision: 11 (including 2 audio-output, 1 safety classifier).
+Blacklisted vision: 7 (including 1 safety classifier).
 
 `thinkingmachines/inkling:free` and `thinkingmachines/inkling-small:free` are **not vision models**. They are general multimodal MoE that accept image/audio but are gated `HTTP 403 is only available on agentic harnesses`. The 403 was from probing outside a harness, not from vision handling. They are documented in `openrouter-model-vetting.md` as harness-gated, not here.
 
@@ -20,10 +20,6 @@ Blacklisted vision: 11 (including 2 audio-output, 1 safety classifier).
 | Model | Input → Output | Context | Pricing | Catalogue | Vetting reason |
 | --- | --- | --- | --- | --- | --- |
 | `dots-studio/dots-3-note-preview:free` | text+image → text | 512K | $0 | blacklist | 280B/16B MoE, chat pass, `tools` returns 400 `bad request` — denies tool use, useful pure-text/vision via `opencode run` without tools only |
-| `google/gemma-4-26b-a4b-it:free` | text+image+video → text | 1M? | $0 | blacklist | 26B-A4B, <35B class, vision, not vetted for agentic loops |
-| `google/gemma-4-31b-it:free` | text+image+video → text | 1M? | $0 | blacklist | 31B, live but 400 on every chat, dead endpoint shape |
-| `google/lyria-3-clip-preview` | text+image → text+audio | 32K? | $0 | blacklist | Audio generation (Lyria), not text agentic, vision input but audio output |
-| `google/lyria-3-pro-preview` | text+image → text+audio | 32K? | $0 | blacklist | Same as clip |
 | `inclusionai/ling-3.0-flash-vl:free` | text+image+video → text | 262K | $0 | blacklist | 124B/5.5B MoE vision-Ling, chat + `tools=[search_files]` → well-formed `{"query":"auth"}`, tool-capable but domain vision-specialized, pending general agentic vetting |
 | `nex-agi/nex-n2.5-mini:free` | text+image → text | 262K | $0 | blacklist | Qwen3.5 MoE 256 experts vision agentic coder, chat pass, tool call needs `reasoning.effort=none/low`, default high flaky — pending pinned-effort vetting |
 | `nex-agi/nex-n2.5-pro:free` | text+image → text | 262K | $0 | blacklist | 512 experts vision agentic coder, same flaky-default concern |
@@ -37,8 +33,8 @@ Non-vision live free models (11) for completeness: `cohere/north-mini-code:free`
 
 ## Vetting Decisions (how to read the table)
 
-- **Parameter rule (<35B)**: `gemma-4-26b`, `lfm-2.5-2.6b`, `nemotron-3.5-lightning` (30B) are <35B class and systematically blacklisted for agentic loops unless exceptional tuning is proven. No exception proven here.
-- **Tool-use gate**: `dots-studio` denies `tools` array with 400; `lyria` is audio-output; `nemotron-nano-omni` and `content-safety` are specialty models, not general text+vision chat. They fail the agentic tool-call bar and belong to the "Useful but Non-Agentic" or specialty rosters.
+- **Parameter rule (<35B)**: `lfm-2.5-2.6b`, `nemotron-3.5-lightning` (30B) are <35B class and systematically blacklisted for agentic loops unless exceptional tuning is proven. No exception proven here. (`gemma-4-26b` is BYOK, not free, and not in this table.)
+- **Tool-use gate**: `dots-studio` denies `tools` array with 400; `nemotron-nano-omni` and `content-safety` are specialty models, not general text+vision chat. They fail the agentic tool-call bar and belong to the "Useful but Non-Agentic" or specialty rosters. (`lyria` is BYOK audio-output, not free.)
 - **Domain-specialized vision**: `ling-3.0-flash-vl` passes chat + tool call but is vision-enriched Ling specialized for video perception; `nex-n2.5` pair are vision agentic coders but need reasoning-effort pinning. Both are blacklisted pending broader harness-level vetting with image payloads, not because they are incapable.
 - **Harness-gated (not vision)**: `thinkingmachines/inkling` pair are general multimodal MoE, not vision models. The 403 `is only available on agentic harnesses` was from probing outside a harness. They could be whitelisted when called via a harness, but this repo keeps them blacklisted until a harness probe passes. They are not listed in the vision table.
 - **Router**: `openrouter/free` is not a model; it is a free-tier router. Whitelisted because it is the simplest entry point for free inference.
