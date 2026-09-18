@@ -1,0 +1,47 @@
+{
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "Qwen Web",
+  "options": {
+    "baseURL": "https://qwen.aikit.club/v1",
+    "apiKey": "{env:QWEN_API_KEY}"
+  },
+  "blacklist": [
+    "qwen-image",
+    "qwen-video"
+  ],
+  "models": {
+    "qwen3.8-max": {
+      "name": "Qwen3.8 Max"
+    },
+    "qwen3.7-plus": {
+      "name": "Qwen3.7 Plus"
+    },
+    "qwen3.7-max": {
+      "name": "Qwen3.7 Max"
+    },
+    "qwen3.6-plus": {
+      "name": "Qwen3.6 Plus"
+    },
+    "qwen3.5-plus": {
+      "name": "Qwen3.5 Plus"
+    },
+    "qwen3.5-omni-plus": {
+      "name": "Qwen3.5 Omni Plus"
+    },
+    "qwen3.8-omni-flash": {
+      "name": "Qwen3.8 Omni Flash"
+    },
+    "qwen-deep-research": {
+      "name": "Qwen Deep Research"
+    },
+    "qwen-web-dev": {
+      "name": "Qwen Web Dev"
+    },
+    "qwen-full-stack": {
+      "name": "Qwen Full Stack"
+    },
+    "qwen-slides": {
+      "name": "Qwen Slides"
+    }
+  }
+}
