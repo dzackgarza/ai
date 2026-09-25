@@ -25,6 +25,20 @@ if (!repo || !pr) throw new Error('pr-feedback-triage workflow needs args {repo,
 const SKILL = '~/ai/opencode/skills/git-guidelines/feedback'
 const HARNESS = SKILL + '/scripts/triage_state.py'
 const MAX_ROUNDS = 8
+// Every reply that resolves a thread must pass the PR's thread-resolution CI gate, which parses
+// the field lines of the skill's disposition contract. An open code-scanning alert is carried
+// into every later scan at its old lines, so a thread closed as Rejected also dismisses the alert.
+const CLOSE_RULES =
+  `Each resolving reply is plain field lines, one per line, no Markdown emphasis: ` +
+  `"Disposition: <Accepted as written|Accepted with modified remediation|Rejected|Duplicate|Outdated|Backlogged as minor technical debt>", ` +
+  `"Policy basis: POLICY.<CODE>" or "Factual/contract basis: ...", "Pre-filter: ...", "Claim: ...", ` +
+  `"Code/action taken or explicit non-change: ...", "Audit anchor: <URL, PR commit, or repo file>"; ` +
+  `Accepted adds "Remediation:", "Proof:", "Commit: <sha on this PR>", "Deleted artifact: <path or none>"; ` +
+  `Duplicate adds "Canonical thread: <URL>"; Outdated adds "Superseding commit: <sha>"; Backlogged adds "Debt issue: <issue URL>". ` +
+  `When the thread's first comment links a code-scanning alert and the disposition is Rejected, dismiss that alert ` +
+  `(gh api -X PATCH repos/${repo}/code-scanning/alerts/<n> -f state=dismissed -f "dismissed_reason=false positive" -f dismissed_comment=<reply URL>). ` +
+  `After resolving, run: uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci check-review-threads --repo ${repo} --pr-number ${pr} --repo-root . ` +
+  `and repair every reply it names before returning.`
 
 const COLLECT_SCHEMA = {
   type: 'object', required: ['converged', 'worklist'], additionalProperties: true,
@@ -83,7 +97,8 @@ while (round < MAX_ROUNDS) {
   const disp = await agent(
     `You are role B (independent disposition) for ${repo} PR #${pr}. Load ${SKILL}/SKILL.md, ${SKILL}/references/disposition-prefilter.md, and ~/ai/opencode/skills/git-guidelines/SKILL.md.\n` +
     `For EACH finding (by stable key), read the actual code at HEAD, run the disposition pre-filter and current-PR spend gate FIRST, record the Pre-filter line, then assign the five-way disposition. Resolve rejected/outdated/duplicate. Leave remediate/investigate findings open. For Backlogged as minor technical debt, append to an existing work-family GitHub debt issue or create one through the repository's issue route, post the thread disposition with every Gate 3 criterion and the issue link, then resolve it without role C.\n` +
-    `You ONLY dispose — never propose a fix. Findings: ${JSON.stringify(toDispose)}\n` +
+    CLOSE_RULES + `\n` +
+    `You ONLY dispose — never propose a fix. Findings:${JSON.stringify(toDispose)}\n` +
     `Return {dispositions[]} with, per finding: key, verdict, preFilter, action (remediate/backlog/none/investigate), rootConcern (first-principles, NO reviewer wording), and debtIssue (required URL when action=backlog).`,
     { schema: DISPOSITION_SCHEMA, phase: 'Disposition', label: `disposition r${round}` })
 
@@ -117,7 +132,7 @@ while (round < MAX_ROUNDS) {
     results.push(await agent(
       `You are role A's verification gate for ${repo} PR #${pr}, finding ${a.key}. Load ${SKILL}/SKILL.md.\n` +
       `Phase-5 verify by hand: compare the declared remediation (${JSON.stringify(rem)}) against the ACTUAL code, answering each Phase-5 question; confirm the spec is honored and no banned patterns. Run lint/test/build.\n` +
-      `If it passes: commit (co-author Claude Opus 4.8), push, and post the three-stamp closure (Disposition -> Remediation -> Verification with the commit hash) to the thread and resolve it. If it fails: report verified:false with the gap; do NOT commit.\n` +
+      `If it passes: commit (co-author Claude Opus 4.8), push, and post the three-stamp closure (Disposition -> Remediation -> Verification with the commit hash) to the thread and resolve it. ${CLOSE_RULES} If it fails: report verified:false with the gap; do NOT commit.\n` +
       `Return {key:'${a.key}', verified, closed, commit, note}.`,
       { schema: VERIFY_SCHEMA, phase: 'Verify', label: `verify ${a.key}` }))
   }
