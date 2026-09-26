@@ -159,7 +159,6 @@ them require subtraction, relocation, or evidence, not elaboration.
   section).
 - `reviewing-llm-code/references/pattern-catalog.md`: canonical pattern names for
   review reports.
-- `reviewing-subagent-work`: independence discipline for agent-produced reviews.
 - `anti-slop` → **Structural and Organizational Slop (Project-Level)**: the same failures
   expressed in directory layouts, schemas, status systems, and governance — not just prose.
 - `fixing-slop` → **Contaminated Artifacts Cannot Be Repaired In Place**: the

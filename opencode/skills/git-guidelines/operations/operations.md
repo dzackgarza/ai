@@ -561,7 +561,6 @@ gh api repos/<owner>/<repo>/issues/<N>/comments
 If the user asks to use Jules for review, load:
 - [[reviewing-llm-code/SKILL|reviewing-llm-code]]
 - [[anti-slop/SKILL|anti-slop]]
-- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]]
 - [[test-guidelines/SKILL|test-guidelines]] if tests/QC/proof surfaces are in scope
 - [[git-guidelines/feedback/feedback|pr-feedback-triage]] if existing review comments are being evaluated
 

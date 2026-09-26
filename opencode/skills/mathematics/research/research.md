@@ -146,8 +146,6 @@ full of procedural rules is a defective submission document.
   [[mathematics/lattices/lattices|lattices]]
 - Lean formalization — [[lean4/skills/lean4/lean4|lean4]],
   [[lean4/skills/aristotle/aristotle|aristotle]]
-- Negative findings and coverage claims —
-  [[epistemic-integrity/SKILL|epistemic-integrity]]
 - Literature search and paper writing —
   [[research-discovery/SKILL|research-discovery]],
   [[research-writing/SKILL|research-writing]]

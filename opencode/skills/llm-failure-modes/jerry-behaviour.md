@@ -91,8 +91,6 @@ approval is not evidence of correctness.
   If the evaluator cannot detect slop because it shares the same generic-text priors,
   that is a fluency-bias or paraphrase-as-review failure mode.
 
-- **addressing-shallow-work** → Load alongside when evaluating whether a solution
-  approach is structurally wrong.
   The inability to recognize code that is wrong at the abstraction level (e.g.,
   regex-on-HTML where DOM selectors exist) is a Jerry failure — the evaluator approves
   because it has the surface appearance of work.

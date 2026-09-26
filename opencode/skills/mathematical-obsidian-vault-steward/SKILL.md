@@ -1,10 +1,6 @@
 ---
 name: mathematical-obsidian-vault-steward
-description: 'Use when stewarding a mathematical Obsidian vault: ingesting raw notes,
-  chats, images, PDFs, snippets, or research artifacts; integrating source-backed
-  mathematical content into durable notes; deciding note granularity; preserving provenance;
-  auditing fake cards; or refactoring vault structure without degrading mathematical
-  meaning.'
+description: "Use when adding notes, chats, images, PDFs, or research artifacts to a mathematical Obsidian vault, or refactoring its structure."
 ---
 # Mathematical Obsidian Vault Steward
 

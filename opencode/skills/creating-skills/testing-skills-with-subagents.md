@@ -14,7 +14,7 @@ compliant).
 **Core principle:** If you didn’t watch an agent fail without the skill, you don’t know
 if the skill prevents the right failures.
 
-**REQUIRED BACKGROUND:** You MUST understand superpowers:test-driven-development before
+**REQUIRED BACKGROUND:** You MUST understand [[test-driven-development/SKILL|test-driven-development]] before
 using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle.
 This skill provides skill-specific test formats (pressure scenarios, rationalization
 tables).

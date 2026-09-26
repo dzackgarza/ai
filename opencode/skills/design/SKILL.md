@@ -1,9 +1,6 @@
 ---
 name: design
-description: 'Use when designing visual artifacts: landing pages, prototypes, slide
-  decks, motion studies, design systems, component explorations, dashboards, or any
-  screen-based UI. Covers design process, aesthetic direction, typography, color,
-  responsive layout, motion, and verification of rendered artifacts.'
+description: "Use when building or judging a screen-based UI: pages, dashboards, slides, components. Owns render-and-inspect verification."
 ---
 # Design Skill
 

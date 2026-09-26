@@ -1,6 +1,6 @@
 ---
 name: game-development
-description: Use when working on a game — engine code, level content, interaction systems, animation, collision and spatial queries, art direction, or the Blender-to-engine asset pipeline. Routes to the production literature on how studios split disciplines and build content pipelines, so that artists and designers change content without touching engine code, plus the RPG-specific systems literature and this project's own pipeline decisions.
+description: "Use when working on a game: engine code, levels, interaction, animation, art direction, or the Blender-to-engine pipeline."
 ---
 # Game Development
 

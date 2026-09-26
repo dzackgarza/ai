@@ -4,8 +4,7 @@ The published prompt that led OpenAI's GPT 5.6 Sol Ultra to its proof of the
 Cycle Double Cover conjecture — one exemplar of the problem-statement
 document template described in
 [[mathematics/research/research|mathematical-research]]. Parent:
-[[mathematics/research/research|mathematical-research]];
-completion-game design theory: [[goalcraft/SKILL|goalcraft]].
+[[mathematics/research/research|mathematical-research]].
 
 Source: `https://cdn.openai.com/pdf/04d1d1e4-bc75-476a-97cf-49055cd98d31/cdc_prompt.pdf`
 ("Prompt used for 'A proof of the Cycle Double Cover Conjecture'", OpenAI,

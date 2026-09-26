@@ -1,7 +1,6 @@
 ---
 name: cleaning
-description: "Use when removing debris, dead code, unused files, or reorganizing any\
-  \ repository \u2014 code, docs, configs, notebooks, experiments, or mixed content."
+description: "Use when deleting dead code, unused files, or debris, or reorganizing a repository's files."
 ---
 # Cleaning
 

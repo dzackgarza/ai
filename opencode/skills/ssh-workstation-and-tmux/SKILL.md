@@ -1,7 +1,6 @@
 ---
 name: ssh-workstation-and-tmux
-description: Use when working with remote SSH workstations, managing named tmux sessions
-  for long-running jobs, or coordinating distributed agent sessions across machines.
+description: "Use when working on a remote SSH workstation or running long jobs in named tmux sessions."
 ---
 Pattern for long-running remote work: SSH into a workstation, use named tmux sessions to
 keep jobs alive across disconnects.

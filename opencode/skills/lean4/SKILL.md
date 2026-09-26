@@ -1,9 +1,6 @@
 ---
 name: lean4
-description: Use when working with theorem proving, formal mathematics, or computational
-  counterexamples. Covers local Lean 4 development (proofs, mathlib, lake), cloud-based
-  ATP via Aristotle (for offloading difficult proofs), and alternative theorem proving
-  software/solvers (Coq, Isabelle, Z3, Prover9, GAP, PySAT).
+description: "Use when writing Lean 4 proofs, using mathlib or lake, running Aristotle, or searching for a computational counterexample."
 ---
 # Theorem Proving and Formalization (Lean 4 & Beyond)
 
@@ -58,5 +55,4 @@ is one line can sit on a large graph of unformalized prerequisites. Look at the 
 graph before committing to a scope. One-shotting a large formalization in a session
 produces reward-hacking — `sorry` chains, restated hypotheses, definitions bent to make
 a proof close — and passing that off as a formalization is academic fraud, not a
-shortcut. `[[difficulty-and-time-estimation/SKILL|difficulty-and-time-estimation]]` owns
-the estimate; the honest move when the graph is large is to say so and scope a layer.
+shortcut. The honest move when the graph is large is to say so and scope a layer.

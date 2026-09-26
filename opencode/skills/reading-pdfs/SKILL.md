@@ -1,8 +1,6 @@
 ---
 name: reading-pdfs
-description: Use when a user needs to read, search, summarize, or extract information
-  from a PDF. The first step is always to check whether the PDF belongs to a live
-  Zotero library item; the answer routes the rest of the workflow.
+description: "Use when reading, searching, or extracting from a PDF. First checks whether the PDF is a Zotero attachment."
 ---
 # Reading PDFs
 

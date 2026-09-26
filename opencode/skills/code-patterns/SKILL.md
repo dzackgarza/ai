@@ -1,7 +1,6 @@
 ---
 name: code-patterns
-description: Use when writing, reviewing, or refactoring code. Routes to general,
-  language-specific, or legacy-compatible guidance.
+description: "Use when writing or refactoring code and deciding where a behavior lives or how general to make it. Routes by language."
 ---
 # Code Patterns
 

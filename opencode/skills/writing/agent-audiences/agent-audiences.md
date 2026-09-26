@@ -97,8 +97,7 @@ it’s doing the thing.
 **Bad (assumes self-awareness the agent doesn’t have):**
 
 > Do not mechanically run through checklists without genuine consideration.
-> That is checklist theater — the exact failure mode described in
-> [[addressing-shallow-work/SKILL|addressing-shallow-work]].
+> That is checklist theater.
 
 This fails because: the agent cannot recognize “checklist theater” in itself.
 The warning is addressed to a capacity the agent lacks.
@@ -479,15 +478,9 @@ contaminating worker guidance with orchestrator concerns.
 - → [[creating-skills/SKILL|creating-skills]] — REQUIRED: Load alongside when writing or editing `SKILL.md`
   files. Covers what belongs in a skill, description writing guidelines.
 
-- → [[looped-task-skill-author/SKILL|looped-task-skill-author]] — REQUIRED: Load alongside when the agent-facing prose
-  supports repeated one-shot loops or long-horizon continuation.
   Covers progress logs, self-correcting state machines.
 
-- → [[subagent-delegation/authoring/authoring|creating-subagents]] — REQUIRED: Load alongside when writing subagent descriptions
-  or agent definitions.
 
-- → [[prompt-engineering/SKILL|prompt-engineering]] — Load alongside when writing broader prompt contracts and
-  reference-skill sections.
   Covers concrete examples, variable placeholders, priming context.
 
 * * *

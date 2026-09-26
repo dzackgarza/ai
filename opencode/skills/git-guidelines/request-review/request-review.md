@@ -7,7 +7,7 @@ license: MIT
 metadata:
   hermes:
     tags: [code-review, security, verification, quality, pre-commit, auto-fix]
-    related_skills: [[[subagent-delegation/implementation/implementation|subagent-driven-development]], plan, [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
+    related_skills: [plan, [[test-driven-development/SKILL|test-driven-development]], [[git-guidelines/SKILL|git-guidelines]], [[llm-failure-modes/SKILL|llm-failure-modes]]]
 ---
 # Pre-Commit Code Verification
 
@@ -26,7 +26,7 @@ Fresh context finds what you miss.
 
 - After completing a task with 2+ file edits in a git repo
 
-- After each task in [[subagent-delegation/implementation/implementation|subagent-driven-development]] (the two-stage review)
+- After each task of a plan executed by subagents (the two-stage review)
 
 **Skip for:** documentation-only changes, pure config tweaks, or when user says “skip
 verification”.
@@ -288,7 +288,7 @@ element.textContent = userInput;
 
 ## Integration with Other Skills
 
-**subagent-driven-development:** Run this after EACH task as the quality gate.
+**Plans executed by subagents:** Run this after EACH task as the quality gate.
 The two-stage review (spec compliance + code quality) uses this pipeline.
 
 **test-driven-development:** This pipeline verifies TDD discipline was followed — tests

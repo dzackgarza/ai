@@ -1,10 +1,6 @@
 ---
 name: system-conventions
-description: Use when choosing a config format, task runner, UI stack, package manager,
-  or storage location; provisioning tools or dependencies; handling secrets or environment
-  variables; selecting CLI tools for search, rename, or codemods; running long-lived
-  commands; or migrating documentation between surfaces. Canonical problem-to-convention
-  map for this system.
+description: "Use when choosing a config format, task runner, UI stack, package manager, storage location, secrets handling, or CLI tool."
 ---
 # System Conventions
 

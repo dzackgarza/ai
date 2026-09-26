@@ -382,15 +382,6 @@ When to do X vs Y:
 
 - [[writing/clarity/clarity|writing-clearly-and-concisely]] — Concise prose techniques
 
-- [[looped-task-skill-author/SKILL|looped-task-skill-author]] — Required for repeated one-shot loops, persistent state,
-  or continuation workflows
-
-- [[subagent-delegation/authoring/authoring|creating-subagents]] — Required when the skill interacts with subagent or
-  runtime-agent definitions
-
-- [[prompt-engineering/SKILL|prompt-engineering]] — Required for system prompts, agent definitions, or prompt
-  contracts adjacent to the skill
-
 ## Testing Skills
 
 Test-Driven Development for skills:

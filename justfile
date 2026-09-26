@@ -27,7 +27,7 @@ dotfiles_dir := repo / "dotfiles"
 
 # Core assets
 
-agents_md := repo / "AGENTS.md"
+agents_md := repo / "AGENTS.global.md"
 skills_dir := opencode_dir / "skills"
 
 # Tool configs
@@ -56,7 +56,7 @@ default:
 
 # Validate repository Markdown entrypoints and installed-skill WikiLinks.
 test:
-    @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md
+    @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md AGENTS.global.md
     @just --justfile {{ justfile() }} check-skill-wikilinks
 
 # Reformat Markdown and structured configuration before commit.

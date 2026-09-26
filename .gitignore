@@ -135,3 +135,6 @@ opencode/*.db
 opencode/*.db-shm
 opencode/*.db-wal
 .agents/brooks/
+
+# Claude Code skill sync (harness-managed)
+opencode/skills/synced/

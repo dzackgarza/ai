@@ -1,7 +1,6 @@
 ---
 name: research-discovery
-description: Use when finding or reading research literature. Routes to search, paper
-  reading, or literature-review procedures.
+description: "Use when searching for or reading research literature."
 ---
 # Research Discovery
 

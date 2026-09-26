@@ -1,11 +1,6 @@
 ---
 name: project-initialization
-description: 'Use before substantive implementation that depends on repository-wide
-  state, after cloning or switching projects for such work, or when requested work
-  needs missing project surfaces. Establishes the normal project form: git/remote
-  freshness, GitHub public state, durable surface ownership, .agents, [[agent-memory/SKILL|agent-memory]],
-  [[justfile/SKILL|justfile]], ai-review-ci QC/hooks/CI, and task-relevant memory
-  lookup before implementation.'
+description: "Use after cloning or switching to a repository for substantive work, or when it lacks a remote, QC hooks, a justfile, or memory."
 ---
 
 # Project Initialization

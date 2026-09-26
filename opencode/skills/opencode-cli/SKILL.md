@@ -1,7 +1,6 @@
 ---
 name: opencode-cli
-description: Use when running OpenCode CLI commands, starting repo-local OpenCode
-  servers, inspecting models or agents, or driving sessions through ocm
+description: "Use when running OpenCode CLI commands, repo-local OpenCode servers, or ocm sessions."
 ---
 # OpenCode CLI
 

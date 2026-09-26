@@ -1,11 +1,6 @@
 ---
 name: zotero
-description: "Use when interacting with the live Zotero library on this workstation\
-  \ \u2014 searching, reading, adding, merging, updating, tagging, trashing, or attaching\
-  \ items via the running Zotero desktop's local API. Also use when the user asks\
-  \ about academic references, citation management, PDF attachments, or Zotero specifically.\
-  \ The canonical transport is the running Zotero desktop at http://127.0.0.1:23119;\
-  \ cloud Web API and translation server are NOT used here."
+description: "Use when searching, reading, adding, tagging, or attaching items in the local Zotero library at http://127.0.0.1:23119."
 ---
 
 # [[zotero/SKILL|Zotero]] Skill

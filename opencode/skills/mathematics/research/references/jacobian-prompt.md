@@ -3,8 +3,7 @@
 A problem-statement document for the Jacobian Conjecture, sharing the
 template structure described in
 [[mathematics/research/research|mathematical-research]]. Parent:
-[[mathematics/research/research|mathematical-research]];
-completion-game design theory: [[goalcraft/SKILL|goalcraft]].
+[[mathematics/research/research|mathematical-research]].
 
 Source: `https://aaronlou.com/jacobian_counterexample_prompt.pdf`.
 Verbatim text below (page furniture removed); distilled rules follow.

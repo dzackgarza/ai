@@ -41,7 +41,7 @@ denial, required outputs, verification questions, commit-before-closure, and
 re-entry on new review rounds.
 It must **not** become an orchestrator-controlled checkpoint where A approves,
 overrides, summarizes, or substitutes for B's disposition or C's remediation. That
-would reintroduce the self-gate forbidden by [[goalcraft/SKILL|goalcraft]] and the canonical
+would reintroduce the self-gate forbidden by the canonical
 `qc-triage` protocol. If no orchestration primitive is available, run the same
 role-isolated stages by hand.
 
@@ -309,7 +309,7 @@ Required output:
 ```
 
 ### Phase 5: Controller Verification Gate
-Before committing subagent remediation, the controller must review the subagent output under [[reviewing-subagent-work/SKILL|reviewing-subagent-work]], [[fixing-slop/SKILL|fixing-slop]], [[test-guidelines/SKILL|test-guidelines]], and the red-flag catalogs.
+Before committing subagent remediation, the controller must review the subagent output under [[fixing-slop/SKILL|fixing-slop]], [[test-guidelines/SKILL|test-guidelines]], and the red-flag catalogs.
 
 A green test/CI/build result is **not** verification. “test-ci green,” “build passes,” or “the gate ran” is a precondition, not a pass — the threat model explicitly includes weak tests that prove the patch rather than the behavior. Verification is comparing the **declared remediation against the actual implementation** and confirming they align with the spec, by hand, per question below.
 
@@ -524,7 +524,6 @@ When routing PR review workflows, follow these rules:
 
 - **User asks to review a PR**:
   Load [[git-guidelines/SKILL|git-guidelines]] (see `code-review.md`) + the [Review Guidelines](https://github.com/dzackgarza/ai/wiki/Review-Guidelines) wiki page + [[reviewing-llm-code/SKILL|reviewing-llm-code]] + [[test-guidelines/SKILL|test-guidelines]].
-  If the PR is agent-produced, also load [[reviewing-subagent-work/SKILL|reviewing-subagent-work]].
 
 - **User asks to address, resolve, reply to, or classify PR review comments**:
   Load [[git-guidelines/SKILL|git-guidelines]] + `pr-feedback-triage` + [[quality-control/SKILL|quality-control]] + [[test-guidelines/SKILL|test-guidelines]].

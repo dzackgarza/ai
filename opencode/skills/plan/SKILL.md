@@ -1,9 +1,6 @@
 ---
 name: plan
-description: "The canonical planning skill and plan mode: create, write, review, or\
-  \ revise durable implementation plans, source plans, and externalization-ready execution\
-  \ specs through [[agent-memory/SKILL|agent-memory]]. When invoked as plan mode,\
-  \ plan only \u2014 no execution this turn."
+description: "Use when creating, revising, or reviewing an implementation plan stored through agent-memory. In plan mode, plan only."
 license: MIT
 metadata:
   hermes:
@@ -13,7 +10,6 @@ metadata:
     - implementation
     - workflow
     related_skills:
-    - - - subagent-delegation/implementation/implementation|subagent-driven-development
     - - - git-guidelines/request-review/request-review|requesting-code-review
     - - - test-driven-development/SKILL|test-driven-development
     - - - git-guidelines/SKILL|git-guidelines
@@ -517,7 +513,6 @@ Load on demand after the routing gate:
 
 ## Related Skills
 
-- [[subagent-delegation/implementation/implementation|subagent-driven-development]]: executes approved plans task by task.
 - [[test-driven-development/SKILL|test-driven-development]] and [[test-guidelines/SKILL|test-guidelines]]: proof design for code changes.
 - [[git-guidelines/SKILL|git-guidelines]]: checkpoint, commit, PR, and review workflow.
 - [[agent-memory/SKILL|agent-memory]]: storage command surface for vault-owned plan records.

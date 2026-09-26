@@ -1,8 +1,6 @@
 ---
 name: reading-transcripts
-description: Use when asked about previous conversations, previous sessions, transcript
-  logs, past interactions, or when needing to parse session histories across any supported
-  CLI agent.
+description: "Use when reading a previous CLI agent session or transcript log."
 ---
 # reading-transcripts
 

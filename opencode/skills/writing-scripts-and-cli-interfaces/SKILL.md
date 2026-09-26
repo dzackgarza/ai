@@ -1,6 +1,6 @@
 ---
 name: writing-scripts-and-cli-interfaces
-description: Use when creating shell scripts, Python CLI tools, or command-line interfaces.
+description: "Use when writing a shell script, a Python CLI, or a command-line interface."
 ---
 # Writing Scripts and CLI Interfaces
 

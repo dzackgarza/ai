@@ -1,6 +1,6 @@
 ---
 name: writing
-description: Use when writing or editing prose. Routes by audience and output purpose.
+description: "Use when writing or editing prose. Routes by audience and purpose."
 ---
 # Writing
 

@@ -29,7 +29,7 @@ Implementation complexity by itself does not create that requirement. The route 
 3. Before implementation, use `plan/references/externalization.md` and `git-guidelines`
    to place the work in the GitHub issue tree, select or create the GitHub Milestone
    scope, and create the PR claim map when a branch claims work.
-4. Use `implement_plan` or `subagent-driven-development` only after the issue tree,
+4. Execute the plan only after the issue tree,
    milestone scope, and PR claim set are known, unless the user explicitly requested a
    diagnosis-only or audit-only pass.
 

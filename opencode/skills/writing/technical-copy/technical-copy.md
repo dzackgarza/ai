@@ -267,8 +267,7 @@ your context — internal identifiers, plan-row labels, unexpanded acronyms, ref
 "the plan" with no path.
 
 **Read.** [[writing/agent-audiences/agent-audiences|agent audiences]] for prompts and
-instructions; [[subagent-delegation/SKILL|subagent-delegation]] for what a new agent
-needs.
+instructions.
 
 **House rule.** Name the reader and what they already know before writing. A topic that
 has not appeared in the conversation is not in the user's context and must be introduced

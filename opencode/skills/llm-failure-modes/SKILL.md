@@ -1,7 +1,6 @@
 ---
 name: llm-failure-modes
-description: Use when reasoning through a complex or high-stakes problem to check
-  for common LLM cognitive failures.
+description: "Reference catalog of LLM failure patterns. Load only from a review skill that cites a specific code, never as a general checklist."
 metadata:
   author: dzack
   version: 0.3.0
@@ -132,8 +131,6 @@ Load the relevant section for your context:
 
 ### Cross-References
 
-- [[addressing-shallow-work/SKILL|addressing-shallow-work]] → Load alongside when investigating failure modes that
-  produce structurally wrong code.
   The inability to recognize when an approach is structurally incapable of correctness —
   even without empirical verification — is a failure mode distinct from “didn’t test
   enough.” The regex-on-HTML example (flattening a semantic tree into bytes before
@@ -155,7 +152,5 @@ Load the relevant section for your context:
   developer-controlled assertions, fallback laundering, no-op behavior, QC appeasement
   code, and recipe bypasses.
 
-- [[reviewing-subagent-work/SKILL|reviewing-subagent-work]] → Load alongside when designing review processes that must
-  detect the failures cataloged in this skill.
   The Synthesis Gate forces content-level evaluation; structural-wrongness recognition
   is its prerequisite gate.

@@ -1,7 +1,6 @@
 ---
 name: config-file-editing
-description: "Use when editing JSON or YAML config files \u2014 covers safe read/modify/write\
-  \ patterns with jq, yq, and Python to prevent syntax errors and indentation corruption."
+description: "Use when editing a JSON or YAML file. Edit with jq, yq, or Python, never by hand."
 ---
 # Config File Editing
 

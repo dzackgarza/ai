@@ -2,7 +2,6 @@
 
 Owner file for banking a mathematical result produced by any agent (including
 yourself). Parent: [[mathematics/research/research|mathematical-research]]. Related:
-[[reviewing-subagent-work/SKILL|reviewing-subagent-work]] for general agent output,
 [[mathematics/research/research-gate-review/research-gate-review|research-gate-review]] for gate protocol; this file owns
 what "independently verified" means for a mathematical claim. A concrete three-way
 certification (Gröbner normal form, explicit finite model, Lean witness module, all

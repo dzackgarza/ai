@@ -87,7 +87,7 @@ as exactly one of:
 `successful` | `mathematically_negative` | `timeout` | `oom` | `software_failure` | `inconclusive`
 
 Only `mathematically_negative` with a terminal verdict banner may feed a `*_theorem`
-ledger row. Negative-finding prose additionally follows [[epistemic-integrity/SKILL|epistemic-integrity]].
+ledger row.
 
 Symmetrically, a positive hit (a SAT model, a candidate object) is not yet a result:
 it triggers the verification protocol of

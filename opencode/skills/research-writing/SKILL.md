@@ -1,7 +1,6 @@
 ---
 name: research-writing
-description: Use when synthesizing research or writing a research paper. Routes by
-  artifact and research workflow.
+description: "Use when writing a research paper or synthesizing research into a document."
 ---
 # Research Writing
 

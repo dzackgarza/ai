@@ -1,7 +1,6 @@
 ---
 name: git-guidelines
-description: Use for any Git or GitHub operation. Routes to the smallest procedure
-  for the requested repository action.
+description: "Use for any git or GitHub operation: staging, commit, branch, PR, issue, or deletion."
 ---
 # Git and GitHub Work
 

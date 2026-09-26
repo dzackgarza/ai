@@ -1,7 +1,6 @@
 ---
 name: finding-or-downloading-new-skills
-description: Use when asked to find, evaluate, or download new skills from skill marketplaces
-  or repositories.
+description: "Use when asked to find, evaluate, or install a skill from a marketplace or repository."
 ---
 # Finding or Downloading New Skills
 
