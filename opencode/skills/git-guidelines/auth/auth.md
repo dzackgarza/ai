@@ -2,7 +2,6 @@
 name: github-auth
 description: "GitHub auth setup: HTTPS tokens, SSH keys, gh CLI login."
 version: 2.0.0
-author: Hermes Agent
 license: MIT
 metadata:
   hermes:

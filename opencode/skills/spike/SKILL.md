@@ -2,7 +2,6 @@
 name: spike
 description: "Use when running a throwaway experiment to validate an idea before building it."
 version: 1.0.0
-author: Hermes Agent (adapted from gsd-build/get-shit-done)
 license: MIT
 metadata:
   hermes:

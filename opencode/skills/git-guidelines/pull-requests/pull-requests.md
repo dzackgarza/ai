@@ -2,7 +2,6 @@
 name: github-pr-workflow
 description: "GitHub PR lifecycle: branch, commit, open, CI, merge."
 version: 2.0.0
-author: Hermes Agent
 license: MIT
 metadata:
   hermes:

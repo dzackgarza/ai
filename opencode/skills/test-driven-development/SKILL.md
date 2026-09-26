@@ -2,7 +2,6 @@
 name: test-driven-development
 description: "Use when implementing a feature or bug fix: red test first, then the smallest passing change."
 version: 1.1.0
-author: Hermes Agent (adapted from obra/superpowers)
 license: MIT
 metadata:
   hermes:

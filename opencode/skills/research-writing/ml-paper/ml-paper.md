@@ -3,7 +3,6 @@ name: research-paper-writing
 title: Research Paper Writing Pipeline
 description: "Write ML papers for NeurIPS/ICML/ICLR: design→submit."
 version: 1.1.0
-author: Orchestra Research
 license: MIT
 dependencies: [semanticscholar, arxiv, habanero, requests, scipy, numpy, matplotlib, SciencePlots]
 platforms: [linux, macos]

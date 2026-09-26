@@ -2,7 +2,6 @@
 name: github-code-review
 description: "Review PRs: diffs, inline comments via gh or REST."
 version: 2.0.0
-author: Hermes Agent
 license: MIT
 metadata:
   hermes:

@@ -2,7 +2,6 @@
 name: github-repo-management
 description: "Clone/create/fork repos; manage remotes, releases."
 version: 2.0.0
-author: Hermes Agent
 license: MIT
 metadata:
   hermes:

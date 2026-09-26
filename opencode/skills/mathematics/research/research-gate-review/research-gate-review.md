@@ -2,7 +2,6 @@
 name: research-gate-review
 description: "Apply the 6-gate review kernel substantively — read code, find real bugs, avoid procedural checkboxing."
 version: 1.0.0
-author: session-derived
 license: MIT
 metadata:
   hermes:

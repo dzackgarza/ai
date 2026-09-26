@@ -2,7 +2,6 @@
 name: humanizer
 description: "Humanize text: strip AI-isms and add real voice."
 version: 2.5.1
-author: Siqi Chen (@blader, https://github.com/blader/humanizer), ported by Hermes Agent
 license: MIT
 metadata:
   hermes:
