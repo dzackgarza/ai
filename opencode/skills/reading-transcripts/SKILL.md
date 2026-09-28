@@ -1,8 +1,26 @@
 ---
 name: reading-transcripts
 description: "Use when reading a previous CLI agent session or transcript log."
+context: fork
+model: sonnet
 ---
 # reading-transcripts
+
+## Task
+
+Claude Code runs this skill in a forked subagent, so the parsed transcript stays out of
+the caller's context. The request is:
+
+$ARGUMENTS
+
+Answer the request and return only the report. The report contains:
+
+- the answer;
+- each session identifier you read (path or ID);
+- the verbatim transcript lines that support each claim, as short quotes.
+
+Mark a claim that no transcript line supports as "not found in the inspected sessions",
+and name the sessions inspected.
 
 ## Overview
 
