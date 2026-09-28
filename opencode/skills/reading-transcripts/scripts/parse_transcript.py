@@ -52,23 +52,11 @@ def main():
             subprocess.run(["python", script_map["amp"], args.identifier], check=True)
 
         else:
-            # File-based parsers
-            if args.identifier == "-":
-                # Handle piped stdin
-                subprocess.run(
-                    ["python", script_map[args.harness], "-"],
-                    stdin=sys.stdin,
-                    check=True,
-                )
-            else:
-                subprocess.run(
-                    ["cat", args.identifier], stdout=subprocess.PIPE, check=True
-                )
-                subprocess.run(
-                    f"cat {args.identifier} | python {script_map[args.harness]} -",
-                    shell=True,
-                    check=True,
-                )
+            # File-based parsers read a path, or stdin when the identifier is "-"
+            subprocess.run(
+                ["python", script_map[args.harness], args.identifier],
+                check=True,
+            )
 
     except subprocess.CalledProcessError as e:
         print(f"Error parsing transcript: {e}")

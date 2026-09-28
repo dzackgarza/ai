@@ -43,7 +43,9 @@ def parse_kilocode_json(file_path):
                     print(text)
             elif btype == "tool_use":
                 tool_name = block.get("name", "unknown_tool")
-                inputs = json.dumps(block.get("input", {}), indent=2)
+                inputs = json.dumps(block.get("input", {}))
+                if len(inputs) > 300:
+                    inputs = inputs[:300] + "...[truncated]..."
                 print(f"🛠️  [Tool Use: {tool_name}]\n{inputs}")
             elif btype == "tool_result":
                 res = block.get("content", "")

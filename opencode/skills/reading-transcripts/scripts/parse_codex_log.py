@@ -66,7 +66,10 @@ def parse_codex_jsonl(file_path):
                         except:
                             pass
                     if isinstance(inputs, dict):
-                        inputs = json.dumps(inputs, indent=2)
+                        inputs = json.dumps(inputs)
+                    inputs = str(inputs)
+                    if len(inputs) > 300:
+                        inputs = inputs[:300] + "...[truncated]..."
                     print(f"🛠️  [Tool Use: {tool_name}]\n{inputs}")
                     print("-" * 60)
                     
