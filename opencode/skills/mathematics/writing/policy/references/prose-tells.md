@@ -270,7 +270,8 @@ does not do.
 
 ## `PR-18`: Patronizing dialectic for a sophisticated audience
 
-The document's reader is the audience of DEF-12 and DEF-13: comfortable with
+The reader is the audience that the house conventions declare. Where a
+document adopts DEF-12 and DEF-13, that reader is comfortable with
 $\infty$-categories, $\mathbb{E}_1$- and $\mathbb{E}_\infty$-ring spectra,
 $\mathbf{LMod}_R$ versus $\mathbf{RMod}_R$, derived stacks, and
 homotopy types. That reader already distinguishes $\mathbb{E}_1$ from
