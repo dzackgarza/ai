@@ -306,6 +306,10 @@ writing.
 
 ## References
 
+- [[mathematics/writing/policy/policy|mathematical-writing-policy]] — the coded rule
+  catalogue for reader-facing mathematical prose. **Load before writing or reviewing
+  exposition, definitions, or theorem blocks, and whenever a policy code is cited.**
+
 - `references/structured-proofs.md` — Lamport structured-proof format: anatomy,
   step constructs (Choose/Let/Assume-Prove/Case/equality chains), numbering and
   citation scheme, depth discipline, worked examples, per-context calibration.

@@ -22,6 +22,7 @@ only when its distinct trigger is materially present.
 ## Writing
 
 - [[mathematics/writing/writing|writing]] — rigorous mathematical prose, notation, LaTeX, and formalization targets; proofs default to Lamport-style structured proofs in every medium. Sub-routes to LaTeX compile QA.
+- [[mathematics/writing/policy/policy|mathematical-writing-policy]] — the coded catalogue of mathematical writing rules (`PR-*`, `DEF-*`, `SYM-*`, `STANCE-*`, …) that repositories cite from their `CONTRIBUTING.md`. Load when writing or reviewing reader-facing mathematical prose, or when a code is cited.
 
 ## Objects in code
 
