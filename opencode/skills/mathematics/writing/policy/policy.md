@@ -77,7 +77,7 @@ in code order.
 | Examples | `EX-*` | The form and status of examples. | [examples](references/examples.md) |
 | Axioms | `AX-*` | Stating axioms inside definitions. | [axioms](references/axioms.md) |
 | Parentheticals | `PAR-*` | What a parenthetical may carry. | [parentheticals](references/parentheticals.md) |
-| Section structure | `SEC-*` | Statement blocks as the skeleton of a section. | [section-structure](references/section-structure.md) |
+| Section structure | `SEC-*` | Statement blocks as the skeleton of a section; the placement and titles of chapters. | [section-structure](references/section-structure.md) |
 
 [Recurring patterns](references/recurring-patterns.md) groups the rules by the
 failure that produced them.

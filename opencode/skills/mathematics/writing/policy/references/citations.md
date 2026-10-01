@@ -18,3 +18,10 @@ through the bibliography.
 ## `CITE-2`: No inline URLs as citations
 
 **Banned:** an inline URL to arXiv, a DOI, or nLab in place of a citation.
+
+## `CITE-3`: Cite a tagged reference by its tag
+
+Cite a reference whose results carry stable tags, such as the Stacks
+Project, by the tag of the result: "[Stacks, Tag 02LS]". Read the tag's
+page before you cite it. A wrong tag still renders, and it sends the
+reader to a different result.

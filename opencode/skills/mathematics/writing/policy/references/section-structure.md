@@ -1,10 +1,9 @@
 # Section structure (`SEC-*`)
 
-A $\S$ is its fenced logical units. The document's logical units are fenced
-blocks — Definition (`::: {#def-...}`), Theorem (`::: {.Theorem
-#thm:...}`), Lemma, Proposition, Corollary, Example (`::: {#exm-...}`),
-Remark (`::: {.Remark}`) — each with an ID and a title, citable via
-`\ref`/`\longref` or `@`. Running prose that points at a definition
+A $\S$ is its fenced logical units. The document's logical units are
+numbered blocks — Definition, Theorem, Lemma, Proposition, Corollary,
+Example, Remark — each with a label and a title, linked through the
+house's reference syntax (`XREF-1`). Running prose that points at a definition
 elsewhere, cites a theorem elsewhere, or paraphrases either in English is
 glue between units. It is not a logical unit that belongs to the document.
 
@@ -240,3 +239,42 @@ general definiens.
 generated $\mathbb Z$-module $L$, the natural map
 $L\otimes_{\mathbb Z}\mathbb Z_p\to\varprojlim_n L/p^nL$ is an
 isomorphism."
+
+## `SEC-9`: A chapter is placed by its dependencies and its subject
+
+The order of chapters is the work's reading order. A chapter's position
+claims that everything it uses is defined above it, and that the part it
+sits in names its subject. Place a chapter by reading it: what it defines,
+what it uses, and which of the two the rest of the part does. Appending to
+the end of a part, or putting it next to a file with a similar name,
+decides neither question. File order is unrelated to dependency order.
+
+Check three things:
+
+- **Dependency.** Find where each result the chapter references is
+  stated. A few forward references are normal; a chapter whose targets
+  are mostly later is in the wrong place.
+- **Subject.** State in one clause what the part is about, and check that
+  the chapter is about that. General machinery and a project's own results
+  are different subjects and go in different parts, however closely they
+  are related.
+- **Size.** A part of a dozen chapters is no longer a group. Split it at
+  the seam the mathematics already has.
+
+**Banned:** three chapters on one lattice sorted by file name, which put
+them in the reverse of the order their own references require, inside the
+run of general lattice theory whose results they use.
+
+**Preferred:** the general lattice theory first, then the three chapters
+in the order of their references, in the part about that lattice.
+
+## `SEC-10`: Title a unit with its subject, never with its format
+
+A title names the mathematics the unit is about. A title that names the
+form of the text ("Summary", "Notes", "Overview", "Details") tells the
+reader nothing and hides the subject from the table of contents.
+
+**Banned:** "Lattice Summary" as the title of a chapter about Baily--Borel
+embeddings.
+
+**Preferred:** "Baily--Borel embeddings".
