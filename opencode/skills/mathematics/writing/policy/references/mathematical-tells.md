@@ -26,7 +26,18 @@ specified forgetful functor); "refinement" for a subcategory (→ full
 subcategory); "least common category" (→ a greatest lower bound in the
 specified preorder of categories, if it exists).
 
-**Preferred:** the standard term or the document's term.
+**Banned:** "blow-up point" for a pole; "wrap number" for the winding number;
+"the value space of $M$" when the object is an $R$-module $W$.
+
+**Preferred:** the standard term or the document's term: "pole"; "winding
+number"; "Let $b\colon M\otimes_R M\to W$ be a $W$-valued bilinear form."
+
+A private coinage, a colloquial term ("apex" for the vertex of a cone,
+"carries", "identifies conventions"), or a confabulated term that sounds
+technical but has no referent makes readers guess whether a new object was
+introduced, and hides the details it stands for. Use the standard term and
+link its defining occurrence (`XREF-5`). If the document has no definition of
+the notion, add one. Define a genuinely new term before its first use.
 
 ## `MA-3`: Notation colliding with a standard meaning
 
@@ -83,7 +94,8 @@ notation to the coinage, or coined notation is used before it is defined.
 
 **Preferred:** first specify the family $p_A\colon E_A\to B_A$ and the map
 $\chi\colon\mathcal C\to B_A$, then draw their pullback. Only afterward
-introduce the shorthand.
+introduce the shorthand, with `:=` pointing from the new symbol to the defined
+expression. In general, define each object before any shorthand for it.
 
 ## `MA-8`: Compressed notation where the diagram is owed
 
@@ -94,9 +106,13 @@ records the projections and the universal property.
 **Banned:** "the family is the base change $S \times_M U$"; "$S \to M$
 classifies the family" as the whole of it.
 
-**Preferred:** draw the square (`tikzcd`) with both legs and the corner mark,
+**Preferred:** draw the square with both legs and the corner mark,
 and use fiber-product notation only as a named shorthand for the apex once its
-square is drawn.
+square is drawn. Where the house allows it, the square may be reached
+through the linked definition of the fiber product: "the fiber is the
+fiber product $X\times_Y 1$", with that definition linked. The reader
+must reach both legs and the universal property; the apex alone gives
+neither.
 
 ## `MA-9`: Colloquial "ownership" for a mathematical relation
 

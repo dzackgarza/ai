@@ -18,16 +18,19 @@ functoriality.
 ## `NOT-2`: Typed equality symbols
 
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
-written with distinct symbols. $\hookrightarrow$ denotes a stated inclusion,
+written with distinct symbols. An isomorphism is not written as an
+equality. $\hookrightarrow$ denotes a stated inclusion,
 embedding, or monomorphism; fullness, faithfulness, and repleteness are
 asserted separately. Strict pullbacks and pseudo-pullbacks are not identified
 by notation.
 
 ## `NOT-3`: One symbol, one meaning
 
-The same symbol has the same type and meaning throughout the document. Project
-notation is introduced at the defining occurrence, after the underlying
-standard construction has been stated.
+The same symbol has the same type and meaning throughout the document,
+including every unit the document includes from elsewhere. Within a single
+passage the constraint is tighter (`SYM-4`). Nonstandard notation is
+introduced at its defining occurrence, after the standard construction it
+abbreviates has been stated.
 
 ## `NOT-4`: Standard names
 

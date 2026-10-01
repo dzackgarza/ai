@@ -17,7 +17,8 @@ forgetful functor. When several choices exist, name the one used by the
 construction. For example, for a commutative ring $R$, tensor product and
 direct sum give the different monoidal structures $(R\text{-}\mathbf{Mod},
 \otimes_R,R)$ and $(R\text{-}\mathbf{Mod},\oplus,0)$. Over a noncommutative
-ring, state the bimodule, left-module, or right-module setting.
+ring, state the bimodule, left-module, or right-module setting. A ring is a
+group under addition, not under multiplication.
 
 ## `STR-3`: State every hypothesis
 
@@ -30,8 +31,9 @@ or other witness, name that witness in the construction.
 
 A factorization is described as "an equality $F=G\circ H$ or a specified
 natural isomorphism $F\Rightarrow G\circ H$" as alternatives, conflating a
-property (strict equality, which does not exist in the document's
-$\infty$-categorical default where $\mathbf{Cat}:=\mathbf{Cat}_\infty$)
+property (strict equality, which does not exist under an
+$\infty$-categorical default where $\mathbf{Cat}:=\mathbf{Cat}_\infty$, as in
+a document that adopts DEF-13)
 with extra structure (a specified $2$-cell). In $\mathbf{Cat}_\infty$ a
 factorization is always a tuple $(H,G,\alpha)$ with $\alpha$ a specified
 natural equivalence.

@@ -6,7 +6,7 @@ blocks — Definition (`::: {#def-...}`), Theorem (`::: {.Theorem
 Remark (`::: {.Remark}`) — each with an ID and a title, citable via
 `\ref`/`\longref` or `@`. Running prose that points at a definition
 elsewhere, cites a theorem elsewhere, or paraphrases either in English is
-not a logical unit that belongs to the document.
+glue between units. It is not a logical unit that belongs to the document.
 
 ## `SEC-1`: A section with no fenced logical unit has no content
 
@@ -18,13 +18,25 @@ is computed on underlying sets," "The kernel … is a limit — the equalizer
 limit cones: a subgroup … need not be a submodule …" — has no Definition,
 no Theorem, no Example, and no Remark that belongs to this $\S$. The
 title "Creation of limits" is then a heading over filler. Every $\S$
-introduces at least one fenced unit of its own; a $\S$ that only cites
-and paraphrases is not a $\S$.
+introduces at least one primary fenced unit of its own — a definition,
+theorem, example, counterexample, or worked calculation — and uses
+remarks and references to support it. A $\S$ that only cites and
+paraphrases is not a $\S$: it is navigation or process prose disguised
+as exposition.
+
+On an ordinary concept page, a bare run of included or linked units is
+the same defect. Connect the definitions and theorems by their
+hypotheses, consequences, proof strategy, or technique. Intentional
+review sheets, theorem and definition compendia, resource indexes, and
+problem banks are lists by design and are not this defect.
 
 **Banned:** "## Creation of limits {#sec-creation}" followed by five
 paragraphs, none fenced, that cite @def-preserve-reflect-create,
 [@Rie16, Theorem 5.6.5], [@Rie16, Corollary 5.5.3], then "Hence …" and
 "The kernel … so it is …" in prose.
+
+**Banned:** a $\S$ that contains only "This is useful for the next
+chapter" and a list of links.
 
 **Preferred:** "::: {#def-create} ## Creation of limits — … :::" or
 "::: {.Proposition #prp-limit-created} ### Limits in $R\text{-}\mathbf{Mod}$
@@ -58,8 +70,8 @@ two categories names the functor along which it is created" and "If no
 comparison is specified, $F$ and $G$ remain distinct" are writing
 requirements about how to speak about constructions versus statements and
 about when parallel functors are distinct. They belong in a requirements
-section (@sec-statements-vs-constructions) or in CONTRIBUTING.md
-(PR-15, PR-16), not as closing morals of $\S$ Creation and $\S$ Parallel
+section (@sec-statements-vs-constructions) or in the writing guide
+(here `PR-15`, `PR-16`), not as closing morals of $\S$ Creation and $\S$ Parallel
 functors. A $\S$ that states a theorem about monadic functors does not
 close with a style rule.
 
@@ -135,13 +147,14 @@ Remark attached to the corollary, not as a standalone $\S$.
 
 ## `SEC-6`: The skeleton is the fenced logical units
 
-The underlying skeleton of a paper or book is the set of fenced logical
-units — Definition (`::: {#def-...}`), Theorem (`::: {.Theorem
-#thm:...}`), Lemma, Proposition, Corollary, and Example (`:::
-{#exm-...}`) — each with its ID, title, hypotheses, quantifiers, and
-types. Their dependency graph is the work: every term used in a theorem
-is defined in a prior definition, every lemma used in a proof is proved
-earlier, every example instantiates a definition. The skeleton must be
+The underlying skeleton of a paper or book is the set of numbered
+statement blocks — Definition, Theorem, Lemma, Proposition, Corollary,
+and Example — each with its label, title, hypotheses, quantifiers,
+types, and conclusion. Their dependency graph is the work: every term
+used in a theorem is defined in a prior definition, every result used in
+a proof or solution is stated before it, linked, or cited, and every
+example instantiates a definition. Under the house's proof obligation,
+each claim is proved earlier or cited. The skeleton must be
 logically coherent and mathematically complete when every non-unit is
 removed — connecting prose, motivation, transitions, and Remarks. If the
 skeleton is not coherent on its own, the work is incomplete.
@@ -155,8 +168,8 @@ contributes to that graph only through its fenced units.
 
 **Banned:** a manuscript where the fenced units alone — Definitions,
 Theorems, and Examples with their IDs stripped of surrounding prose — do
-not define every term, do not state every claim, or do not prove every
-theorem.
+not define every term, do not state every claim, or do not prove or cite
+every theorem as the proof obligation requires.
 
 **Preferred:** write the fenced units first as the skeleton; then add
 prose and Remarks as glue. Test by deleting every non-unit: the remaining
@@ -184,7 +197,14 @@ non-example as a Remark following the Corollary that $U$ creates limits
 (and the kernel Example), the parallel-functors distinction as a Remark
 following the definition of a natural transformation. If there is no
 primary unit to attach to, the $\S$ should not exist; the remark belongs
-in the requirements $\S$ or in CONTRIBUTING.md.
+in the requirements $\S$ or in the writing guide.
+
+A Remark is reader-facing copy. It may explain a reference to a result in
+a source, note which part of a source a problem uses, or record an
+erratum: a false statement and its corrected hypotheses. It never
+discusses provenance bookkeeping, internal status, what is or is not
+included, collection membership, missing sources, or any other curation
+concern (`PROSE-11`).
 
 ## `SEC-8`: Specialization of a general construction with no new claim
 
@@ -215,3 +235,8 @@ Z}^L\mathbb Z_p$ is $p$-adic completion when $L$ is finitely generated;
 $\operatorname{Tor}_1^{\mathbb Z}(L,\mathbb Z_p)=0$ iff … :::" — a
 Proposition/Example with a precise claim, not a restatement of the
 general definiens.
+
+**Preferred:** a Proposition with an actual claim: "For a finitely
+generated $\mathbb Z$-module $L$, the natural map
+$L\otimes_{\mathbb Z}\mathbb Z_p\to\varprojlim_n L/p^nL$ is an
+isomorphism."

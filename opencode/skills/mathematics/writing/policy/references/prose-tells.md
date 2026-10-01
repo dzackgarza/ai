@@ -143,12 +143,14 @@ is …" outside its definition; "**Remark.** …" as a paragraph.
 
 ## `PR-11`: Formatting tells
 
-**Banned:** Title Case in headings; curly quotes; emoji; collaborative or
-meta language ("let me know", "I hope this helps"); bold-header bullet lists
-where prose is clearer.
+**Banned:** Title Case in headings and titles; curly quotes typed into the
+source; emoji; collaborative or meta language ("let me know", "I hope this
+helps"); bold-header bullet lists where prose is clearer.
 
-**Preferred:** sentence case in headings; straight quotes; no emoji; no
-collaborative or meta language.
+**Preferred:** sentence case in headings and titles, with proper names
+capitalized ("Sylow theorems", "Riemann mapping theorem"); straight quotes
+in the source, with typographic quotes and dashes left to the typesetter; no
+emoji; no collaborative or meta language.
 
 ## `PR-12`: Project process inside mathematical exposition
 
@@ -295,10 +297,20 @@ requires additional data."
 $\mathbf{LMod}_R\simeq\mathbf{RMod}_R$ for a general
 $\mathbb{E}_1$-ring spectrum $R$." Do not manufacture a naive position to
 knock down; do not explain what notation does not do. The document assumes
-the sophistication of its intended audience (modern graduate courses at
-Harvard, MIT, and Princeton; Lurie, Scholze, Gaitsgory, Haynes Miller)
-and does not rehearse warnings appropriate to a first encounter with the
-distinction.
+the sophistication of its declared audience and does not rehearse warnings
+appropriate to a first encounter with the distinction. For a document that
+adopts DEF-12 and DEF-13, that audience is modern graduate courses at
+Harvard, MIT, and Princeton, and the work of Lurie, Scholze, Gaitsgory, and
+Haynes Miller. For a document written for graduate students who review for
+a qualifying exam, the reader already distinguishes the notions that the
+exam covers.
+
+**Banned:** "One might expect a continuous bijection to have a continuous
+inverse, but this requires more."
+
+**Preferred:** "A continuous bijection from a compact space to a Hausdorff
+space is a homeomorphism." Where the failure of the tempting converse is
+itself worth knowing, give the counterexample as an example block.
 
 ## `PR-19`: Logical connective without entailment
 
@@ -349,7 +361,9 @@ surjective" — $M$ unbound, no "is … if …", redundant "is surjective."
 
 **Preferred:** "$M\in\mathbf{LMod}_R$ is finitely generated if there
 exists a finite set $I$ and an effective epimorphism
-$\bigoplus_{i\in I}R\twoheadrightarrow M$." Bind $M$, state the
+$\bigoplus_{i\in I}R\twoheadrightarrow M$." Over an ordinary ring: "An
+$R$-module $M$ is finitely generated if there exist $n\ge0$ and a
+surjective $R$-linear map $R^n\to M$." Bind $M$, state the
 quantifiers, and do not double the surjectivity marker.
 
 ## `PR-22`: "Some … is …" for $\exists$
@@ -488,12 +502,14 @@ $\otimes\colon\mathcal{C}\times\mathcal{C}\to\mathcal{C}$ (MA-13).
 
 **Banned:** "the fiber of $f$ over $y$ is the apex of the cartesian
 square"; "let $b\colon M\times M\to W$ be $A$-bilinear" for
-$b\colon M\otimes_A M\to W$; "a monoid for the cartesian structure."
+$b\colon M\otimes_A M\to W$; "a monoid for the cartesian structure";
+"the direct sum of copies of $R$, one for each element of $I$", repeated
+where $\bigoplus_{i\in I}R$ is available.
 
 **Preferred:** "the fiber is the pullback $X\times_Y 1$ of $f$ along $y$";
 "$b\colon M\otimes_A M\to W$"; "a monoid object in
-$(\mathcal{C},\times,\mathbf{1})$." Use the concise notation that already
-exists for the precise object.
+$(\mathcal{C},\times,\mathbf{1})$"; "$\bigoplus_{i\in I}R$". Use the
+concise notation that already exists for the precise object.
 
 ## `PR-28`: "Requires a stated descent/local-to-global theorem with its hypotheses" is not a theorem
 
@@ -587,8 +603,16 @@ $R^n\twoheadrightarrow M$ is surjective") and DEF-31 ("the relevant
 pullbacks"): an English indefinite standing for a quantifier so that no
 checkable claim is made.
 
+Three recurring forms say that a theorem exists instead of stating it:
+"requires a theorem with its hypotheses" (PR-28); "with its hypotheses"
+(PR-31); and "without hypothesis $H$, $A$ and $B$ differ" (PR-34), which
+names neither the theorem, nor which condition is meant (DEF-34), nor the
+comparison map.
+
 **Banned:** "A conclusion about $L$ from either image requires …";
-"A result about $M$ follows from …"
+"A result about $M$ follows from …"; "holds under its hypotheses";
+"Without the finite-generation hypothesis, scalar extension and completion
+are distinct constructions."
 
 **Preferred:** state the proposition with quantifiers: "For finitely
 presented $M$, $M\simeq0$ iff $S\otimes_R^L M\simeq0$ for faithfully
@@ -597,6 +621,23 @@ $L\simeq L'$ iff $L\otimes_{\mathbb Z}\mathbb Z_p\simeq L'\otimes_{\mathbb Z}\ma
 all $p$ and $L\otimes_{\mathbb Z}\mathbb Q\simeq L'\otimes_{\mathbb Z}\mathbb Q$ compatibly
 over $\mathbb Q_p$." Name the conclusion; do not use "a conclusion" /
 "a result."
+
+**Preferred:** a theorem block, "A nondegenerate quadratic form over
+$\mathbb Q$ represents $0$ nontrivially if and only if it does so over
+$\mathbb R$ and over $\mathbb Q_p$ for every prime $p$", and then its
+application: "By the Hasse–Minkowski theorem, $q$ is isotropic over
+$\mathbb Q$, because …".
+
+**Preferred:** "For a finitely generated module $M$ over a local ring $R$
+with residue field $k$, $M=0$ if and only if $M\otimes_R k=0$"; "there
+exist $n$ and a surjective $R$-linear map $R^n\to M$" (PR-21); "assume
+$\mathcal C$ has all pullbacks" (DEF-31).
+
+**Preferred:** "For a finitely generated $\mathbb Z$-module $M$, the
+natural map $M\otimes_{\mathbb Z}\mathbb Z_p\to\varprojlim_n M/p^nM$ is an
+isomorphism. For $M=\mathbb Q$ the source is $\mathbb Q_p$ and the target
+is $0$." The theorem names the hypothesis and the map; the counterexample
+shows the boundary.
 
 ## `PR-31`: Tautological "with its hypotheses" does no mathematical work
 
@@ -632,7 +673,7 @@ corrected.
 Standard mathematical prose never does this. A textbook states the
 theorem with hypotheses, proves it, and applies it; it does not tell the
 reader that a theorem is required or that hypotheses are required. The
-governance belongs in `CONTRIBUTING.md`, not in the document.
+governance belongs in the writing policy, not in the document.
 
 This generalizes PR-24 (self-referential meta-prose about the text's
 structure) and PR-16–18 (strawman negation of a premise no one held):
@@ -647,7 +688,7 @@ proof, or hypothesis is required instead of giving it.
 
 **Preferred:** in the document, state the mathematics: "::: {#thm-descent}
 **Theorem.** … :::" then "By {#thm-descent}, for finitely presented $L$,
-… holds because $R\to S$ is faithfully flat." In `CONTRIBUTING.md`,
+… holds because $R\to S$ is faithfully flat." In the writing policy,
 state the governance once: "Every local-to-global conclusion is a
 fenced Theorem with quantified hypotheses; do not draw it from one image
 alone."
@@ -1664,7 +1705,7 @@ $\infty\text{-}\mathbf{Cat}$, $\mathbf{Sch}_{/S}$) so that later theory
 ($\operatorname{Val}(b)$, $b^{\sharp}$, $M^\vee$, $D_L$, discriminant
 forms) is an instance, not a re-definition — is not inferable from the
 current page's minimal needs. No agent can know it unless it is written
-down in this document and in the document's scaffolding section.
+down in the writing policy and in the document's scaffolding section.
 
 When a definition admits an easy, no-harder generalization that
 immediately recovers the classical element formula (here
@@ -1676,7 +1717,7 @@ for every future $\mathcal C$ and degrades a forward-thinking research
 program that will live with these interfaces for years.
 
 **Standard:** in the document's introduction / scaffolding preamble and in
-this `CONTRIBUTING.md`, state explicitly: "All bilinear/quadratic
+the writing policy, state explicitly: "All bilinear/quadratic
 notions are defined diagrammatically via $(\otimes,1,\tau)$ and
 $b^{\sharp}$ in a closed symmetric monoidal abelian $\mathcal C$, so as
 to apply to $\mathbf{Mod}_R$, $\mathrm{QCoh}(X)$, $\mathbf{Sp}$, etc.,
@@ -1876,9 +1917,11 @@ always one of the two, stated explicitly:
 * **(A) Comment on the choice:** after $G_e(b):=e^*b$, state how $G_e(b)$
   varies — $G_{e'}(b)=P^{\!t}G_e(b)P$ for $e'=e\circ P$, so $G_e(b)$ is
   well-defined up to $\operatorname{GL}_n(R)$-congruence (similarity,
-  conjugacy, isometry, etc., per flavour), and invariants ($\det$,
-  isometry class $[G_e(b)]$, $\operatorname{Val}(b)$) are independent of
-  $e$. Without that, "$\operatorname{Gram}(b)$" with no $e$ is ill-typed
+  conjugacy, isometry, etc., per flavour). State which invariants do not
+  depend on $e$: the congruence class $[G_e(b)]$ and $\operatorname{Val}(b)$
+  are independent of $e$, and $\det G_e(b)$ is well defined up to
+  multiplication by the square of a unit, since
+  $\det G_{e'}(b)=\det(P)^2\det G_e(b)$. Without that, "$\operatorname{Gram}(b)$" with no $e$ is ill-typed
   (PR-58/PR-59).
 
 * **(B) Form the category whose objects *carry* the choice, define the
@@ -1903,7 +1946,13 @@ dependence on the choice unfalsifiable.
 **Banned:** "Put $G(b):=(b(e_i,e_j))$" with no $e$ and no
 "$G_{e'}=P^{\!t}G_eP$ / well-defined up to $\operatorname{GL}_n$-congruence";
 "choose a presentation $F_1\to X$ and define …" with no category whose
-objects are $(X,F_1\to X)$ and no fiber/section discussion.
+objects are $(X,F_1\to X)$ and no fiber/section discussion; "the
+fundamental group of $X$" with no base point named and no statement of how
+the group depends on it.
+
+**Preferred:** for a path-connected space $X$, "a path from $x_0$ to $x_1$
+induces an isomorphism $\pi_1(X,x_0)\cong\pi_1(X,x_1)$, determined by the
+choice of path up to conjugation."
 
 **Preferred:** (A) "For ordered basis $e\colon R^n\xrightarrow{\sim}M$, put
 $G_e(b):=e^*b$. For $e'=e\circ P$, $G_{e'}(b)=P^{\!t}G_e(b)P$, so $[G_e(b)]$
@@ -2188,7 +2237,7 @@ The twist generalization is not a trick to remember — it is forced by
 one habit: read every parameter of a definition as an *object* of a
 category, then ask how the construction varies functorially in that
 parameter. That habit, applied systematically, rediscovers the
-generalisations in this document without remembering them.
+generalisations in this policy without remembering them.
 
 Timeless heuristics that generalize (use on every new definition):
 
@@ -2429,7 +2478,7 @@ Concretely:
   $\Gamma^2_R$ setup and a separate treatment of $(p,q,r)$ as the
   $\mathbb R$-fiber of that setup.
 
-**Standard:** in the document's scaffolding and in this `CONTRIBUTING.md`,
+**Standard:** in the document's scaffolding and in the writing policy,
 state the explicit generalization scope most definitions should be at:
 
 > "Bilinear/quadratic notions are $W$-valued $b\colon M\otimes_RM\to W$
@@ -2443,7 +2492,7 @@ state the explicit generalization scope most definitions should be at:
 
 Then every new definition is reviewed against that scope, and a block that
 only does $F$ ordered finite-dimensional with $\max$ is flagged *outside*
-the document (GitHub issue with `needs-research`, not a fenced Definition)
+the document (in the house's record of open problems, not a fenced Definition)
 until the $R$ Dedekind / $\mathbb Z_p$ / $\mathbb A$ / $W$-varying form is
 supplied. The finite $W=R$, $V$ finite-dimensional, $\max$ specialization
 is then a fenced Remark / Corollary that recovers the desired case.
@@ -2454,7 +2503,7 @@ $p$ is the greatest dimension … triple $(p,q,r)$ is the signature" as the
 
 **Preferred:** define $(p,q,r)$ via the suprema on $\mathrm{Gr}(V)$ /
 $\mathrm{Fl}(V)$ for $F$ ordered arbitrary $V$ as in PR-70, then add the
-fenced scope note above and the flagged `needs-research` for the
+fenced scope note above and the open-problem record for the
 Dedekind / $p$-adic / adele generalization; define
 $\operatorname{sig}(L):=\operatorname{sig}(L\otimes_R\operatorname{Frac}(R))$
 only when $\operatorname{Frac}(R)$ is ordered at the relevant $\sigma$,
@@ -2515,8 +2564,8 @@ as the specialization to $R=F$ a field? If yes, define it intrinsically
 and note $\dim_F:=\operatorname{rk}_F$, $\operatorname{sig}_F$ as the
 field fiber. If the intrinsic form is not yet available and the
 once-removed $M\mapsto\operatorname{inv}_F(M\otimes_RF)$ is used in a
-pinch, flag it outside the document (GitHub issue `needs-research` with the
-label "intrinsic invariant needed") and do not present the $F$-transport
+pinch, record outside the document the open problem that an intrinsic
+invariant is needed, and do not present the $F$-transport
 as the definition.
 
 **Banned:** "$\operatorname{rk}_R(M):=\dim_F(M\otimes_RF)$" as the

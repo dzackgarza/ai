@@ -5,13 +5,31 @@
 
 Each mathematical notion has one defining occurrence in the document. Later
 chapters cite it. They do not restate it, shadow it with a synonym, or write a
-second local definition.
+second local definition. When the document records a source's variant of a
+definition, it states the variant's relation to the definition the document
+uses.
+
+**Banned:** defining "scheme" in an introduction, restating it in a remark,
+and using both versions as if they had equal authority.
+
+**Preferred:** one definition block, then a link to it and a statement of
+consequences where they are used.
+
+Multiple defining occurrences drift apart and make it unclear which
+hypotheses govern later claims. One defining occurrence gives the term a
+stable referent.
 
 ## `DEF-2`: Read the document before writing a dependent passage
 
 Read the document's defining occurrence and its prerequisites before writing a
 dependent passage. A definition reconstructed from training or an external
 source is inadmissible even when it resembles a standard definition.
+
+**Banned:** calling a space compact in the sense of sequential compactness
+in a passage whose linked definition defines compactness by open covers.
+
+**Preferred:** read the document's definition of compactness, link it, and
+use the notion it defines.
 
 ## `DEF-3`: Correct at the defining occurrence
 
@@ -24,7 +42,7 @@ A definition, theorem, proposition, lemma, corollary, example, or remark is a
 numbered block with a stable identifier, written in the medium's block
 syntax. The identifier lets every later use link the block (`XREF-1`). The
 house conventions of each document fix the syntax and the list of block
-classes.
+classes. Declare a block class in the house conventions before using it.
 
 ## `DEF-5`: A theorem presented as a definition
 
@@ -289,7 +307,10 @@ modules over the opposite, bimodules, forgetful functors, the commutative
 identification, and a warning about the noncommutative case in one go is
 a grab bag, not a definition. Each notion has one block with its type,
 data, and universal property; related notions have separate blocks that
-cite the first.
+cite the first. Where the house allows it, one block may define an
+explicitly enumerated family of predicates on the same data, such as
+symmetric, skew-symmetric, and alternating bilinear forms. A block never
+defines notions of different types together.
 
 **Banned:** "::: {#def-modules-over-ring} ## Modules over a ring — For a
 ring $A$, $A\text{-}\mathbf{Mod}$ is … A right $A$-module is … An
@@ -302,15 +323,30 @@ and then separately "::: {#def-right-modules} ## Right modules —
 $\mathbf{RMod}_A := \mathbf{LMod}_{A^{\mathrm{op}}}$ :::" and so on, each
 with its own defining occurrence.
 
+A lemma, proposition, theorem, or remark is never inside a definition block,
+not even as a trailing sentence. Each statement has its own block with its own
+logical status. An implication between defined notions is a proposition with a
+proof.
+
+**Banned:** a definition block for alternating bilinear forms that ends
+"alternating forms are skew-symmetric; the converse holds when $2$ is
+invertible."
+
+**Preferred:** close the definition block, then a proposition block that
+states that alternating forms are skew-symmetric and that the converse holds
+when $2$ is a unit, with its proof.
+
 ## `DEF-16`: Remark or warning inside a definition block
 
 A definition block defines a notion. A remark about a different notion —
 a warning that left and right module categories are not equivalent for a
 general ring, a comment on additional data, a pointer to a subtlety —
 belongs in a Remark block or in the paragraph following the definition,
-not inside the definition's fenced div. A definition that contains its
-own counterexample or warning cannot be cited as the defining occurrence
-without dragging the warning along.
+not inside the definition block. An example belongs in its own Example
+block, and a comparison of alternative formulations in its own Remark block
+(`DEF-28`). A definition that contains its own counterexample, warning, or
+example cannot be cited, linked, or included elsewhere as the defining
+occurrence without dragging them along.
 
 **Banned:** a "::: {#def-modules-over-ring}" block whose last sentence is
 "For a general ring, an equivalence between left and right module
@@ -475,7 +511,9 @@ specialized context (e.g. $\infty$-categorical, derived) without
 argument. "$M$ is a direct summand of a free module" is the theorem
 "projective iff retract of free," not the definition. Freely
 interchanging such characterizations as if they were the same definition
-hides the theorem.
+hides the theorem and its hypotheses. When a passage uses a characterization
+other than the linked definition, it links or states the theorem that proves
+the equivalence, with its hypotheses.
 
 Concrete standard: $M\in\mathbf{LMod}_R$ is **projective** if
 $\operatorname{Hom}_R(M,-)$ preserves effective epimorphisms,
@@ -547,8 +585,9 @@ isomorphism."
 "Being a basis" is used without stating whether it is a property of a
 family ($ (m_i)_{i\in I}$ is a basis iff the induced map is an iso), a
 chosen structure (a specific isomorphism $e\colon F(I)\xrightarrow{\sim}M$),
-or an existence statement ($I$ is a basis of $M$ if there exists an
-isomorphism $F(I)\xrightarrow{\sim}M$). The same English — "a basis indexed
+or an existence statement ($M$ is free if there exist a set $I$ and an
+isomorphism $F(I)\xrightarrow{\sim}M$). Freeness is a property of $M$;
+a basis is a family or a chosen isomorphism, never a set $I$ that exists. The same English — "a basis indexed
 by $I$ is an isomorphism $e$" — collapses the family $(e(1_i))_{i\in I}\subset
 M$ with its classifying map $e$, and the quantifier ("there exists $e$" vs
 "a chosen $e$") is not stated.
@@ -562,8 +601,8 @@ existence, and conflates the elements $e(1_i)\in M$ with the map $e$.
 in $M$ is a basis if the induced $F(I)\to M$ is an equivalence." Structure:
 "A based $R$-module is a pair $(M,e)$ with $M\in\mathbf{LMod}_R$ and a
 chosen equivalence $e\colon F(I)\xrightarrow{\sim}M$; write the underlying
-family as $e_i:=e(1_i)$." Existence: "$I$ is a basis of $M$ if there
-exists an equivalence $F(I)\xrightarrow{\sim}M$."
+family as $e_i:=e(1_i)$." Existence: "$M$ is free if there exist a set
+$I$ and an equivalence $F(I)\xrightarrow{\sim}M$."
 
 ## `DEF-25`: A category defined pointwise by its objects
 
@@ -603,6 +642,10 @@ unmarked; "An $R$-module $M$ is **torsion** if …".
 
 **Preferred:** "Let $R$ be an integral domain. An $R$-module $M$ is
 *torsion* if every $m\in M$ is annihilated by some nonzero $r\in R$."
+Similarly, "A family $(m_i)_{i\in I}$ in $M$ is a *basis* if …", "A *based
+module* is a pair $(M,e)$ …", "A $t$-structure is *hereditary* if …": the
+mark falls on the introduced noun, noun phrase, or adjective, and on nothing
+else.
 
 ## `DEF-27`: Distinguished object introduced only in the title
 
@@ -670,10 +713,12 @@ $2$-cells.
 A sentence in running prose that looks like a definition — "A
 factorization of $F$ through $D$ consists of functors $H$ and $G$
 together with …," "A theorem that $F$ lands is a factorization" — is not
-a definition. A definition is a fenced block `::: {#def-...} ## Title`
-with the definiendum bold at its first introduction, a single defining
-occurrence (DEF-1), and citable via `\ref`/`\longref`. Running prose
-cannot be cited, has no ID, and has no logical status. Colloquial
+a definition. A definition is a numbered definition block with a stable
+identifier (`DEF-4`), with the definiendum marked at its defining
+occurrence (`DEF-26`); it is the single defining occurrence (`DEF-1`), and
+every later use links it (`XREF-1`, `XREF-5`). Running prose
+cannot be cited, linked, or included elsewhere, has no ID, and has no
+logical status. Colloquial
 "property," "structure," and "lands" definitions in prose are not
 definitions.
 
@@ -681,7 +726,7 @@ definitions.
 constructions} A theorem that $F\colon\mathcal{C}\to\mathcal{D}$ lands in
 $D_P$ is a factorization $F=i\circ\bar F$. This theorem does not redefine
 $F$ or $D_P$." — two sentences of prose, no fenced `{#def-lands}` or
-`{.Theorem}`, no bold term.
+`{.Theorem}`, no marked definiendum.
 
 **Preferred:** "::: {#def-lands} ## Lands in — … :::" as above, and
 "::: {.Proposition #prp-lands} ### Landing — … :::" with proof exhibiting
@@ -805,6 +850,9 @@ the construction uses $1\in S$.
 **Preferred:** "Let $S$ be a submonoid of the multiplicative monoid
 $(R,\cdot)$." A nonempty subset closed under multiplication need not
 contain $1$, so it need not be a submonoid.
+
+The rule governs authored prerequisites and definitions. A problem statement
+quoted from a source keeps the source's wording.
 
 ## `DEF-36`: Higher-categorical primitive first
 

@@ -11,7 +11,14 @@ and terminal object $e$. Then $(\mathcal{C}, \times, e)$ is a monoidal
 category." The reader who just read the definition sees which slot is
 which without parsing prose. Listing the components in a sentence instead
 of presenting the tuple is readable but does not mirror the definition's
-grammar.
+grammar. Calling something an example without showing the instance gives
+the reader no mathematical test.
+
+**Banned:** "Affine space is an important example of a scheme."
+
+**Preferred:** "For a ring $A$, the locally ringed space
+$\operatorname{Spec}(A)$ is an affine scheme. When $A=k[x_1,\ldots,x_n]$, it
+is affine $n$-space over $k$."
 
 **Banned:** "A category with finite products is monoidal with $a\otimes b$ a
 chosen product $a\times b$ and $e$ a terminal object, the three isomorphisms
@@ -28,5 +35,6 @@ universal property of the product."
 If there is nothing to prove, do not present the passage as a proposition
 with a proof. A category with finite products is an example of a monoidal
 category, not a theorem. State the definition, then give the example in an
-example block. Reserve proposition and proof blocks for statements that
-require verification beyond unpacking the definition.
+example block. Reserve proposition blocks for statements that say more
+than the definition, and give each one the proof or citation that the
+house's proof obligation requires.

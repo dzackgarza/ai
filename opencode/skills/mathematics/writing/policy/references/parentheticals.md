@@ -27,7 +27,8 @@ asserted aside.
 **Preferred:** "If $F\colon\mathcal C\to\mathcal D$ is fully faithful, then
 $F$ induces an equivalence from $\mathcal C$ to its replete full essential
 image in $\mathcal D$." Cite the result and define any term not already
-established. The expanded statement can later be demoted to a remark, cited
+established. A parenthetical that only unfolds the definition of the
+term it qualifies asserts no theorem and is `PAR-4`. The expanded statement can later be demoted to a remark, cited
 theorem, or footnote.
 
 ## `PAR-3`: Smuggled example
@@ -41,9 +42,21 @@ category)."
 
 ## `PAR-4`: Legitimate qualification
 
-A small, correct, load-bearing modifier. Keep inline.
+A small, correct, load-bearing modifier that restricts or identifies the
+claim. Keep inline.
 
-**Fine as is:** "fibers are (possibly nontrivial) groupoids."
+**Fine as is:** "fibers are (possibly nontrivial) groupoids."; "The map is
+finite (equivalently, the target coordinate ring is a finite module over
+the source coordinate ring)." The second parenthetical unfolds the
+definition of a finite morphism of affine schemes; it asserts no theorem
+(`PAR-2`).
+
+**Banned:** "The map is finite (and this is important, as we will see
+below)."
+
+A parenthetical that only announces future explanation, motivation, or
+emphasis is padding (`PAR-5`). Move its mathematical content into the
+main sentence or delete it.
 
 ## `PAR-5`: Padding or tangent
 

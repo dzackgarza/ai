@@ -17,8 +17,15 @@ within a passage is a shadowing conflict.
 A passage uses a symbol before declaring the object it names. No type, no
 domain, no codomain, and no constituent tuple is stated. The reader cannot
 determine what the symbol refers to without external knowledge. Bind the
-symbol first: state the object, its type, and the map's domain and
-codomain (or the structure's tuple). Then use the symbol.
+symbol first: state the object, its mathematical type (element, set, map,
+space, group, ring, module, category, functor), and where it lives — the
+map's domain and codomain, or the structure's tuple. Then use the symbol.
+Introduce every object, map, index, and codomain before its first use.
+
+**Banned:** "The map $f$ is surjective, where $X$ is the source."
+
+**Preferred:** "For schemes $X$ and $Y$, let $f\colon X\to Y$ be a
+morphism. Assume $f$ is surjective."
 
 **Banned:** "A monoid in $(\mathbf{Ab},\otimes_{\mathbb Z},\mathbb Z)$ is a
 ring, its multiplication being the bilinear map classified by $\mu$ and its
@@ -89,10 +96,13 @@ $e\times\zeta$.
 ## `SYM-5`: A map written without its domain and codomain
 
 A morphism is written as a bare symbol in an equation — $1\times\zeta$,
-$\mu\circ\delta$ — without stating its domain and codomain. The reader
-must infer the types from context. In a definition, where the reader is
-meeting the maps for the first time, state the domain and codomain of
-each map before using it in an equation.
+$\mu\circ\delta$ — or named in prose as "the natural map $f$" without
+stating its domain and codomain. The reader must infer the types from
+context, and cannot check or compose the map until its source, target,
+and construction are stated. The type is part of the mathematical
+statement. Wherever the reader meets the maps for the first time, as in a
+definition, state the domain and codomain of each map before using it in
+an equation.
 
 **Banned:** "$\mu\circ(1\times\zeta)\circ\delta=\eta\circ{!}_c$" with no
 domain or codomain stated for $1\times\zeta$, $\delta$, or $!_c$ before
@@ -101,6 +111,11 @@ their use.
 **Preferred:** "$\operatorname{id}_c\times\zeta\colon c\times c\to
 c\times c$, $\delta\colon c\to c\times c$, and $!_c\colon c\to
 \mathbf{1}$" stated before the equations that use them.
+
+**Banned:** "Consider the natural map $f$."
+
+**Preferred:** "Consider the natural morphism $f\colon X\to Y$ induced by
+the ring map $A\to B$."
 
 ## `SYM-6`: A symbol introduced after its first use
 
@@ -171,8 +186,9 @@ one convention for sidedness and use it uniformly in the passage.
 
 Strict identity ($=$), isomorphism ($\cong$), and equivalence ($\simeq$)
 are distinct (NOT-2). "The identity $A=A^{\mathrm{op}}$" for a commutative
-ring asserts strict identity where the document's default structure is at most
-a canonical equivalence: for an $\mathbb{E}_\infty$-ring spectrum $A$,
+ring asserts strict identity where, in a document that adopts the derived
+and homotopical ontology (DEF-13), the default structure is at most a
+canonical equivalence: for an $\mathbb{E}_\infty$-ring spectrum $A$,
 $A\simeq A^{\mathrm{op}}$ via the symmetry; for a discrete commutative
 ring the equality is strict, but only after truncating to $\pi_0$. Do not
 write $A=A^{\mathrm{op}}$ for the derived identification.
@@ -212,7 +228,7 @@ tuple, and the equivalence.
 
 ## `SYM-12`: Derived tensor product not distinguished from underived
 
-In the document's derived and spectral ontology (DEF-13), $\otimes_A$ is the
+In a document that adopts the derived and spectral ontology (DEF-13), $\otimes_A$ is the
 derived tensor product $\otimes_A^L$; the underived tensor on discrete
 modules is the further truncation $\pi_0(-\otimes_A^L-)$. Writing
 $B\otimes_A M$ without stating whether it is derived or underived leaves
@@ -230,7 +246,8 @@ the derived product where it is meant.
 ## `SYM-13`: Classical module notation for $\infty$-categorical modules and terminological drift
 
 Classical notation $R\text{-}\mathbf{Mod}$, $R^{(I)}$, and $R^n$ for
-modules is the truncation to the heart. The document's default is
+modules is the truncation to the heart. In a document that adopts the
+derived ontology (DEF-13), the default is
 $\mathbf{LMod}_R$, $\mathbf{RMod}_R$, ${}_A\mathbf{Bimod}_B$ (or
 ${}_A\mathbf{BiMod}_B$) for presentable stable $\infty$-categories of
 module spectra, and $\bigoplus_{i\in I}R$ (coproduct in

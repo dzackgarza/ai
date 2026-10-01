@@ -8,7 +8,7 @@ The tell is stylistic; the defect is that a definition was not written or an obj
 
 **Banned:** “A scheme is a geometrically complete space.”; “The subcategory is structurally complete under sameness.”
 
-**Preferred:** “A scheme is a locally ringed space locally isomorphic to the spectrum of a commutative ring.”; `A full subcategory $\mathcal D\subseteq\mathcal C$ is \dfn{replete} if every object of $\mathcal C$ isomorphic to an object of $\mathcal D$ belongs to $\mathcal D$.`
+**Preferred:** “A scheme is a locally ringed space locally isomorphic to the spectrum of a commutative ring.”; “A full subcategory $\mathcal D\subseteq\mathcal C$ is *replete* if every object of $\mathcal C$ isomorphic to an object of $\mathcal D$ belongs to $\mathcal D$.”
 
 Vibe adjectives and impressive qualifiers sound technical while leaving the defining conditions unknown.
 Use the standard term and state its definition; the definition is the work.

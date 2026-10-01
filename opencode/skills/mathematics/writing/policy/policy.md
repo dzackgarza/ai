@@ -35,6 +35,15 @@ audience:
 - the audience, and so the level that `PR-18` protects;
 - the default ontology. `DEF-8` to `DEF-14` apply where the house adopts the
   derived and homotopical ontology;
+- the proof obligation: whether every claim in a statement block is proved,
+  or whether a standard result may be stated with a citation and no proof
+  (`SEC-6`, `EX-2`);
+- whether one definition block may define an explicitly enumerated family of
+  predicates on the same data (`DEF-15`);
+- whether a pullback square is drawn where fiber-product notation is used, or
+  is reached through the linked definition of the fiber product (`MA-8`);
+- where open problems and deferred generalizations are recorded outside the
+  document (`PR-72`);
 - rules that exist only for that repository, under that repository's own
   codes.
 
@@ -105,18 +114,33 @@ A change to this policy requires the same work it demands of other writing.
 - Extract the general mechanism. One page supplies the evidence; the rule
   states the pattern at the level where it applies.
 - Cover every correction since the last update, not only the last one.
+- When reading a document for any purpose, look for new instances of the
+  recorded patterns, and record each new pattern as a general rule with the
+  example that shows it.
 - For a stance defect, say who is judged, supervised, or spoken for, and which
-  authority the writer assumes. Show why repeated helpful-looking sentences
-  are severe, and do not reduce the defect to verbosity or a missing citation.
+  authority the writer assumes. Teach recognition and severity: show how
+  repeated helpful-looking sentences set up sustained condescension or
+  professional contempt. Address the temptation to reduce the defect to
+  verbosity, a missing citation, or an isolated mistake.
 - Make the preferred form show the actual correction. A softer command, a
   first-person suggestion, or "Suggested reading" can keep the same hierarchy.
-- Ground every preferred form in a standard formulation found in textbooks
-  and papers. Do not invent it from memory.
+  Replace a prescription with the knowledge it displaced and the reasons that
+  support it.
+- Ground every preferred form in a standard formulation, structure, or
+  convention found by reading textbooks and papers. Read the standard source
+  and transcribe from it. Do not invent the preferred form from memory.
 - When a later correction shows that an earlier rule has the wrong model,
   rewrite or delete the earlier rule. An appended stronger rule that leaves
   the contradiction authoritative keeps the defect.
-- Integrate a new rule into its family under the next free code. Never reuse
-  or renumber a code: repositories and commit histories cite them.
-- Keep evidence apart from proposals. A preferred form must not invent
-  coverage, history, or facts about a source.
+- Keep one source of truth. Integrate a new rule into its family under the
+  next free code. Do not start an overlapping catalogue or a parallel policy
+  document. Never reuse or renumber a code: repositories and commit histories
+  cite them.
+- Keep evidence apart from proposals. Observed quotations establish the
+  finding. A preferred form must not invent coverage, history, or facts about
+  a source.
 - Do not quote a private message. Quote repository prose only.
+
+The policy must make a difficult recognition reproducible for a later
+contributor. Recording agreement, adding prohibitions, or adding policy text
+does not show that it does.

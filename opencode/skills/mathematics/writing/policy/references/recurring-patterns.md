@@ -92,7 +92,7 @@ contributors/agents, not the mathematical reader, with a preemptive,
 condescending tone that assumes the reader was about to make a mistake
 never committed (PR-32). Standard prose states the theorem with
 hypotheses and applies it; it does not tell the reader that a theorem is
-required. Governance belongs in `CONTRIBUTING.md`, not in the
+required. Governance belongs in the writing policy, not in the
 mathematical text (cf. PR-24, PR-16–18).
 
 **9. "Are distinct constructions" tautology and "without $H$" vacuity.**
@@ -406,8 +406,8 @@ The local theory belongs over arbitrary Dedekind $R$ ($\mathbb Z$,
 $\mathcal O_K$ with $\operatorname{cl}(R)=1$ not assumed, $\mathbb Z_p$,
 $\mathbb Q_p$, $\mathbb C_p$, $\mathbb A$) with $b\colon L\otimes_RL\to
 W$ $W$-varying — a scope that should be stated explicitly and, when the
-$W\neq R$ / $\mathbb Z_p$ / adele form is not yet supplied, flagged as
-needs-research outside the document (PR-72).
+$W\neq R$ / $\mathbb Z_p$ / adele form is not yet supplied, recorded as
+an open problem outside the document (PR-72).
 
 **32. Always ask if the statement generalizes without much more
 difficulty — if not, state the general and recover the special case.**
@@ -421,7 +421,7 @@ is the definition and the desired special case is a Remark / Corollary
 and $\sup$ vs. $\max$ for signature.
 
 **33. Premature specialization of signature hides the Dedekind /
-$p$-adic / adele scope and should be flagged as needs-research.**
+$p$-adic / adele scope and should be recorded as an open problem.**
 The quick "$F$ ordered, $V$ finite-dimensional, $p:=\max\dim U$" as the
 definition of signature fixes the document to $F=\mathbb Q$ / $\mathbb R$
 and presents the one-real-place specialization as if it were the notion,

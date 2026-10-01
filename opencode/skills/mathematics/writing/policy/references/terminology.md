@@ -13,9 +13,7 @@ Terminology failures have three recurring forms:
 - **Colliding overload.** A standard word such as "kernel", "core", or
   "fiber" is reused with a project-management or implementation meaning.
 
-The citation-backed recurring inventory lives in
-`.agents/references/terminology-dictionary.md`. The following replacements
-apply to the document:
+Make these replacements:
 
 | Term to avoid | Required mathematical statement |
 | --- | --- |
@@ -71,8 +69,8 @@ a map of $\mathbb{E}_\infty$-ring spectra, a morphism of commutative
 algebra objects in $\mathbf{Sp}$ — not "homomorphism of commutative
 rings." "Homomorphism" is classical universal-algebra language for a
 set-map preserving operations, tied to the truncated story where a ring is
-a set with addition and multiplication. In the document's ontology where
-rings are $\mathbb{E}_\infty$-ring spectra (DEF-13) and maps are maps of
+a set with addition and multiplication. In a document whose
+rings are $\mathbb{E}_\infty$-ring spectra (DEF-13) and whose maps are maps of
 spectra with $\mathbb{E}_\infty$-structure, the standard word is
 "morphism" or "map."
 
@@ -83,8 +81,8 @@ rings."
 rings" (in a genuinely classical passage where $A = \pi_0 HA$) or "let
 $\varphi\colon A\to B$ be a map of $\mathbb{E}_\infty$-ring spectra" / "a
 morphism in $\mathbf{CAlg}$." Use "morphism" or "map" with the
-$\infty$-category stated; reserve "homomorphism" for no passage in this
-book.
+$\infty$-category stated; in such a document, use "homomorphism" in no
+passage.
 
 ## `TERM-3`: "Value module" for codomain or target
 
@@ -111,8 +109,7 @@ after a torsion theory has been specified."
 
 **Preferred:** "Over a general $\mathbb{E}_1$-ring spectrum $R$, a
 torsion subcategory is used only after a hereditary torsion pair
-$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-pair)
-has been specified" or "after a $t$-structure
+$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ has been specified" or "after a $t$-structure
 $(\mathbf{LMod}_R^{\ge0},\mathbf{LMod}_R^{\le0})$ has been specified."
 
 ## `TERM-5`: Colloquial "lands", "property", "structure" without a precise definition
@@ -120,8 +117,8 @@ $(\mathbf{LMod}_R^{\ge0},\mathbf{LMod}_R^{\le0})$ has been specified."
 Colloquial terms "lands (in)", "property", "structure", "stuff" are used
 as if their meaning were obvious — "a theorem that $F$ lands in $D_P$ is
 a factorization," "being torsion-free is a property," "being a torsor is
-structure" — without ever giving the precise categorical definition. In
-the document each has a precise meaning: "$F$ lands in $D_P$" means a
+structure" — without ever giving the precise categorical definition. Each
+has a precise meaning: "$F$ lands in $D_P$" means a
 factorization $F\simeq i\circ\bar F$ through the replete full inclusion
 $i\colon D_P\hookrightarrow D$ (with $\bar F$ the corestriction and
 $\alpha\colon F\simeq i\circ\bar F$ the specified equivalence);
@@ -129,19 +126,19 @@ $\alpha\colon F\simeq i\circ\bar F$ the specified equivalence);
 is fully faithful, "structure" means $U$ is faithful, "stuff" means
 $U$ is arbitrary (STR-1), each with its fiber condition. Do not use the
 colloquial term in a definition, theorem, or title before the precise
-term has been fenced and defined.
+term has been defined.
 
 **Banned:** "A theorem that $F\colon\mathcal{C}\to\mathcal{D}$ lands in a
 replete full subcategory $i\colon D_P\hookrightarrow D$ is a factorization
-$F=i\circ\bar F$" — uses "lands in" as if defined, with no fenced
+$F=i\circ\bar F$" — uses "lands in" as if defined, with no
 definition of "lands in" as factorization.
 
-**Preferred:** first define: "::: {#def-lands} ## Lands in — A functor
+**Preferred:** first define: "**Definition.** A functor
 $F\colon\mathcal{C}\to\mathcal{D}$ **lands in** a replete full
 subcategory $i\colon D_P\hookrightarrow\mathcal{D}$ if there exists a
 functor $\bar F\colon\mathcal{C}\to D_P$ and a specified natural
 equivalence $\alpha\colon F\simeq i\circ\bar F$. The triple
-$(\bar F,\alpha)$ is a factorization of $F$ through $D_P$. :::" Then
+$(\bar F,\alpha)$ is a factorization of $F$ through $D_P$." Then
 later: "Proposition: The functor $F$ lands in $D_P$ via $\bar F$ with
 $\alpha$."
 
@@ -150,11 +147,13 @@ $\alpha$."
 "Monomorphism" and "embedding" are used interchangeably mid-passage —
 "some monomorphism $A\to B$ exists" then "a construction that uses an
 embedding names a particular monomorphism" — without ever defining
-either term or stating the identification. In the document a monomorphism is
-a $(-1)$-truncated map ($f$ is mono if …), an embedding is a fully
-faithful functor (or, for spaces, an embedding as a $(-1)$-truncated
-map with extra condition) — each with its fenced definition. Do not
-switch terms without defining the identification.
+either term or stating the identification. In an $\infty$-categorical
+document a monomorphism is a $(-1)$-truncated map ($f$ is mono if …), an
+embedding is a fully faithful functor (or, for spaces, an embedding as a
+$(-1)$-truncated map with extra condition) — each with its definition. Do
+not switch terms without defining the identification. State the relation
+that holds in the category at hand: in $\mathbf{Set}$, a monomorphism is an
+injective map.
 
 **Banned:** "some monomorphism $A\to B$ exists … a construction that
 uses an embedding names a particular monomorphism" — switches from
@@ -163,7 +162,7 @@ between them.
 
 **Preferred:** choose one term and define it, or define both and state
 the identification: "A **monomorphism** ($f\colon A\rightarrowtail B$)
-is … (\ref{def-mono}). An **embedding** is … (\ref{def-embedding}). In
+is … . An **embedding** is … . In
 $\mathbf{Sets}$, every monomorphism is an embedding; in general …" Link
 each use to its defining occurrence (XREF-5).
 
@@ -178,8 +177,8 @@ standalone noun for a terminal cone — hide necessary details. "Apex"
 alone names no cone and no universal property; its standard counterpart
 is the (terminal) cone $(P\to X, P\to Z)$ over $X\to Y\leftarrow Z$ that
 is terminal among cones, introduced once in the definition of pullbacks.
-Every technical term beyond what an undergraduate would know is fenced
-and defined before use; a colloquial term is not used in its place.
+Every technical term beyond what an undergraduate would know is defined
+at a defining occurrence before use; a colloquial term is not used in its place.
 
 **Banned:** "the fiber … is the apex of the cartesian square";
 "objects that carry both structures" (EV-2); "the discriminant package"
@@ -199,7 +198,7 @@ a (co)cartesian fibration and the square is a pullback in
 $\mathbf{Cat}_\infty$, the projection is a (co)cartesian fibration. More
 generally, any technical term beyond what an undergraduate would know —
 "pullback," "cartesian fibration," "torsion pair," "annihilator," "basis"
-— must be fenced and defined in the document before use, not used as if
+— must be defined in the document before use, not used as if
 its meaning were obvious or as if the reader will supply the definition
 from prior knowledge. Colloquial and undefined technical terms are not
 interchangeable with the precise defined terms.
@@ -208,11 +207,11 @@ interchangeable with the precise defined terms.
 been specified" (TERM-4); "$\mathbf{Sh}_\Sigma$ for a diagram category"
 (MA-3) without definition.
 
-**Preferred:** "the pullback square exhibiting $X\times_Y 1$" (with
-`{#def-pullback}` defined) or "the square exhibiting the pullback."
+**Preferred:** "the pullback square exhibiting $X\times_Y 1$" (with the
+pullback defined) or "the square exhibiting the pullback."
 Reserve "cartesian fibration" for the fibration property and prove when a
 pullback square has that property. Define every non-undergraduate
-technical term in a fenced block before its first use.
+technical term at a defining occurrence before its first use.
 
 ## `TERM-9`: "Value module" with no definition, fixing a single $W$
 
@@ -237,7 +236,7 @@ A presheaf on $\mathcal C$ is a functor $\mathcal C^{\mathrm{op}}\to
 \mathbf{Set}$ (stably $\mathcal C^{\mathrm{op}}\to\mathcal S$). An
 $R$-module-valued functor $\mathcal C^{\mathrm{op}}\to\mathbf{Mod}_R$
 is an $\mathbf{Mod}_R$-valued presheaf, or an $\mathbf{Mod}_R$-enriched
-presheaf when the enrichment from {#thm-mod-closed} is meant — not a
+presheaf when the self-enrichment of $\mathbf{Mod}_R$ by its internal Hom is meant — not a
 "presheaf" unqualified. Overloading the generic name hides which
 enrichment and which $\operatorname{Bil}$ is named (the $R$-module
 $\operatorname{Bil}_{R,W}(M)$ vs. the functor
@@ -250,13 +249,13 @@ Concrete standards:
 
 * **Presheaf:** $\operatorname{PSh}(\mathcal C):=
   \operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathbf{Set})$, stably
-  $\operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathcal S)$ [@Stacks-00VG;
-  Lurie HTT 0.6.5].
+  $\operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathcal S)$ (Stacks Project,
+  Tag 00VG; Lurie, HTT 0.6.5).
 
 * **$R$-module-valued:** a functor $\mathbf{Mod}_R^{\mathrm{op}}\to
   \mathbf{Mod}_R$ is an $\mathbf{Mod}_R$-valued presheaf on
   $\mathbf{Mod}_R$, equivalently an $\mathbf{Mod}_R$-enriched presheaf via
-  the self-enrichment {#thm-mod-closed}. Name the enrichment when it
+  the self-enrichment of $\mathbf{Mod}_R$ by its internal Hom. Name the enrichment when it
   matters.
 
 * **At the point of use:** no "defines a presheaf" to name functoriality
@@ -273,8 +272,8 @@ by $(f\colon M\to N)\mapsto (f\otimes_R f)^*\colon
 \operatorname{Hom}_R(N\otimes_R N,W)\to\operatorname{Hom}_R(M\otimes_R
 M,W)$, $f^*b(x,y)=b(fx,fy)$ as the element formula for $(f\otimes_R f)^*b$."
 If the word is needed, "as an $\mathbf{Mod}_R$-valued presheaf on
-$\mathbf{Mod}_R$ (resp. $\mathbf{Mod}_R$-enriched presheaf via
-{#thm-mod-closed})"; otherwise just "as a functor
+$\mathbf{Mod}_R$ (resp. $\mathbf{Mod}_R$-enriched presheaf via the
+self-enrichment of $\mathbf{Mod}_R$)"; otherwise just "as a functor
 $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$."
 
 ## `TERM-11`: Bare "maps $M\to W$" with no category — egregiously imprecise, and wrong for quadratics
@@ -305,13 +304,13 @@ Concrete standards — name the category, and use the classifier so no
   \to\mathcal S$.
 
 * **Classifier (so no "maps $M\to W$" to describe):** fix the divided
-  power (Whitehead) classifier $\Gamma^2_R$ once, fenced, with its
+  power (Whitehead) classifier $\Gamma^2_R$ once, at a defining occurrence, with its
   universal property. Then
   $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$
   as $R$-module (stably
   $\mathbf{RHom}_R(\mathbf{\Gamma}^2_R(M),W)$). Its underlying set is the
   set of functions $U(M)\to U(W)$ satisfying the quadratic condition;
-  its $R$-module structure is the self-enrichment {#thm-mod-closed} on
+  its $R$-module structure is the self-enrichment of $\mathbf{Mod}_R$ on
   that Hom, not "pointwise via $W$" on a set of maps whose category was
   never named. Similarly $\operatorname{Sym}_{R,W}(M):=
   \operatorname{Hom}_R(\operatorname{Sym}^2_R(M),W)$ for symmetric,
@@ -356,14 +355,14 @@ of $q$, not $q$ "refining" $b$ without the map.
 Concrete standard — name $\gamma^*$ and its fiber, then "refinement" is
 the fiber:
 
-"::: {#def-quad-polar} **Definition.** Put
+"**Definition.** Put
 $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ and
 $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_RM,W)$ as
 $R$-modules. The $R$-linear
 $\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to\operatorname{Bil}_{R,W}(M)$
 sends $q$ to its polar $b_q(x,y)=q(x+y)-q(x)-q(y)$. A **quadratic
 refinement** of $b\in\operatorname{Bil}_{R,W}(M)$ is a $q$ with
-$\gamma^*(q)=b$ — i.e. a point in the fiber over $b$. :::"
+$\gamma^*(q)=b$ — i.e. a point in the fiber over $b$."
 
 **Banned:** "quadratic refinements retain …" with no $\gamma^*$,
 no $b$, no fiber.
@@ -390,17 +389,17 @@ specialization that has not been introduced.
 Concrete standards:
 
 * **Object, not setting:**
-  "::: {#def-disc-cat} **Definition.** Let $\mathbf{TorBil}_{R,W}$ (resp.
+  "**Definition.** Let $\mathbf{TorBil}_{R,W}$ (resp.
   $\mathbf{TorQuad}_{R,W}$) be the category whose objects are pairs
   $(T,\bar b)$ with $T\in\mathbf{Mod}_R$ torsion of finite length and
   $\bar b\colon T\otimes_R T\to W/\operatorname{Val}$ nondegenerate
-  $W$-valued torsion bilinear (resp. quadratic) form. :::"
+  $W$-valued torsion bilinear (resp. quadratic) form."
 
 * **Discriminant as object of that category, defined later:**
-  "::: {#def-discriminant} For a lattice $L$ with $b\colon L\otimes L\to R$
+  "**Definition.** For a lattice $L$ with $b\colon L\otimes L\to R$
   nondegenerate, put $D_L:=L^\vee/L$ and let $\bar b$ / $\bar q\colon
   D_L\to\mathbb Q/\mathbb Z$ ($\to\mathbb Q/2\mathbb Z$ for quadratic) be
-  the induced torsion form. :::"
+  the induced torsion form."
 
 **Banned:** "in the discriminant setting."
 
@@ -416,7 +415,7 @@ Competing conventions abound — manifold theory / $L$-theory
 ($\sigma(M)=p-q$ called "signature"), arithmetic lattices (often
 "signature $(p,q)$" called "index"), Sterk-style indefinite lattices
 ("signature $(p,q)$" vs. "$2$-elementary $(r,a,\delta)$"), etc. —
-but in the document **index** always means the integer
+but under this rule **index** always means the integer
 
 $$ \operatorname{ind}(b):=p-q\in\mathbb Z, $$
 
@@ -445,9 +444,9 @@ $p-q$ and hence the signature $(p,q)$ since $p+q=n-r$."
 ## `TERM-15`: Module and algebra bilinear forms
 
 A *module bilinear form* is an element of
-$\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R)$
-(@def:module-bilinear-form). An *algebra bilinear form* is an element of
+$\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R)$.
+An *algebra bilinear form* is an element of
 $\operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R)$ with the tensor
-product of $R$-algebras (@def:algebra-bilinear-form). An associative pairing
+product of $R$-algebras. An associative pairing
 on a unital algebra is a condition on a module bilinear form on $U(A)$,
 equivalently a trace pairing $\varepsilon\circ\mu$.

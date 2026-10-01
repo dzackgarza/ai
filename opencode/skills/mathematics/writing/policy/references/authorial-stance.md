@@ -1,6 +1,6 @@
 # Authorial stance (`STANCE-*`)
 
-These policies govern all contributor-written copy: mathematical exposition, guides, annotations, headings, introductions, problem commentary, interface text, documentation, and public project descriptions.
+These policies govern all contributor-written copy: mathematical exposition, guides, annotations, headings, introductions, problem commentary, talks, research statements, interface text, documentation, and public project descriptions.
 Resource annotations are one place the failure can appear.
 They do not define its scope.
 The `RESOURCE-*` rules below give particular applications of these general rules.
@@ -219,6 +219,10 @@ It cannot serve as an erratum.
 **Correction format, when an actual error has been established:** Identify the statement, its version and location, the necessary correction, and the argument or counterexample establishing it.
 Do not invent an erratum to justify a verdict.
 
+**Banned:** “The literature on this point is unreliable.”
+
+**Preferred:** an erratum: the statement, its version and location, the correction, and the argument or counterexample that establishes it.
+
 State a verified error and its correction when the reader needs them.
 Do not convert a defect in a statement into a judgement of its author or an entire work.
 Professional equality does not require suppressing errors, weakening mathematical criticism, or pretending incompatible claims are equally correct.
@@ -243,6 +247,14 @@ Claims about what examiners know, infer from an application, or value in a candi
 They also make the site appear to speak on faculty members' behalf.
 State documented exam requirements with attribution on the relevant exam page.
 A syllabus establishes its listed scope; it does not establish an examiner's motives, attention, or judgement of an individual candidate.
+
+**Banned:** “Referees will expect this construction.”; “Experts know that this is the right definition.”
+
+**Preferred:** Attribute a documented requirement or a published argument to its source and cite it.
+Otherwise state the mathematical reason for the construction or the definition.
+
+The rule is not limited to examiners and faculty.
+A claim about what referees, experts, or any other group know, value, or expect gives the writer an authority that the writer does not have.
 
 ## `STANCE-09`: Remove judgements of the reader's interests and effort
 

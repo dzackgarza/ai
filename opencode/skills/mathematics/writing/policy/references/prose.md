@@ -30,19 +30,28 @@ An assignment prompt belongs in a problem statement when the assignment itself i
 In exposition, the reader needs the definition or the result.
 The prompt supplies no mathematical claim and forces the reader to adopt an invented exam frame.
 
+**Banned:** “You are given a matrix and asked for a normal form.”; “Now you apply Cauchy's theorem.”
+
+**Preferred:** “Given a matrix $A$ over a field $F$, the rational canonical form of $A$ exists …”; “By Cauchy's theorem, …”
+
+The same frame appears as second-person address anywhere in exposition, hints, or solutions.
+Write in the first person plural or in the impersonal form.
+The imperatives of mathematics (“let”, “suppose”, “define”) are standard and are not a second-person address.
+A quoted problem statement keeps the voice of its source.
+
 ## `PROSE-03`: Name the relation instead of pointing by position
 
 **Banned:** “The question that matters is the next one.”
 
 **Preferred:** “After defining the affine charts, check whether the transition maps are compatible on overlaps.”
 
-**Banned:** “As discussed above, this map is an isomorphism.”
+**Banned:** “As discussed above, this map is an isomorphism.”; “the next step”; “the previous section”.
 
 **Preferred:** “By the normalization theorem, the induced map is an isomorphism.”
 
-“Next”, “above”, “below”, and “as discussed” are properties of document layout and of the reader's memory.
+“Next”, “above”, “below”, “previous”, and “as discussed” are properties of document layout and of the reader's memory.
 They are not mathematical referents.
-Page order changes when text is split, transcluded, or rendered in another context.
+Page order changes when text is split, reordered, transcluded, or rendered in another context.
 Name the object, map, hypothesis, or claim that the reader must use, and link the named theorem, block, or page (`XREF-1`); if no such relation exists, remove the signpost.
 
 ## `PROSE-04`: Do the mathematics instead of describing the document
@@ -58,7 +67,7 @@ Name the object, map, hypothesis, or claim that the reader must use, and link th
 Self narration describes what the page is or does instead of supplying its subject.
 A reader can see the page and needs the definition, result, or example that the sentence claims to introduce.
 
-The same defect appears as meta-prose about the text's own structure, notation, or theorems: sentences that say where a definition lives (“is defined in `[[D-…]]`; it is …”), what a theorem does not redefine, what existence does not supply, what a theorem licenses in notation, or what notation does not imply.
+The same defect appears as meta-prose about the text's own structure, notation, or theorems: sentences that say where a definition lives (“is defined in Definition 2.3; it is …”), what a theorem does not redefine, what existence does not supply, what a theorem licenses in notation, or what notation does not imply.
 Mathematical exposition rarely describes itself; when it must, the note is a one-clause footnote.
 State the mathematics in statement blocks and link them; a link is a citation, not self-reference.
 
@@ -169,11 +178,11 @@ Record them in the repository's issue tracker, work queue, or complaint log. Inc
 
 The same leak occurs when a sentence's only coherent audience is a contributor: “requires a stated theorem”, “must be justified”, or “with its hypotheses” as a reminder to include them.
 Its rhetoric is a preemptive scolding that corrects a mistake the reader never made (`PR-18`). A textbook states the theorem with its hypotheses, proves it, and applies it; it does not tell the reader that a theorem or hypothesis is required.
-That governance belongs in this guide.
+That governance belongs in the writing policy.
 
 **Banned:** “A conclusion about $L$ from either image requires a stated local-to-global theorem with its hypotheses” on a mathematical page.
 
-**Preferred:** on the page, the theorem block, then “By the Hasse–Minkowski theorem, …”; in this guide, the governance once: “Every local-to-global conclusion is a theorem block with quantified hypotheses.”
+**Preferred:** on the page, the theorem block, then “By the Hasse–Minkowski theorem, …”; in the writing policy, the governance once: “Every local-to-global conclusion is a theorem block with quantified hypotheses.”
 
 ## `PROSE-12`: Do not prescribe a reading order without a mathematical dependency
 
@@ -189,6 +198,7 @@ Historical chronology and an author’s claim about what can be understood do no
 State the mathematical relation that requires the order, or let the navigation express an editorial choice.
 A wiki supports lookup through linked topic pages: a linear study plan inside it repeats the navigation, makes the same links carry a second meaning, becomes false when pages are split or reorganized, and tells readers how to allocate their time.
 Put a deliberately ordered curriculum in a guide or publication, where sequence is the artifact's purpose.
+In a book, the table of contents already gives the editorial order: “Read the chapters in this order.” repeats it.
 
 ## `PROSE-13`: Do not divide readers by imagined motive
 
