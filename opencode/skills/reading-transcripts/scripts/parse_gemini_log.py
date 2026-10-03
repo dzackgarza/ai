@@ -40,7 +40,9 @@ def parse_gemini_json(file_path):
             tool_calls = msg.get("toolCalls", [])
             for tool in tool_calls:
                 tool_name = tool.get("name", "unknown_tool")
-                inputs = json.dumps(tool.get("args", {}), indent=2)
+                inputs = json.dumps(tool.get("args", {}))
+                if len(inputs) > 300:
+                    inputs = inputs[:300] + "...[truncated]..."
                 print(f"🛠️  [Tool Use: {tool_name}]\n{inputs}")
                 
                 # Try to extract the tool result which Gemini embeds inside the same message block

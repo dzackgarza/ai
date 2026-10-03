@@ -1,4 +1,0 @@
-interface:
-  display_name: "Goalcraft"
-  short_description: "Adversarial completion-game design"
-  default_prompt: "Use $goalcraft to design a minimum viable adversarial envelope (Codex /goal + docs) for this task."

@@ -57,7 +57,9 @@ def parse_qwen_jsonl(file_path):
                 elif "functionCall" in part:
                     fcall = part["functionCall"]
                     tool_name = fcall.get("name", "unknown_tool")
-                    inputs = json.dumps(fcall.get("args", {}), indent=2)
+                    inputs = json.dumps(fcall.get("args", {}))
+                    if len(inputs) > 300:
+                        inputs = inputs[:300] + "...[truncated]..."
                     print(f"🛠️  [Tool Use: {tool_name}]\n{inputs}")
                 
                 # Tool results (functionResponse in Qwen)

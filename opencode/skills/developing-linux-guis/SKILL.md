@@ -1,11 +1,11 @@
 ---
 name: developing-linux-guis
-description: Build GUI applications for Linux desktop environments using AGS. Use when creating desktop applications, system tray tools, bars, or native Linux UI components.
+description: "Use when building a Linux desktop GUI, bar, or tray tool with AGS."
 ---
 # Developing Linux GUIs
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 ## Core Policy
 
@@ -499,7 +499,7 @@ visual tests.
 Do not block development on Tier 3 if CI cannot provide Wayland, but require it before
 claiming the GUI is correct.
 
-## Required justfile Recipes
+## Required [[justfile/SKILL|justfile]] Recipes
 
 Every AGS project must expose these recipes:
 

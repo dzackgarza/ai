@@ -96,8 +96,6 @@ applies to its own behavior.
   charlie behaviour pattern — the constraint registers verbally but does not constrain
   output.
 
-- **addressing-shallow-work** → Load alongside when the agent states a correct
-  architectural principle but produces code that violates it.
   The agent who endorses “use semantic navigation” while already having written
   regex-on-HTML is in charlie behaviour — the principle is held in the abstract while
   the concrete artifact does the opposite.

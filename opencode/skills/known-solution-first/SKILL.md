@@ -1,6 +1,6 @@
 ---
 name: known-solution-first
-description: Use when facing unfamiliar external tools, library/API usage, compiler/build failures, package errors, provider errors, exact diagnostics, dependency version mismatches, install/build failures, migration warnings, deprecation warnings, or any problem whose meaning is owned by an external project rather than local code. Also use before implementing nontrivial code where a known library, official recipe, or existing pattern might already solve the task.
+description: "Use when an error, tool, library, API, or diagnostic is owned by an external project, or when the user names a standard or prior art."
 ---
 
 # Known-Solution-First Debugging
@@ -56,6 +56,61 @@ the external contract from a verified authoritative source, or (b) have performe
 minimal exact-error/docs search and found nothing applicable. Without both the named
 boundary and the external-knowledge check, "integration issue" is an excuse to avoid
 public lookup.
+
+## When the User Invokes a Standard
+
+The highest-precision trigger this skill has, and the one it currently misses. The
+words: *standard*, *idiomatic*, *conventional*, *prior art*, *reference implementation*,
+*best practice*, *the usual way*, *well-trodden*, and any question about how the field
+normally solves this.
+
+Measured over the session store: 88 user turns invoking one of these. **Six were followed
+by any external lookup.** Sixty-six used local tools only — reading the repository and
+editing it — and sixteen produced text alone. The instruction is read as a complaint
+about a local defect and answered with the patch that would have been written anyway.
+
+**What the word actually asks.** It is a statement about distribution, not about a bug:
+*your solution is outside what practitioners of this field do; go find what they do.* It
+carries three consequences.
+
+- **The local repository cannot answer it.** By construction the answer lives outside the
+  work: in a library's documentation, a mature project's source, a domain's canonical
+  text, a specification. Reading more of your own code is not evidence about what is
+  standard, and neither is reasoning from priors — the priors are what produced the
+  non-standard thing.
+- **The deliverable is a citation, then a change.** Name the standard, name where it is
+  documented or who implements it, then say what the local code does differently. A patch
+  with no cited source has not answered the question, however plausible it looks.
+- **The user has usually already checked.** Someone reporting that a feature is
+  completely standard in current software is reporting a fact about the world. Treating
+  it as an opinion to be weighed against your own reading of the repo inverts the
+  epistemics.
+
+**"Standard idioms, like X" does not mean "use X".** This is the most common misreading
+and it produces a change that looks like compliance. The named example is a pointer into
+a solution space, not a specification: the user knows one instance of a mature answer to
+this problem and is telling you the space exists so that you go and survey it. The phrase
+also reports their confidence — they are naming what they happen to know, not claiming to
+have picked the best option, which is the work being handed to you.
+
+Two ways to get it wrong, both of which skip the search:
+
+- **Adopt X literally.** Installing the named library without evaluating it against the
+  alternatives answers a question nobody asked, and may well be the wrong point in the
+  space for this problem.
+- **Dismiss the problem because X does not fit.** Explaining why the named example is
+  unsuitable, and then keeping the hand-rolled thing, is the worse failure: the example
+  was disposable, the observation that a mature solution space exists was not.
+
+The deliverable is the space, not the example: what mature options solve this class of
+problem, which one fits here, on what grounds — and, if the user's example lost, one line
+on why. When a survey returns exactly one real option, say so; that is a finding about the
+field.
+
+**The act.** Search before editing: the tool's own documentation, then a mature project
+that solves the same problem, then the field's reference. Return with the standard named
+and sourced. If the search genuinely finds no standard, that is a finding worth one
+sentence — but it is the outcome of a search, not a substitute for one.
 
 ## The Gate
 
@@ -209,25 +264,25 @@ Gaps:
 
 Required when this skill applies:
 
-- `systematic-debugging` — hypothesis ledger, falsification, formal reasoning.
+- [[systematic-debugging/SKILL|systematic-debugging]] — hypothesis ledger, falsification, formal reasoning.
   External-owner problems require upstream search **before** the hypothesis ledger is
   populated from local probing. Record public sources as observations.
 
-- `reality-grounded-debugging` — command-output discipline, surface-classification
+- [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] — command-output discipline, surface-classification
   matrix. "Actual reality" for external tools includes public docs, issues, release
   notes, and examples before local artifact inference.
 
-- `llm-failure-modes` — cognitive failure modes including local-artifact laundering
+- [[llm-failure-modes/SKILL|llm-failure-modes]] — cognitive failure modes including local-artifact laundering
   and reverse-engineering before lookup.
 
-- `reviewing-llm-code` — pattern catalog entry for missing dependency-lookup /
+- [[reviewing-llm-code/SKILL|reviewing-llm-code]] — pattern catalog entry for missing dependency-lookup /
   known-solution checks.
 
 Load alongside:
 
-- `systematic-debugging` for building the hypothesis ledger after public sources are
+- [[systematic-debugging/SKILL|systematic-debugging]] for building the hypothesis ledger after public sources are
   checked.
-- `reality-grounded-debugging` for local integration inspection after the public
+- [[reality-grounded-debugging/SKILL|reality-grounded-debugging]] for local integration inspection after the public
   contract is established.
-- `tool-provisioning-and-environment-hygiene` for provisioning rules when a known
+- [[tool-provisioning-and-environment-hygiene/SKILL|tool-provisioning-and-environment-hygiene]] for provisioning rules when a known
   solution requires installation (ephemeral vs project-managed vs persistent-isolated).

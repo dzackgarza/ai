@@ -1,0 +1,43 @@
+---
+name: mathematics
+description: "Use for any mathematical work: SageMath, Macaulay2, CoxIter, lattices, quadratic forms, proofs, LaTeX, research claims, formalization targets."
+---
+# Mathematics
+
+Start here for mathematical work. Route to exactly one primary subskill; load a second
+only when its distinct trigger is materially present.
+
+## Computation
+
+- [[mathematics/computation/sagemath/sagemath|sagemath]] — SageMath computations: algebraic geometry, number theory, general CAS work.
+- [[mathematics/computation/macaulay2/macaulay2|macaulay2]] — Macaulay2 code: Groebner-based verification, syzygy/membership certificates, batch `M2 --script` runs.
+- [[mathematics/computation/coxiter/coxiter|coxiter]] — invariants of hyperbolic Coxeter groups via CoxIter.
+- [[mathematics/computation/integer-programming/integer-programming|integer-programming]] — integer programming and constraint satisfaction, especially in pure-mathematics contexts.
+- [[mathematics/computation/programming-z3/programming-z3|programming-z3]] — Z3Py workflows: theories, solver APIs, tactics, optimization.
+
+## Research discipline
+
+- [[mathematics/research/research|research]] — multi-session, multi-agent research programs: typed claim ledgers, computation discipline, adversarial audits, handoffs, formal releases. Sub-routes to knowledge extraction, mathematical testing, and gate review.
+
+## Writing
+
+- [[mathematics/writing/writing|writing]] — rigorous mathematical prose, notation, LaTeX, and formalization targets; proofs default to Lamport-style structured proofs in every medium. Sub-routes to LaTeX compile QA.
+- [[mathematics/writing/policy/policy|mathematical-writing-policy]] — the coded catalogue of mathematical writing rules (`PR-*`, `DEF-*`, `SYM-*`, `STANCE-*`, …) that repositories cite from their `CONTRIBUTING.md`. Load when writing or reviewing reader-facing mathematical prose, or when a code is cited.
+
+## Objects in code
+
+- [[mathematics/objects-in-code/objects-in-code|objects-in-code]] — how mathematical objects are
+  represented: presentation versus object, universal properties, the generality a
+  formulation must survive, structure versus property, and the vocabulary that signals a
+  wrong model. Load before naming a class, choosing a return type, or writing a
+  construction. Sub-routes to categorical architecture for functor-based kernels.
+
+## Domain knowledge
+
+- [[mathematics/lattices/lattices|lattices]] — lattices, quadratic forms, and discrete subgroups: conventions and domain constraints.
+
+## Out of tree
+
+- Formal theorem proving (Lean 4, Aristotle, Coq/Isabelle/SMT/ATP) — [[lean4/SKILL|lean4]].
+- Literature search and paper reading — [[research-discovery/SKILL|research-discovery]].
+- Research-paper synthesis and submission — [[research-writing/SKILL|research-writing]].

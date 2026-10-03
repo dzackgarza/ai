@@ -235,8 +235,8 @@ If compaction happens, you re-read handoffs and continue.
 1. **Initialize memory:** Use the `remember` tool to store session-specific progress and
    continuity ledger data.
 
-2. **Load `subagent-delegation` skill:** Read instructions from `~/ai/opencode/agents/`
-   to define how agents behave.
+2. **Read the agent definitions in `~/ai/opencode/agents/`** to learn how agents
+   behave.
 
 ### Pre-Requisite: Plan Validation
 

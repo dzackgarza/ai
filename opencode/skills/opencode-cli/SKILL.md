@@ -1,6 +1,6 @@
 ---
 name: opencode-cli
-description: Use when running OpenCode CLI commands, starting repo-local OpenCode servers, inspecting models or agents, or driving sessions through ocm
+description: "Use when running OpenCode CLI commands, repo-local OpenCode servers, or ocm sessions."
 ---
 # OpenCode CLI
 
@@ -82,7 +82,7 @@ and rebuild when you actually need generated config changes.
 - If a workflow depends on repo-local config or env, start a repo-local
   `command opencode serve` inside that repo’s `direnv`.
 
-- `opencode` is not stale.
+- opencode is not stale.
   Config is reread on each invocation, so do not blame cache or restart loops.
 
 ## Basic Inspection Commands

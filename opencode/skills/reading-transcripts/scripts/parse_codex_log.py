@@ -37,10 +37,19 @@ def parse_codex_jsonl(file_path):
                     print(f"\n[{role}]")
                     for block in payload.get("content", []):
                         btype = block.get("type")
-                        if btype == "input_text" or btype == "text":
+                        if btype in ("input_text", "text", "output_text"):
                             print(block.get("text", "").strip())
                     print("-" * 60)
                     
+                elif item_type == "agent_message":
+                    author = payload.get("author", "?")
+                    recipient = payload.get("recipient", "?")
+                    print(f"\n[AGENT MESSAGE {author} -> {recipient}]")
+                    for block in payload.get("content", []):
+                        if block.get("type") in ("input_text", "text", "output_text"):
+                            print(block.get("text", "").strip())
+                    print("-" * 60)
+
                 elif item_type == "reasoning":
                     text = payload.get('text', '').strip()
                     if text:
@@ -50,14 +59,17 @@ def parse_codex_jsonl(file_path):
                 elif item_type in ["function_call", "custom_tool_call"]:
                     print(f"\n[ASSISTANT]")
                     tool_name = payload.get("name", "unknown")
-                    inputs = payload.get("arguments", {})
+                    inputs = payload.get("arguments") or payload.get("input", {})
                     if isinstance(inputs, str):
                         try:
                             inputs = json.loads(inputs)
                         except:
                             pass
                     if isinstance(inputs, dict):
-                        inputs = json.dumps(inputs, indent=2)
+                        inputs = json.dumps(inputs)
+                    inputs = str(inputs)
+                    if len(inputs) > 300:
+                        inputs = inputs[:300] + "...[truncated]..."
                     print(f"🛠️  [Tool Use: {tool_name}]\n{inputs}")
                     print("-" * 60)
                     

@@ -304,8 +304,104 @@
     owner of each state before adding another representation.
 
 24. **Abstraction rebound after simplification** - After corrections strip away
-    overbuilt machinery, agents retreat to a slogan-level simple plan and omit the
-    technical boundary that would make it executable. This is the mirror image of
-    overengineering: the agent avoids invented systems but also avoids naming the
-    interception point, data path, ownership transition, and proof surface. Correct
-    behavior is simple but concrete.
+   overbuilt machinery, agents retreat to a slogan-level simple plan and omit the
+   technical boundary that would make it executable. This is the mirror image of
+   overengineering: the agent avoids invented systems but also avoids naming the
+   interception point, data path, ownership transition, and proof surface. Correct
+   behavior is simple but concrete.
+
+25. **Compliance maximalism** - A small engineering requirement is not implemented
+   adequately but treated as the seed of an indefinitely refinable system of
+   identities, invariants, evidence, provenance, enforcement, and closure conditions.
+   "Pin the dependency" becomes a synchronized compatibility authority; "test the
+   release candidate" becomes commit provenance, binary identity, tag readback,
+   checksums, and release artifacts; "track the work" becomes a ledger, milestone
+   subtree, ordering constraints, and programme-completion semantics. The machinery
+   is not merely unnecessary — it becomes self-reproducing: each new enforcement
+   layer introduces objects that must themselves be validated (manifest → projection →
+   synchronization proof → build provenance → runtime provenance → published artifact
+   → hash → tag correspondence → workflow permission proof → tests for the proofs →
+   audit of the tests). The agent stops solving the original problem and begins
+   maintaining a recursively generated compliance universe.
+
+   Recurrent sub-failures:
+
+   - **Exactness treated as an unconditional good.** The agent never asks which
+     exactness matters for this project. For a single-maintainer research tool, a
+     known-compatible worker, a pinned immutable consumer commit, a clean CI
+     checkout, and one real notebook interaction succeeding may be sufficient. The
+     agent instead demands exact correspondence among every declared, built,
+     executed, published, and observed identity, at maintenance cost that addresses
+     no observed failure mode in that setting.
+
+   - **Best practices applied without scale calibration.** Practices imported from
+     environments with many independent publishers, large fleets, hostile
+     supply-chain assumptions, long support windows, regulated releases, or
+     millions of users are applied to a one-person research repository used
+     alongside ordinary notebooks. Each practice may be defensible in its native
+     context; its applicability here is never established. This is an engineering
+     judgment failure, not merely verbosity.
+
+   - **Administrative closure replaces product closure.** The original product
+     condition ("the kernel installs cleanly, behaves correctly with both plugins,
+     survives restart, can be released without ambiguity") is displaced by an
+     administrative condition ("the issue hierarchy, milestone, release record,
+     exact candidate, published identity, downstream adoption, evidence artifacts,
+     and readbacks form a closed chain"). The latter is attractive because it is
+     explicit and mechanically enumerable, and largely irrelevant to whether the
+     user has a usable artifact.
+
+   - **Evidence becomes the implementation target.** A conformance suite is
+     valuable when it exposes real defects. Once it does, the defects become the
+     work. Instead, the agent repeatedly refines the semantics of the evidence
+     system: reclassify an observed defect as an expected result, create stronger
+     schemas, redefine what counts as proof, classify tests as poisoned, build more
+     discriminating certification boundaries. The suite ceases to be an instrument
+     for improving the system and becomes a product in its own right.
+
+   - **Planning artifacts acquire false authority.** The ledger, issue tree,
+     milestone, compatibility record, and PR plan were created to *represent* work.
+     The agent begins treating them as *normative* objects whose internal
+     consistency must be preserved even when that consistency distorts the original
+     intent. Warning vocabulary: "programme completion", "governed release
+     identity", "exact-head qualification", "public traceability", "accepted
+     preorder", "claim set", "proof matrix", "invalidation rule." None is
+     intrinsically illegitimate; in aggregate they signal the agent has moved from
+     engineering a research tool to administering an imaginary institution.
+
+   - **Corrections cause overcompensation rather than re-centering.** The agent
+     writes a superficial plan; the user says the goals were narrowed and asks for
+     the real implementation; the agent interprets the correction maximally and
+     adds comprehensive machinery around every requirement; the user objects to the
+     explosion; the agent responds with an *even more elaborate audit* adjudicating
+     which machinery is justified; the review loop becomes dominated by the
+     generated framework. The correction "do the substantive work" should have
+     produced completion, rollback, restart, and resolution; instead it produced a
+     larger ontology of compliance.
+
+   Governing test. No new compliance, provenance, governance, or certification
+   mechanism may be introduced unless it is the minimal response to a named current
+   failure or an explicit requirement, and it may not create a new programme-level
+   completion condition. Every substantial addition must answer: (1) what concrete
+   failure does this prevent; (2) why is a simpler local mechanism insufficient;
+   (3) why is the maintenance burden proportionate to this project's users, threat
+   model, and release model. Under that test, immutable consumer pins, clean
+   downstream builds, real process restart tests, a small compatibility table, and
+   whole-cell transactions pass; binary hashes, release provenance manifests,
+   generated projections across every package, GitHub Release asset checksums,
+   exact workflow/tag/readback ceremony, and a repository-wide proof-remediation
+   ledger fail. Tests should terminate in product behavior, not in another evidence
+   artifact. Calibrate all release, security, and provenance work to a
+   single-maintainer personal research tool unless the user explicitly specifies a
+   larger operational model. The result is not less rigorous — it directs rigor at
+   the relevant objects (the kernel, plugin boundary, installation, notebook
+   behavior) rather than at an ever-expanding bureaucracy surrounding them.
+
+   Distinct from scope explosion (#1), which produces changes too large to model:
+   compliance maximalism produces a *self-reproducing governance system* whose
+   objects become the work. Distinct from engineering over judgment (#13), which
+   substitutes rule sets for judgment: here the rule sets are themselves
+   recursively generated and each layer generates the next. Distinct from
+   state-channel proliferation (#23), which duplicates existing state:
+   compliance maximalism invents *new categories* of state (provenance, identity,
+   proof) that have no prior owner to duplicate.

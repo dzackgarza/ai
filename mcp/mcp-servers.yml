@@ -1,21 +1,70 @@
 common:
-  sdl-mcp:
-    description: SDL MCP server (shared HTTP service, systemd --user)
-    type: remote
-    url: http://127.0.0.1:39150/mcp
-    enabled: true
   improved-webtools:
     description: Web search and fetching via improved-webtools MCP server
     command: uvx
     args:
     - --from
-    - git+https://github.com/dzackgarza/opencode-plugin-improved-webtools#subdirectory=mcp-server
+    - git+https://github.com/dzackgarza/improved-webtools#subdirectory=mcp-server
     - improved-webtools-mcp
     enabled: true
     exclude_harnesses:
     - opencode
     env:
       SEARXNG_INSTANCE_URL: '{env:SEARXNG_INSTANCE_URL}'
+  lean-lsp:
+    description: Lean theorem prover LSP MCP server (diagnostics, goals, hover, mathlib
+      search via LeanSearch/Loogle/Lean Hammer)
+    command: uvx
+    args:
+    - lean-lsp-mcp
+    enabled: true
+  blender:
+    description: Blender integration via the ahujasid/blender-mcp server (scene inspection,
+      object creation, Python execution inside a running Blender; needs the bundled
+      addon listening on port 9876)
+    command: uvx
+    args:
+    - blender-mcp
+    enabled: true
+  blender-b:
+    description: A second Blender on port 9877, so two agents can work on different
+      .blend files at once. One addon serves one Blender process holding one file,
+      and every command is funnelled onto its single main thread, so isolation has
+      to come from a separate instance rather than a separate connection. Set the
+      port in the addon's sidebar panel before starting the server there.
+    command: uvx
+    args:
+    - blender-mcp
+    enabled: true
+    env:
+      BLENDER_PORT: '9877'
+  unreal:
+    description: Unreal Editor MCP server, embedded in the running editor by the ModelContextProtocol
+      and AllToolsets plugins (Unreal Engine 5.8+). HTTP/SSE only; the editor must
+      be running for this endpoint to answer.
+    type: remote
+    url: http://127.0.0.1:8123/mcp
+    enabled: true
+  node_repl:
+    description: Node REPL that the ChatGPT desktop app injects into the Codex config
+      and keeps pinned to its own build. Listed here so the sync keeps whatever the
+      app last wrote instead of deleting the section it owns.
+    preserve: true
+    enabled: true
+  aseprite:
+    description: 'Aseprite pixel-art control (diivi/aseprite-mcp): 104 tools for canvas,
+      drawing, layers, animation, palettes, export, plus a raw Lua escape hatch. Drives
+      the Aseprite binary in batch mode.'
+    command: uv
+    args:
+    - --directory
+    - /home/dzack/gitclones/aseprite-mcp
+    - run
+    - -m
+    - aseprite_mcp
+    enabled: true
+    env:
+      ASEPRITE_PATH: /home/dzack/gitclones/aseprite/build/bin/aseprite
 harnesses:
   opencode:
     enabled: true

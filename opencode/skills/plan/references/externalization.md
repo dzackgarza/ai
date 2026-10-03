@@ -67,25 +67,54 @@ PR, or completion state. A wiki may own the ordered top-level roadmap list only 
 GitHub's issue/sub-issue ordering cannot represent that order cleanly; all
 decomposition and execution state still belongs to issues, milestones, and PRs.
 
-## Draft PRs Scope Units of Work, as a Planning Step
+## PR Grouping Is an Execution-Time Decision, Never a Planning Output
 
-Creating the issue tree is not the last planning step. The natural next step is to open
-small draft PRs that each claim a coherent unit of work — a group of related issues or a
-subtree node — so the unit a future agent picks up is already scoped by planning rather
-than invented at pickup time.
+Issues externalize *tracking*: individual bits of future work, proof burdens, and
+story nodes may be as narrow as tracking needs them to be. PR boundaries externalize
+*delivery*, and they are not decided at planning time. A planning pass that declares
+up-front how issues group into PR-sized tasks is guessing about a future session's
+capacity from the weakest possible position, and observed behavior is that it guesses
+timid: planning-time PR grouping is where scope narrowing and slicing enter the
+programme, before any implementation agent exists.
 
-This belongs to planning, not triage. Without pre-scoped draft PRs, agents arriving later
-default to grabbing a single issue per PR. Individual issues are often narrow, so
-one-issue-per-PR fragments the work into many tiny PRs, each pulling in a human review pass
-and possibly several review rounds — a large, recurring waste of reviewer time for little
-delivered value. Pre-scoped draft PRs stop agents from reinventing the unit of work and
-keep review attention on coherent, review-sized changes.
+The unit of delivery is the executing session's coherent arc, and that arc is one
+review-loop PR — see [[pr-scoping/SKILL|pr-scoping]] for the measured calibration. A
+plan corresponds to roughly a session; sometimes one session consumes several plans.
+Plan phases, issue nodes, and milestone cuts are therefore never PR boundaries: a
+session picking up work derives its PR scope at pickup time by loading pr-scoping,
+reading the whole backlog, and taking the root-cause cluster its window can hold —
+usually the entire coherent subtree, regardless of how many plan phases or issues
+that consumes.
 
-So, when externalizing a plan, create draft PRs over coherent issue groups or subtree
-nodes as part of the plan output, once a claimable issue set exists. Scope each draft PR to
-the smallest coherent delivery still worth a single review pass — usually a sibling group
-or a milestone-sized subtree. A lone single-issue PR is right only when that issue is
-itself a coherent, review-worthy unit.
+What planning legitimately contributes to future delivery scope:
+
+- issue nodes that self-describe the root-cause cluster, so a pickup session can see
+  the whole unit without re-deriving it;
+- grouping/organizational issues that record which narrow tracking issues share a
+  root cause — evidence for the pickup session, not a PR pre-commitment;
+- explicit identity dependencies (content that cannot be authored until something
+  merges or releases), which are the only planning-time facts that force separate
+  landings.
+
+What planning must not emit: PR counts, "minimum N PRs", per-phase PR assignments,
+draft PRs opened over future work, or issue text prescribing PR shape. The executing
+session opens its PR when implementation starts, scoped by pr-scoping against the
+live backlog. Fragmentation is prevented by that skill's default — one session-scale
+PR — not by pre-scoped draft-PR ceremony that freezes a planner's guess.
+
+## Converge Before You Externalize
+
+Externalization is a one-way door taken once. Until the semantic target has converged —
+one internal draft states the intended product transformation and has been reviewed
+against [[pr-scoping/SKILL|pr-scoping]] — create no branch, no PR, no issue edits, and no
+vault-synchronized copies. A correction to an unconverged draft is a prose edit; once a
+wrong scope has been committed, pushed, PR-bodied, and mirrored, the same correction
+becomes a distributed-state migration (commits, PR-body replacement, vault repair,
+revalidation) on every round. Draft → converge → externalize once.
+
+After promotion, keep exactly one authored copy. If the PR body is the claim map, any
+repo export or vault card is a pointer to it — never a synchronized duplicate whose
+byte-equality must be maintained by additional commits.
 
 ## Source Plan Requirements
 
@@ -100,8 +129,9 @@ Before creating GitHub objects, the source plan must fix:
 - dependency edges that are blockers, distinct from traversal order;
 - the GitHub Milestone objects needed up front, with scope expressed as a subtree
   root or explicitly enumerated issue set;
-- the PR claim set: the issues or subtree this PR intends to close, partially
-  advance, or only reference;
+- for a PR being opened now by the executing session: its claim set — the issues or
+  subtree it closes or only references. Future work carries no claim sets; those are
+  derived at pickup time (see PR Grouping above);
 - explicit non-goals and deferred work.
 
 Do not let test IDs, commands, filenames, commits, labels, green checks, issue
@@ -157,9 +187,9 @@ When scaffolding a project roadmap with the user, proceed top-down:
 7. Split only the parts that need implementation tracking.
 8. Create issues/sub-issues for the accepted tree.
 9. Create GitHub Milestones for milestone subtrees.
-10. Open draft PRs that each scope a coherent unit of work — a sibling issue group or a
-    subtree node — once a claimable issue set exists, so downstream agents pick up
-    pre-scoped units instead of one narrow issue at a time.
+10. Stop. Do not open draft PRs over future work — PR scope is derived by the session
+    that picks the work up (see PR Grouping above). Ensure instead that each coherent
+    cluster's root issue self-describes the whole unit a pickup session should take.
 11. Render or refresh the wiki projection from the resulting GitHub state.
 
 Do not start by asking the user for issue titles, labels, implementation tasks, or
@@ -229,6 +259,7 @@ Stop and repair the source plan before externalizing when:
 - the wiki would manually mirror live issue/PR status;
 - issue creation would require inventing user stories, proof obligations, scope, or
   milestone cuts not present in the source plan;
-- a planning pass publishes an issue tree but leaves its coherent units of work unscoped
-  by draft PRs, so downstream agents must reinvent PR scope or default to one narrow issue
-  per PR.
+- a planning pass is about to emit PR counts, per-phase PR assignments, draft PRs over
+  future work, or issue text prescribing PR shape — delivery grouping belongs to the
+  executing session at pickup time, and a cluster whose root issue does not
+  self-describe its full unit is fixed by rewriting the issue, not by pre-scoping PRs.

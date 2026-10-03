@@ -1,11 +1,11 @@
 ---
 name: config-file-editing
-description: Use when editing JSON or YAML config files — covers safe read/modify/write patterns with jq, yq, and Python to prevent syntax errors and indentation corruption.
+description: "Use when editing a JSON or YAML file. Edit with jq, yq, or Python, never by hand."
 ---
 # Config File Editing
 
 > [!IMPORTANT]
-> All code produced under this skill must adhere to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
+> All code produced under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways.
 
 ## Core Rule
 

@@ -1,9 +1,9 @@
 ---
 name: llm-failure-modes
-description: Use when reasoning through a complex or high-stakes problem to check for common LLM cognitive failures.
+description: "Reference catalog of LLM failure patterns. Load only from a review skill that cites a specific code, never as a general checklist."
 metadata:
   author: dzack
-  version: '0.3.0'
+  version: 0.3.0
 ---
 # LLM Failure Modes
 
@@ -104,8 +104,8 @@ Load the relevant section for your context:
   delegation, scale-complexity confusion, ground-up bias (churn-first workflow),
   fallback-legacy compulsion (asymmetric risk model), availability-first tool reuse,
   workflow phase collapse, state-channel proliferation, abstraction rebound after
-  simplification.
-  (24 items)
+  simplification, compliance maximalism.
+  (25 items)
 
 - **Documentation and frame-contamination failures** —
   [documentation-failures.md](documentation-failures.md) Private-context leakage,
@@ -140,22 +140,20 @@ Load the relevant section for your context:
 
 ### Cross-References
 
-- **addressing-shallow-work** → Load alongside when investigating failure modes that
-  produce structurally wrong code.
   The inability to recognize when an approach is structurally incapable of correctness —
   even without empirical verification — is a failure mode distinct from “didn’t test
   enough.” The regex-on-HTML example (flattening a semantic tree into bytes before
   searching) illustrates fluency masking structural wrongness.
 
-- **anti-slop** → Load alongside when the failure mode produces surface-level quality
+- [[anti-slop/SKILL|anti-slop]] → Load alongside when the failure mode produces surface-level quality
   issues (generic names, boilerplate) alongside deeper epistemic failures.
   Surface patterns often mask the structural wrongness cataloged here.
   All implementation work influenced by this skill is subject to the
-  [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)
+  [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]]
   in `policy-index/SKILL.md` as non-negotiable hard constraints — no runtime defaults,
   fallbacks, mocks, or optional critical dependencies.
 
-- **reviewing-llm-code pattern catalog** →
+- **[[reviewing-llm-code/SKILL|reviewing-llm-code]] pattern catalog** →
   [../reviewing-llm-code/references/pattern-catalog.md](../reviewing-llm-code/references/pattern-catalog.md)
   is the canonical catalog for concrete code, test, QC, and documentation patterns that
   instantiate these failure modes.
@@ -163,7 +161,5 @@ Load the relevant section for your context:
   developer-controlled assertions, fallback laundering, no-op behavior, QC appeasement
   code, and recipe bypasses.
 
-- **reviewing-subagent-work** → Load alongside when designing review processes that must
-  detect the failures cataloged in this skill.
   The Synthesis Gate forces content-level evaluation; structural-wrongness recognition
   is its prerequisite gate.

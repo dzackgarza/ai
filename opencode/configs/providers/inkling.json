@@ -1,0 +1,10 @@
+{
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "Thinking Machines Tinker",
+  "options": {
+    "baseURL": "https://tinker.thinkingmachines.dev/services/tinker-prod/oai/api/v1",
+    "apiKey": "{env:TINKER_API_KEY}"
+  },
+  "models": {},
+  "whitelist": []
+}
