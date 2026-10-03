@@ -15,6 +15,9 @@
     },
     "poolside/laguna-xs-2.1:free": {
       "name": "laguna-xs-2.1:free"
+    },
+    "stealth/space-bunny-alpha": {
+      "name": "Space Bunny Alpha"
     }
   },
   "whitelist": [
@@ -22,7 +25,8 @@
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "openrouter/free",
     "poolside/laguna-s-2.1:free",
-    "poolside/laguna-xs-2.1:free"
+    "poolside/laguna-xs-2.1:free",
+    "stealth/space-bunny-alpha"
   ],
   "blacklist": [
     "01-ai/yi-1.5-34b-chat",
@@ -96,6 +100,7 @@
     "anthropic/claude-sonnet-4",
     "anthropic/claude-sonnet-4.5",
     "anthropic/claude-sonnet-4.6",
+    "apodex/apodex-1.1-mini:free",
     "arcee-ai/afm-4.5b",
     "arcee-ai/arcee-blitz",
     "arcee-ai/caller-large",
@@ -250,6 +255,7 @@
     "inclusionai/ling-3.0-flash-sante:free",
     "inclusionai/ling-3.0-flash-vl:free",
     "inclusionai/ling-3.0-tiny:free",
+    "inclusionai/ling-3.1-flash",
     "inclusionai/ring-2.6-1t",
     "inclusionai/ring-2.6-1t:free",
     "infermatic/mn-inferor-12b",
@@ -625,6 +631,7 @@
     "qwen/qwen3.6-plus",
     "qwen/qwen3.6-plus:free",
     "qwen/qwen3.7-max",
+    "qwen/qwen3.8-27b:free",
     "qwen/qwq-32b",
     "qwen/qwq-32b-preview",
     "raifle/sorcererlm-8x22b",

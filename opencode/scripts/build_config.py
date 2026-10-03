@@ -702,7 +702,12 @@ def validate_provider_partitions(
         meta = get_models_dev_provider_meta(models_dev_data, provider_id)
         if meta:
             api_key = resolve_first_env(meta.get("env") or [])
-            if meta.get("npm") == "@ai-sdk/openai-compatible" and meta.get("api") and api_key:
+            model_catalog_is_public = provider_id == "opencode"
+            if (
+                meta.get("npm") == "@ai-sdk/openai-compatible"
+                and meta.get("api")
+                and (api_key or model_catalog_is_public)
+            ):
                 live_issues = validate_openai_compatible_provider(
                     provider_id,
                     provider_cfg,
