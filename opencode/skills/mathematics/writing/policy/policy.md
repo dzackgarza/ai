@@ -10,6 +10,17 @@ that points here. Each rule has a stable code, a banned example, and the
 preferred replacement. Cite the codes in contributions, commit messages, and
 review.
 
+## The single principle
+
+Write the mathematical object itself, at its natural level of generality and
+in its natural categorical location; do not replace it by explanatory prose
+about the object, implementation details about the object, or a
+lower-structure approximation to the object.
+
+When a correction seems new, find which part of the principle it applies —
+generality, categorical location, or layer — and which family covers it. The
+rules below are this principle made checkable.
+
 ## Scope
 
 The rules govern contributor-written mathematical copy: chapters, pages,

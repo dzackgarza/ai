@@ -38,3 +38,25 @@ category.
 A theorem that a functor lands in a replete full subcategory is a proved
 factorization through its inclusion. Any other landing statement names the
 actual codomain.
+
+## `DIA-7`: A diagram whenever the relation is diagrammatic
+
+When the mathematical content is a commutativity, compatibility,
+factorization, comparison of embeddings, or a universal construction,
+represent it by a labeled commuting diagram, not by prose and not by an
+isolated equation between composites. An equation $\varphi\circ\iota_1
+=\iota_2$ states that two elements of a hom-set agree; the triangle with
+vertices $S$, $M_1$, $M_2$ and arrows $\iota_1$, $\iota_2$, $\varphi$
+exhibits the objects and the maps, which is the mathematical type of the
+relation (DIA-2). If a diagram expresses the type more faithfully than an
+equation, the diagram is owed.
+
+**Banned:** "An equivalence of embeddings is an isometry $\varphi\colon
+M_1\isoto M_2$ with $\varphi\circ\iota_1=\iota_2$" standing alone; "the
+construction is compatible with base change" with no square.
+
+**Preferred:** the triangle or square, drawn once, referenced thereafter:
+```tikzcd
+& S \arrow[dl,"\iota_1"'] \arrow[dr,"\iota_2"] & \\
+M_1 \arrow[rr,"\varphi"'] && M_2
+```

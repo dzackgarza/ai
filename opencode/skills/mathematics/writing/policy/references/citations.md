@@ -25,3 +25,18 @@ Cite a reference whose results carry stable tags, such as the Stacks
 Project, by the tag of the result: "[Stacks, Tag 02LS]". Read the tag's
 page before you cite it. A wrong tag still renders, and it sends the
 reader to a different result.
+
+## `CITE-4`: Every citation has a local referent
+
+A citation is attached to the specific definition, theorem, construction,
+computation, or attribution it supports, with a locator that reaches it
+(CITE-1). A bare list of works at the end of a passage — names and years
+with no stated result — is a reading list, not a citation: the reader
+cannot tell which work proves which claim. Cite each result where it is
+used.
+
+**Banned:** "We refer to: [@Vin85]; [@Vin75]."
+
+**Preferred:** "The structure theorem for the automorphism group we use
+is [@Vin85, Theorem 2.1]; the arithmeticity result is [@Nik80, Prop.
+1.15.1]" — each citation at the claim it supports, with a locator.

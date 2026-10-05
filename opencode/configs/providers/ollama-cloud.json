@@ -10,6 +10,7 @@
     "gemini-3-flash-preview",
     "gemma4:31b",
     "glm-5.1",
+    "glm-5.2",
     "gpt-oss:20b",
     "kimi-k2.5",
     "kimi-k2.6",
@@ -30,14 +31,26 @@
     "rnj-1:8b"
   ],
   "models": {
-    "glm-5.2": {
-      "name": "GLM 5.2"
+    "deepseek-v4.1-flash": {
+      "name": "DeepSeek V4.1 Flash"
+    },
+    "deepseek-v4-pro:0813": {
+      "name": "DeepSeek V4 Pro (0813)"
+    },
+    "glm-5.3": {
+      "name": "GLM 5.3"
+    },
+    "glm-5.3-flash": {
+      "name": "GLM 5.3 Flash"
     },
     "gpt-oss:120b": {
       "name": "GPT-OSS 120B"
     },
     "kimi-k2.7-code": {
       "name": "Kimi K2.7 Code"
+    },
+    "kimi-k3": {
+      "name": "Kimi K3"
     },
     "minimax-m3": {
       "name": "MiniMax M3"
@@ -47,21 +60,13 @@
     },
     "nemotron-3-ultra": {
       "name": "Nemotron 3 Ultra"
-    },
-    "kimi-k3": {
-      "name": "Kimi K3"
-    },
-    "deepseek-v4-flash:0731": {
-      "name": "deepseek-v4-flash:0731"
-    },
-    "deepseek-v4-pro:0813": {
-      "name": "DeepSeek V4 Pro (0813)"
     }
   },
   "whitelist": [
-    "deepseek-v4-flash:0731",
+    "deepseek-v4.1-flash",
     "deepseek-v4-pro:0813",
-    "glm-5.2",
+    "glm-5.3",
+    "glm-5.3-flash",
     "gpt-oss:120b",
     "kimi-k2.7-code",
     "kimi-k3",

@@ -457,6 +457,40 @@ operator-theoretic index, Hodge computes $p-q$ and deduces $(p,q)$ since
 $p+q=n-r$) and signature always means the full tuple $(p,q)$ or
 $(p,q,r)$ (TERM-14).
 
+**36. The object replaced by prose *about* the object.** A single
+principle covers most annotation feedback: write the mathematical object
+itself, at its natural level of generality and in its natural categorical
+location — never explanatory prose about the object, implementation
+details about it, or a lower-structure approximation to it. Its recurring
+forms: fenced environments carrying the wrong content type — definitions
+in prose, examples scattered, remarks that are transitional filler,
+classification results not collected in their subtree (SEC-11);
+constructions introduced where first needed instead of at the least
+specialized section where they exist — the abstraction lattice
+($R$-pairings before $W$-valued bilinear modules before lattices,
+definite / indefinite / hyperbolic before embedding theory) is the owner
+map (SEC-12); definitions below their maximal generality — over $\mathbf R$
+when $R$ is arbitrary, "even" smuggled into the general notion,
+lattice-specific language before the bilinear-module construction it
+restricts (DEF-38); elementwise conditions as definitions when the
+canonical map / adjoint / value group exists — nondegeneracy as
+$b^{\sharp}$ injective, not a $\forall\,y$ sentence (DEF-39); isolated
+quotients, kernels, and decategorified bijections where the source has a
+cofiber sequence, a poset isomorphism, or an equivalence of groupoids
+(DEF-40); equations between composites where a commuting diagram is the
+mathematical type of the relation (DIA-7); database field names and
+corpus bookkeeping leaking into theory prose — theory, implementation,
+and provenance are three layers (PROSE-16); sentences whose subject is
+the document — "this name is a convention", "the character itself is
+standard" — self-announcing slop that states nothing (PROSE-17);
+bibliography dumps with no local referent (CITE-4); local coinages where
+the standard rep-theory or lattice terminology and the standard symbols
+$\widetilde\Orth$, $\Orth^+$, $\widetilde\Orth^+$, $L[n]$ already encode
+the distinction (TERM-16); silent passage between $\Emb(S,L)$, its
+groupoid, its orbit set, and its double quotient (FORM-10); and
+complexity that is non-monotone through the document — twists first met
+inside the lifting argument (SEC-13).
+
 **29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
 $\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
 gives $\varphi_*\colon(M,b\colon M\otimes_R M\to W)\mapsto(M,\varphi\circ

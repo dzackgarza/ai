@@ -450,3 +450,29 @@ $\operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R)$ with the tensor
 product of $R$-algebras. An associative pairing
 on a unital algebra is a condition on a module bilinear form on $U(A)$,
 equivalently a trace pairing $\varepsilon\circ\mu$.
+
+## `TERM-16`: Standard terminology and notation before local language
+
+Use the established terminology and notation of the relevant literature
+first. A local synonym, decoration, or notation is justified only when
+standard language genuinely does not encode the required distinction —
+and then it is defined once, at its defining occurrence (DEF-26). Do not
+coin a paraphrase for a notion that representation theory, lattice
+theory, or another established field already names; do not introduce new
+letters for objects with standard symbols.
+
+**Banned:** "a lattice with no repeated constituents" for *simple /
+completely reducible*; a project coinage for what the literature calls
+reducible, indecomposable, or semisimple; renaming $\widetilde\Orth(L)$
+or $\Orth^+(L)$ with local symbols when the standard notation —
+discriminant kernel $\widetilde\Orth(L)=\ker\rho_L$, spinor-norm kernel
+$\Orth^+(L)$, and their intersection $\widetilde\Orth^+(L)$ — already
+distinguishes the three groups; $n$-torsion written out per-instance
+instead of the standard $L[n]$ and $L^{\mathrm{prim}}[n]$.
+
+**Preferred:** the standard term and symbol at the defining occurrence —
+*reducible*, *completely reducible*, *simple*, *indecomposable*,
+*semisimple*; $L[n]:=q^{-1}(n)$ and $L^{\mathrm{prim}}[n]$ defined once
+at their natural owner (SEC-12); $\widetilde\Orth$, $\Orth^+$,
+$\widetilde\Orth^+$ with their definitions as kernels. A local name is
+recorded only as a pointer to the standard one.

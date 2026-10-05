@@ -220,3 +220,46 @@ The definition is linked at each first use.”
 Navigation cannot replace a missing definition or an unproved dependency.
 A guide should provide the statement at the point where the reader needs it, or link a named canonical statement.
 Telling the reader to repair the order hides an authoring defect and transfers the work to the reader.
+
+## `PROSE-16`: Mathematical theory, implementation, and provenance are three layers
+
+A theory chapter defines the mathematics; a realization or implementation
+page names the Sage, Lean, or database object that encodes it; provenance
+and bookkeeping (which corpus an entry came from, what a column stores,
+extraction status) live in the work queue or the record, never in the
+mathematical prose (`PROSE-11`, `DEF-37`). A sentence about a database
+field or a storage convention in a theory chapter is an
+implementation-layer leak: its only coherent audience is the maintainer
+of the database, and it tells the mathematical reader nothing.
+
+**Banned:** "the `integral.quadratic_character` field stores the Kronecker
+symbol $\smash{\left(\frac{d_L}{a}\right)}$, a name also used as a
+convention in the lattice database" on a theory page; "the `index` field,
+which stores the group-theoretic index $[L:K]$."
+
+**Preferred:** on the theory page, state the definition of $\chi_L$
+(`#def:lattice-discriminant-character`) with $\operatorname{Val}$,
+$D_L$, $d_L$ and the Kronecker symbol, and the proposition that
+$\chi_L(p)$ distinguishes the two isometry classes over $\FF_p$; put
+"`integral.quadratic_character` stores $\chi_L$" on the schema or
+realization page, code-formatted. The word "index" already means
+$[L:\!K]$; a sentence explaining the field name restates it.
+
+## `PROSE-17`: No self-announcing or tautological exposition
+
+Every sentence carries a mathematical assertion, a definition, a
+dependency, a precise citation, or a genuine consequence. A sentence
+whose subject is the document, its conventions, or its own content —
+rather than the mathematics — states nothing. Delete it, or replace it
+with the mathematical content it announces.
+
+**Banned:** "This name is a convention used here and in the lattice
+database."; "The quadratic character itself is standard."; "We recall the
+following well-known construction."; "The field called `index` stores the
+index."
+
+**Preferred:** state what the convention *is*, attached to the definition
+(`DEF-26`); delete "is standard" — standardness is shown by the citation
+(`CITE-4`), not asserted (`PROSE-06`); if the material genuinely recalls,
+write "Recall (@def-…) that …" with the link (`XREF-6`), and delete the
+announcement when the linked definition stands on its own.

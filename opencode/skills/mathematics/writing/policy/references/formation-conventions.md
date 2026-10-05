@@ -57,3 +57,27 @@ A family of forms is a named presheaf with its codomain stated. If comparison
 identities use $R$-module operations, state the presheaf as
 $F\colon\mathcal C^{\mathrm{op}}\to R\text{-}\mathbf{Mod}$ and type every
 natural transformation in the identity.
+
+## `FORM-10`: Keep the quotient level visible
+
+For a group $G$ acting on a set or space $X$, the object $X$, the action
+groupoid $X\!/\!\!/G$, the orbit set $\pi_0(X\!/\!\!/G)=X/G$, and any coarse
+or stack quotient are distinct objects at distinct truncation levels. Prose
+never collapses them: "classifying embeddings" does not silently pass
+between $\Emb(S,L)$, the groupoid $\mathbf{PrimEmb}(S,L)$, the orbit set
+$\Orth(L)\backslash\Emb(S,L)$, and the double quotient
+$\Orth(L)\backslash\Emb(S,L)/\Orth(S)$. State which object a claim or
+count is about, and state the quotient map that relates two levels when
+both appear (FORM-6).
+
+**Banned:** "$\Emb(S,L)$ classifies embeddings up to isometry of the
+ambient lattice" and, later in the same passage, using $\Emb(S,L)$ to
+count $\Orth(L)$-orbits; "the set of equivalence classes of primitive
+embeddings is denoted $\Emb(S,L)$" with $\Emb(S,L)$ defined elsewhere as
+the set of embeddings.
+
+**Preferred:** name the level at each use: "the set $\Emb(S,L)$ of
+primitive embeddings", "the orbit set $\Orth(L)\backslash\Emb(S,L)$",
+"the double quotient
+$\Orth(L)\backslash\Emb(S,L)/\Orth(S)$, which is not the same object as
+$\Orth(L)\backslash\Emb(S,L)$".

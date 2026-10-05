@@ -876,3 +876,69 @@ universal properties without implementation names. A realization section can
 then name the Lean, Sage, or Mathlib object that represents the defined
 mathematics. Lean, Mathlib, and Sage identifiers are code-formatted and are
 never prose nouns.
+
+## `DEF-38`: Define at maximal generality, then specialize
+
+A construction is defined at the maximal generality at which it exists,
+and a special case is introduced as a restriction of the general object,
+not as the defining occurrence. Do not define a bilinear form over
+$\mathbf R$ when the construction exists over an arbitrary ring $R$; do
+not define a general notion with an "even only" hypothesis accidentally
+baked in; do not define lattice-specific language before the corresponding
+bilinear-module construction exists to restrict (cf. PR-63, PR-72).
+
+**Banned:** "A $W$-valued lattice is a free $\mathbb Z$-module $L$ with a
+bilinear form $b\colon L\times L\to W$ such that $b(x,x)\in 2W$" as the
+definition of bilinear forms, when the ring is general and evenness is a
+property, not part of the construct; a lattice-specific term whose
+underlying bilinear-module notion was never defined.
+
+**Preferred:** define the pairing or bilinear form over an arbitrary base
+ring $R$ and value module $W$; then "an *even* form is …" as a property
+(SEC-12); then the lattice as the case $R=\mathbb Z$ with its finiteness
+and integrality hypotheses stated (`PR-71`).
+
+## `DEF-39`: Structural definition before elementwise characterization
+
+When a canonical module, map, functor, fiber, or adjoint exists, define the
+notion through that object. An elementwise condition is a theorem to be
+proved equivalent — not the defining occurrence (DEF-22). The structural
+definition names the object the theory reuses; the elementwise formula is
+its evaluation in the concrete case (PR-47).
+
+**Banned:** "$b$ is *nondegenerate* if $b(x,y)=0$ for all $y$ implies
+$x=0$" as the definition of nondegeneracy, never naming the adjoint
+$b^{\sharp}\colon M\to\operatorname{Hom}_R(M,W)$.
+
+**Preferred:** "$b$ is *nondegenerate* if its adjoint
+$b^{\sharp}\colon M\to M_W^\vee$ is injective (with kernel
+$\ker(b^{\sharp})$ the radical), and *unimodular* if $b^{\sharp}$ is an
+isomorphism" — then the elementwise characterization as a proposition.
+Likewise: reframe a notion in terms of the value group
+$\operatorname{Val}(b)\subseteq W$ instead of carrying $b(x,x)\in 2W$
+through every use (PR-45).
+
+## `DEF-40`: Give the complete structural construction
+
+A construction that comes as a fiber, cofiber, or short exact sequence is
+given in full. State the sequence $A\to B\to C$ with its maps; never write
+an isolated quotient $B/A$, an isolated kernel $\ker(f)$, or an isolated
+cokernel $\operatorname{coker}(f)$ as though it were the construction.
+The same applies at the categorical level: an embedding problem is
+formulated in the relevant category with its equivalences as
+$2$-morphisms (DIA-5); a correspondence of overlattices with isotropic
+subgroups is stated at the level it actually has — as an equivalence of
+posets, categories, or groupoids, when that is what the source proves —
+not decategorified to a bare bijection (STR-4).
+
+**Banned:** "$M/N$" used as the object under discussion with no
+mention of the map $N\to M$ or the cofiber sequence that produces it;
+"the set of overlattices of $L$ is in bijection with the isotropic
+subgroups of $D_L$" where the source proves an order isomorphism of
+posets or an equivalence of groupoids.
+
+**Preferred:** the cofiber sequence
+$N\hookrightarrow M\twoheadrightarrow M/N$ with its maps named (PR-56);
+"the map $K\mapsto K/L$ is an order isomorphism from the overlattice
+poset to the isotropic-subgroup poset of $D_L$" — the statement at the
+structure level the theorem has.

@@ -278,3 +278,63 @@ reader nothing and hides the subject from the table of contents.
 embeddings.
 
 **Preferred:** "Baily--Borel embeddings".
+
+## `SEC-11`: Each fenced environment carries its typed content
+
+A fenced block's class is semantic, not typographic. A `definition` block
+contains a definition (DEF-4); an `example` block contains an example; a
+`remark` contains a mathematical remark — a warning, an alternative
+viewpoint, a real subtlety — never transitional prose (SEC-7). A class of
+objects that recurs is collected where its type lives: examples in the
+examples section, classification results in the classification subtree. A
+block that carries content of the wrong type, and a section that scatters
+one class across the document, both hide the unit from the skeleton
+(SEC-6).
+
+**Banned:** a `::: {.Remark}` whose body is "We next collect the
+classification theorems"; an example stated as a closing sentence of a
+section instead of as an `{#exm-...}` block amongst the section's other
+examples (SEC-2); classification theorems for overlattices spread across
+three chapters instead of one subtree.
+
+**Preferred:** the remark contains the actual remark; each example is a
+fenced `{#exm-...}` unit collected in the examples section of its chapter;
+the classification theorems form one subtree whose $\S$ order is the
+dependency order.
+
+## `SEC-12`: A construction is introduced at its natural owner
+
+Every concept has one owner: the section at its level of generality in the
+abstraction lattice, where it first exists naturally. Introduce a
+construction there, not at the place where it happens to be first needed.
+Exposition order follows the dependency lattice, and $L[n]=q^{-1}(n)$,
+twists, and classification results each live at their mathematical owner —
+a general pairing or bilinear-module construction is not deferred to the
+lattice chapter because the lattice chapter was written first.
+
+**Banned:** defining $W$-valued $R$-bilinear modules inside the lattice
+chapter because that is where the discriminant form is needed; defining
+$L[n]$ only inside the MM-theory section, after it has already been used;
+a classification theorem stated far from the classification subtree.
+
+**Preferred:** locate each definition and theorem at the least specialized
+section where it is defined, and let the specialized sections cite it
+(`DEF-1`, `XREF-5`). Sections form a chain in the abstraction lattice:
+pairings, then $W$-valued bilinear modules, then $W$-valued lattices,
+then torsion forms, then definite, indefinite, and hyperbolic lattices,
+then embedding theory.
+
+## `SEC-13`: Complexity is monotone through the exposition
+
+A reader meets each notion after its prerequisites and before the
+machinery that depends on it. An elementary construction is not
+introduced for the first time inside a substantially more sophisticated
+argument; an advanced section does not stop to define basic notation.
+Complexity and abstraction increase through the document.
+
+**Banned:** "twists of a lattice" first defined inside the
+automorphism-lifting argument that uses them; the notation $L[n]$
+explained for the first time three sections after its first use.
+
+**Preferred:** the elementary construction in its own earlier section,
+cited where used (`SEC-9`, `SEC-12`).
