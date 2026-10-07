@@ -298,3 +298,17 @@ $R\text{-}\mathbf{Mod}$"; "$f\in\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M,N)$
 "for ordered bases $e$ of $M$ and $e'$ of $N$, the matrix
 $[f]_{e,e'}\in M_n(R)$"; "the pullback of $f$ along $i$ in the square
 $S\times_M N\to S$, $S\times_M N\to N$" (`EV-5`).
+
+## `SYM-15`: Recall distant bespoke notation at substantive reuse
+
+When notation defined far away re-enters a theorem, proposition, or other
+self-contained unit, gloss it at the first substantive reuse. Cite the
+defining occurrence and state what the symbol denotes. A bare
+cross-reference supplies provenance but does not make a dense symbolic
+statement locally readable (`XREF-6`). Standard notation needs no gloss.
+
+**Banned:** a theorem that uses $N_b(L)$ after many sections with only a
+bare reference to its definition.
+
+**Preferred:** "where $N_b(L)$ denotes the radical of the bilinear lattice
+$L$ (@def:bilinear-radical)."

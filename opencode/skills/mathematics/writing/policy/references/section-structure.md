@@ -422,3 +422,34 @@ $\pi^{-1}(\Gamma)$ for an isotropic $\Gamma\subseteq D_L$
 representative calculation, and the algorithm; a construction that is
 itself asserted data is named in the statement and built in the proof
 (`STR-3`, `PROSE-10`).
+
+## `SEC-17`: Reader-facing mathematics contains no audit metadata
+
+Contributor workflow, dependency audits, corpus references, review state,
+and completion state live in repository metadata or tooling. They are not
+authored mathematical content. A fenced block such as `meta`,
+`corpus-references`, `depends-on`, or `audited` exposes internal work state
+to the reader and interrupts the mathematical dependency order.
+
+**Banned:** a reader-facing fenced block that records source audit status,
+contributors, dependencies, review completion, or corpus provenance.
+
+**Preferred:** keep machine-readable workflow and audit data in the
+repository's metadata surface; express a mathematical dependency in the
+text through the stable reference that the argument uses (`XREF-1`).
+
+## `SEC-18`: State the claim before its auxiliary machinery
+
+A theorem, lemma, or proposition opens with its mathematical conclusion.
+Place only the hypotheses and notation needed to parse that conclusion
+before it. Auxiliary constructions, calculations, and proof notation are
+subordinate to the claim and belong after it, usually in the proof
+(`SEC-16`). Several paragraphs of setup before the assertion bury the
+logical unit that the block exists to state.
+
+**Banned:** a proposition that first builds an auxiliary module, chooses
+representatives, and defines three maps before it states what those data
+prove.
+
+**Preferred:** state the conclusion with its necessary quantified data;
+then define the auxiliary objects in the proof or in a cited construction.

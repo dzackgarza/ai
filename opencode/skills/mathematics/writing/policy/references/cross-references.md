@@ -68,3 +68,30 @@ convergent subsequence."
 **Preferred:** "Recall that a normal family (Definition 3.2) is a family
 of holomorphic functions in which every sequence has a locally uniformly
 convergent subsequence."
+
+## `XREF-7`: Internal results have references, not nicknames
+
+Refer to an internally authored theorem, lemma, proposition, corollary, or
+definition through its resolver reference. Ordinary descriptive prose may
+state how the cited result is used, but it does not give the result an
+informal proper name. A nickname such as "the primitivity proposition"
+creates a second, unstable identifier that is neither the title nor the
+label.
+
+**Banned:** "By the primitivity proposition, …" when that phrase names an
+internal proposition.
+
+**Preferred:** "By @prp:primitive-embedding, the embedding is primitive."
+
+## `XREF-8`: Displayed mathematical objects use stable references
+
+An equation, diagram, exact sequence, coexact sequence, fiber sequence, or
+cofiber sequence that later prose uses has a label and is cited through the
+resolver. Position is not an identifier. This applies to displayed objects
+as well as statement blocks (`XREF-1`).
+
+**Banned:** "the previous sequence", "the diagram above", or "applying
+$F$ to the preceding equation".
+
+**Preferred:** "Applying $F$ to @eq:unit-comparison" or "Exactness of
+@eq:localization-sequence gives …".

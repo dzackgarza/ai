@@ -2614,9 +2614,13 @@ diagram it lives in (`SYM-14`).
 ## `PR-75`: Display mathematics earns display status
 
 Display math is used when the expression's visual structure matters —
-a multi-step derivation, alignment at operators, a diagram, an
-equation the text refers to by number — not because the expression
-feels important. Inline is the default: a short type signature
+a multi-step derivation, alignment at operators, a diagram, a complete
+exact, coexact, fiber, or cofiber sequence, or an equation the text refers
+to by number — not because the expression feels important. A complete
+sequence is structural mathematics: its objects, maps, and exactness must
+be visible as one unit, so it is always displayed. Use an aligned display
+when a multi-map sequence needs more than one line. Inline is the default
+for non-sequential expressions: a short type signature
 ($\iota_v\colon\langle v\rangle\to L$), an isolated object
 ($\qty(v^\perp)^{\mathrm{nd}}$), and a one-line identity
 ($A_L=\operatorname{coker}(b^\sharp)$) belong inline in the sentence
@@ -2630,12 +2634,14 @@ an equation earns display by being numbered and referenced, by needing
 alignment, or by being a derivation; a "key" object that none of these
 hold is named inline and defined at its defining occurrence (`DEF-26`).
 
-**Banned:** a lone type signature or isolated object on its own display
+**Banned:** a complete exact, coexact, fiber, or cofiber sequence inline in
+a sentence; a lone type signature or isolated object on its own display
 block, sandwiched between sentences that continue without it; one-line
 identities displayed where the sentence already carries them; display
 used for emphasis because the object "is central to the section."
 
-**Preferred:** the signature inline — "for
+**Preferred:** display the complete sequence, aligned across lines when
+necessary; keep the signature inline — "for
 $\iota_v\colon\langle v\rangle\to L$ the adjoint is …"; display for
 the derivation, the aligned computation, and the numbered equation the
 later text cites.

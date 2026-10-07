@@ -161,8 +161,9 @@ for any reader-facing mathematical prose and cite its codes in review.
 - Use `$...$` for single symbols, short expressions, signatures, and
   references within prose.
 
-- Use `$$...$$` for multi-step derivations, aligned equations, and
-  important equations whose visual structure matters.
+- Use `$$...$$` for multi-step derivations, aligned equations, complete
+  exact/coexact/fiber/cofiber sequences, and important equations whose
+  visual structure matters.
 
 - Display earns its place: a short signature such as
   `$\iota_v\colon\langle v\rangle\to L$`, an isolated object, or a
@@ -294,9 +295,17 @@ Load these patterns into context as one-shot demonstrations of the exact style e
   macros instead of manual sizing (`NOT-7`–`NOT-9`)
 
 - [ ] Display math only where visual structure matters — signatures and
-  one-line identities inline (`PR-75`); statement blocks state the claim,
-  proofs build the witness (`SEC-16`); diagram source in the accepted
-  fence or raw form (`DIA-8`)
+  one-line identities inline, complete exact and fiber sequences always
+  displayed (`PR-75`); statement blocks lead with the claim and proofs build
+  the witness (`SEC-16`, `SEC-18`); diagram source in the accepted fence or
+  raw form (`DIA-8`)
+
+- [ ] No reader-facing audit or dependency metadata fences (`SEC-17`);
+  internal results and displayed mathematical objects use stable resolver
+  references, not nicknames or positional prose (`XREF-7`, `XREF-8`)
+
+- [ ] Distant bespoke notation is locally glossed at its first substantive
+  reuse (`SYM-15`)
 
 - [ ] Standard names match target formal library conventions
 
@@ -325,6 +334,9 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | Zero-argument semantic macro + adjacent operand | Typographic fragment: the source no longer records which object is meant | All semantic operands inside the argument list: `\disc{L}`, `\cardinality{X}` (`NOT-7`) |
 | `\|X\|` for cardinality, `\bigl(…\bigr)` by hand | Absolute value overloaded with a set count; manual sizing encodes no mathematics | `\cardinality{X}`, `\qty{…}`, `\abs{…}` (`NOT-8`, `NOT-9`) |
 | Isolated signature on its own display block | Sentence fragment; display used for emphasis | Short signatures and one-line identities inline; display for numbered, aligned, multi-step math (`PR-75`) |
+| Complete exact or fiber sequence inline | Its objects, maps, and structural relation cannot be read as one unit | Display every complete exact/coexact/fiber/cofiber sequence; align a multi-line sequence (`PR-75`) |
+| Internal result nickname or positional display reference | A second unstable identifier replaces the resolver label | Cite the result or displayed object by its stable reference (`XREF-7`, `XREF-8`) |
+| Distant bespoke symbol reused without a gloss | A self-contained statement depends on remote notation | Recall what the symbol denotes at its first substantive reuse (`SYM-15`) |
 | Witness arithmetic inside a statement block | The proposition is the claim; citing it cites the paragraph | Statement states hypotheses and conclusion; the proof builds the witness (`SEC-16`) |
 | Using informal set builder notation in formalization | Lean/mathlib mismatch | Use explicit class/instance definitions |
 | Missing sociological markers | Unparseable structure; indistinguishable prose | Wrap every claim and proof in italic markers |
