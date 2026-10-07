@@ -273,3 +273,28 @@ finitely generated; $M\simeq\bigoplus_{i\in I}R$ for free." Fix the
 $\infty$-categorical convention once and use it uniformly; note when
 passage to $\pi_0$ recovers the classical $R\text{-}\mathbf{Mod}$ or
 $R^{(I)}$.
+
+## `SYM-14`: Adjectival map prose instead of the typed membership
+
+A map is characterized by an adjective — "$R$-linear", "the inclusion",
+"the restriction", "the projection", "the natural map", "the induced
+map", "the dual map" — instead of the typed membership that fixes its
+source, target, and ambient Hom-set or category. The adjective asks the
+reader to reconstruct the map; the membership exhibits it. Every map is
+typed: write $f\in\operatorname{Hom}_{\mathcal C}(M,N)$, or
+$f\colon M\to N$ in $\mathcal C$, with the ambient category named at the
+first use. "The matrix of $f$" does not exist until bases are chosen
+(`PR-58`, `PR-59`); "regarded inside" and "restricts to" name no
+monomorphism, no pullback, and no subobject. "Restricts to" is the
+shadow of a stated mono $i\colon N\rightarrowtail M$ and the pullback of
+a map along $i$; write the mono and the pullback.
+
+**Banned:** "the inclusion $S\subseteq L$"; "the map $f$ is
+$R$-linear"; "the matrix of $f$"; "$M$ regarded inside $N$" with no map;
+"$f$ restricts to a map $S\to T$."
+
+**Preferred:** "$\iota\colon S\hookrightarrow L$ a monomorphism in
+$R\text{-}\mathbf{Mod}$"; "$f\in\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M,N)$";
+"for ordered bases $e$ of $M$ and $e'$ of $N$, the matrix
+$[f]_{e,e'}\in M_n(R)$"; "the pullback of $f$ along $i$ in the square
+$S\times_M N\to S$, $S\times_M N\to N$" (`EV-5`).

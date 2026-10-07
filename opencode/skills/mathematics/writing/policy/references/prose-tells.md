@@ -2579,3 +2579,63 @@ intrinsically for $R$-modules / $R$-lattices (with $W$ varying), then
 note "$\dim_FV=\operatorname{rk}_F(V)$ for $F$ a field" and
 "$\operatorname{sig}(L\otimes_RF)$ is the $F$-fiber of
 $\operatorname{sig}_R(L)$" as specializations.
+
+## `PR-74`: Do not compress actual mathematics into English
+
+A sentence describes a mathematical object — a map, a factorization, a
+decomposition, a normal form — in English instead of writing it. The
+compression hides the missing object or map the reader needs. If the
+underlying statement is a diagram, an exact sequence, an explicit
+isometry, or a decomposition, write the diagram, sequence, isometry, or
+decomposition; prose may state its consequences afterwards, never in
+its place (`DIA-7`, `DEF-40`). The tell is a noun phrase standing for
+unnamed structure: "the dual form" (which map of forms?), "the
+remaining summands give …" (which decomposition, which summands?), "the
+morphism $e\mapsto e, f\mapsto f$" (which Hom-set, which components?),
+"moves a vector into normal form" (which map, which uniqueness?), "this
+multiplies pairings by $4$" (exhibit the isometry $L\to L(4)$).
+
+**Banned:** "the morphism $e\mapsto e, f\mapsto f$" standing for a map
+whose source, target, and category are unstated; "the remaining
+summands give the result" with no decomposition named; "multiplication
+by $4$ gives a bijection on pairings" where the mathematics is an
+isometry $L\to L(4)$; "the dual form" with no defining occurrence.
+
+**Preferred:** write the mathematics: "the isometry
+$\varphi\colon(L,q)\isoto(L(4),q')$ with
+$\varphi(e)=e$, $\varphi(f)=f$ in
+$\operatorname{Hom}_{\mathbf{Lat}}((L,q),(L(4),q'))$"; "the orthogonal
+decomposition $M=N\perp N'$ (PR-55) gives
+$M/N\cong N'$ as the remaining summand"; "the map on pairings is
+$\varphi_*$ for the twist $\varphi\colon W\to W'$, $\varphi:=4\cdot_W$"
+(PR-67). Name the map, the ambient Hom-set, the formula, and the
+diagram it lives in (`SYM-14`).
+
+## `PR-75`: Display mathematics earns display status
+
+Display math is used when the expression's visual structure matters —
+a multi-step derivation, alignment at operators, a diagram, an
+equation the text refers to by number — not because the expression
+feels important. Inline is the default: a short type signature
+($\iota_v\colon\langle v\rangle\to L$), an isolated object
+($\qty(v^\perp)^{\mathrm{nd}}$), and a one-line identity
+($A_L=\operatorname{coker}(b^\sharp)$) belong inline in the sentence
+they complete. Displaying them costs a paragraph break at each
+occurrence, scatters a passage's mathematics into blocks the reader
+must reassemble, and produces display blocks that are sentence
+fragments: a displayed equation is part of a sentence and takes its
+punctuation, so an isolated object on its own line is a fragment with
+no subject and no claim (`PR-65`). Importance is not display-worthiness:
+an equation earns display by being numbered and referenced, by needing
+alignment, or by being a derivation; a "key" object that none of these
+hold is named inline and defined at its defining occurrence (`DEF-26`).
+
+**Banned:** a lone type signature or isolated object on its own display
+block, sandwiched between sentences that continue without it; one-line
+identities displayed where the sentence already carries them; display
+used for emphasis because the object "is central to the section."
+
+**Preferred:** the signature inline — "for
+$\iota_v\colon\langle v\rangle\to L$ the adjoint is …"; display for
+the derivation, the aligned computation, and the numbered equation the
+later text cites.

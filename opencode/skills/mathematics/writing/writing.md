@@ -117,6 +117,24 @@ Load `references/structured-proofs.md` before writing any proof; it carries the 
 format, numbering/citation scheme, worked examples, calibration table, and
 anti-patterns.
 
+### 10. State the structure, not its English shadow
+
+**Failure mode:** Agents flatten a precise construction into prose — "sits
+inside" for a monomorphism, "injective" for a vanishing kernel, "agrees" for
+a comparison morphism, "admits an embedding" for a point of the embedding
+object, "compatible with base change" for a functor applied to a diagram.
+Each level of flattening (diagram/functor/exact sequence → isolated property →
+set description → paraphrase) discards type information the reader needs and
+cannot recover.
+
+**Philosophy:** State mathematics at its highest natural structural level:
+named ambient category, typed morphisms, complete exact/(co)fiber sequences,
+commuting diagrams where the fact is diagrammatic. Formalism is wanted when
+it carries mathematical information; announcing prose, local re-notation,
+and computational surrogates are not. The full checkable catalogue is
+[[mathematics/writing/policy/policy|mathematical-writing-policy]] — load it
+for any reader-facing mathematical prose and cite its codes in review.
+
 ## Decision Procedures
 
 ### When to include verification code
@@ -140,10 +158,16 @@ anti-patterns.
 
 ### Inline vs display math
 
-- Use `$...$` for single symbols, short expressions, references within prose.
+- Use `$...$` for single symbols, short expressions, signatures, and
+  references within prose.
 
-- Use `$$...$$` for multi-step derivations, important equations, anything requiring
-  alignment.
+- Use `$$...$$` for multi-step derivations, aligned equations, and
+  important equations whose visual structure matters.
+
+- Display earns its place: a short signature such as
+  `$\iota_v\colon\langle v\rangle\to L$`, an isolated object, or a
+  one-line identity stays inline; display it when it is numbered and
+  referenced, needs alignment, or is a derivation (`PR-75`).
 
 - Number important equations with `\tag{n}`.
 
@@ -254,6 +278,26 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 
 - [ ] No skipped algebraic steps in derivations
 
+- [ ] No prose shadow of a construction: monos for "sits inside", exact
+  sequences for injectivity, comparison morphisms for "agree", functors
+  for "transports", points of construction objects for "admits"
+
+- [ ] Limits, kernels, cokernels, and exact sequences taken in the
+  structured category the objects live in; the forgetful functor named
+  before computing downstairs (`FORM-11`)
+
+- [ ] Vanishing verbs carry a typed referent: the zeroed map, component,
+  or composite is written out (`MA-17`)
+
+- [ ] Semantic macros take their operands inside the argument list;
+  cardinality and absolute value notated distinctly; house delimiter
+  macros instead of manual sizing (`NOT-7`–`NOT-9`)
+
+- [ ] Display math only where visual structure matters — signatures and
+  one-line identities inline (`PR-75`); statement blocks state the claim,
+  proofs build the witness (`SEC-16`); diagram source in the accepted
+  fence or raw form (`DIA-8`)
+
 - [ ] Standard names match target formal library conventions
 
 - [ ] Sociological markers (`*Theorem.*`, `*Lemma.*`, `*Proof.*`) used consistently
@@ -275,6 +319,13 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | Inconsistent function notation | Confusion; formalization mismatch | Pick one convention and stick to it |
 | Skipping base case in induction | Invalid proof | Always verify base case separately |
 | Non-exhaustive cases | Missing paths; potential counterexample | List all cases explicitly |
+| Prose shadow of a construction | Type information lost: "sits inside", "admits", "compatible with base change" name no map, object, or functor | Write the mono, the point of the embedding object, the functor on the diagram; cite the policy code |
+| Constructions taken downstairs silently | The module cokernel is not the cokernel in the structured category; the forgetful functor is a datum | Name the category at the construction; state creation/preservation before computing downstairs (`FORM-11`) |
+| "Mixed terms vanish" | No typed referent: the reader cannot recover what is zero | Write the zeroed map or component: $\beta(L_i,L_j)=0$ (`MA-17`) |
+| Zero-argument semantic macro + adjacent operand | Typographic fragment: the source no longer records which object is meant | All semantic operands inside the argument list: `\disc{L}`, `\cardinality{X}` (`NOT-7`) |
+| `\|X\|` for cardinality, `\bigl(…\bigr)` by hand | Absolute value overloaded with a set count; manual sizing encodes no mathematics | `\cardinality{X}`, `\qty{…}`, `\abs{…}` (`NOT-8`, `NOT-9`) |
+| Isolated signature on its own display block | Sentence fragment; display used for emphasis | Short signatures and one-line identities inline; display for numbered, aligned, multi-step math (`PR-75`) |
+| Witness arithmetic inside a statement block | The proposition is the claim; citing it cites the paragraph | Statement states hypotheses and conclusion; the proof builds the witness (`SEC-16`) |
 | Using informal set builder notation in formalization | Lean/mathlib mismatch | Use explicit class/instance definitions |
 | Missing sociological markers | Unparseable structure; indistinguishable prose | Wrap every claim and proof in italic markers |
 | Sloppy algebraic manipulation | Errors hide in skipped steps | Show every expansion, factorization, simplification |

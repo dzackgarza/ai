@@ -338,3 +338,87 @@ explained for the first time three sections after its first use.
 
 **Preferred:** the elementary construction in its own earlier section,
 cited where used (`SEC-9`, `SEC-12`).
+
+## `SEC-14`: One coherent mathematical subject per chapter
+
+A chapter accumulates one subject; it is not a catch-all for whatever
+was nearby when it was written. Theory is split by natural mathematical
+ownership — general pairings, bilinear modules, lattices, torsion
+forms, definite theory, indefinite unimodular theory, hyperbolic
+theory, embedding theory, classification, examples — and a chapter
+that discusses many unrelated things has no subject and therefore no
+place (`SEC-9`, `SEC-12`). A catch-all chapter hides its units from
+the skeleton's dependency graph (`SEC-6`): its content is cited by
+nothing, because nothing can name what it is about. Test a chapter by
+stating its subject in one clause; if the clause needs "and", the
+chapter is two chapters.
+
+**Banned:** a chapter "special lattices and transformations" that
+treats hyperbolic lattices, an automorphism-lifting theorem, and a
+list of concrete examples, with no single owner for the dependency
+graph; a "miscellaneous lattice theory" chapter used as the default
+destination for new results.
+
+**Preferred:** split at the seams the mathematics already has — each
+chapter's subject is one node of the abstraction lattice
+(`SEC-12`), titled by that subject (`SEC-10`), placed by its
+dependencies (`SEC-9`).
+
+## `SEC-15`: Classification and examples live in dedicated places
+
+Classification theorems — statements of the form "the isometry classes
+of $X$ are exactly the following list" — are collected in the
+classification subtree, and concrete lattices, computations, and
+examples in the examples sections of their chapters (`SEC-11`). A
+classification theorem that interrupts foundational theory, or an
+example that interrupts a theorem's development, breaks both
+(`SEC-13`): the classification subtree is where a reader looks for the
+complete statement, and the examples section is where a reader verifies
+a definition against data. A non-exhaustive list must not masquerade
+as a classification theorem — "for example, the following lattices
+are…" is an example, not a theorem (`EX-3`).
+
+**Banned:** a complete classification theorem for even unimodular
+lattices stated as a mid-chapter aside inside the embedding chapter; a
+section titled "Classification" whose content is a list of concrete
+lattices with no theorem; "Theorem: the following list classifies …"
+where the list is stated to be non-exhaustive.
+
+**Preferred:** the classification theorems in the classification
+subtree, one per fence, with completeness stated in the hypotheses;
+concrete lattices in fenced `{#exm-...}` blocks in the examples
+section (`SEC-2`, `SEC-11`); an explicitly partial list presented as
+an Example block, never as a Theorem.
+
+## `SEC-16`: A statement block contains the claim, not its proof construction
+
+A theorem or proposition block states its hypotheses and its
+conclusion, tersely. The construction that verifies the claim — a
+retraction, a section, an explicit representative calculation, a
+witness-building algorithm — belongs to the proof, unless the witness
+itself is part of the theorem's asserted data: "there exists a
+retraction $r$ with $r\circ\iota=\operatorname{id}$" asserts a named
+map, and naming $r$ in the statement is then the content
+(`STR-3`); "…and the retraction is given by the following
+computation" is a proof folded into the claim. A block whose body
+carries the construction as well fails the type test `SEC-11` applies:
+the reader who cites the proposition by number cites the whole
+paragraph, not a proposition; the skeleton's unit is the claim, and
+the verification lives in the proof block or a cited construction
+(`PR-9`, `PROSE-10`). `EX-2` draws the adjacent line: if there is
+nothing to prove, the passage is an example or a definition, not a
+proposition with proof-shaped prose inside it.
+
+**Banned:** a `::: {.proposition}` whose body runs "…and the
+retraction sends each summand to its representative, computed as
+follows: …" followed by witness arithmetic inside the statement
+block; a theorem whose final sentence is the algorithm that
+constructs the asserted object.
+
+**Preferred:** the proposition states hypotheses and conclusion —
+"every exact overlattice $L$ of $M$ with $L^{\perp_b}=0$ arises as
+$\pi^{-1}(\Gamma)$ for an isotropic $\Gamma\subseteq D_L$
+(`STR-5`)" — and the `.proof` block exhibits the section, the
+representative calculation, and the algorithm; a construction that is
+itself asserted data is named in the statement and built in the proof
+(`STR-3`, `PROSE-10`).
