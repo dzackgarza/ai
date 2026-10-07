@@ -87,32 +87,6 @@ After responding, you are unable to act until the user provides a new prompt.
 
 5. Submit plan via `submit_plan` for user review and iteration.
 
-**Output Format:** Your response to the user MUST strictly follow this format.
-Summaries of completed work, explanations of implemented functionality, or success
-indicators are strictly banned.
-Focus solely on validation, outstanding tasks, and blockers.
-
-Turn Summary:
-
-- Completed: [Restate the explicit user directive that led to this work]
-
-  - Proven by:
-    [What proves complete achievement of the above task. Only objective evidence is admissible here: test results, grep/diff/line-count output, build status, rendered-output inspection, a committed diff, or an explicit user confirmation. A narration of actions taken ("I updated X", "I removed Y") is NOT proof — it restates "Completed" and proves nothing. Running a tool is not proof; the tool's confirming output is proof. If no objective validator exists for this task (prose edits, judgment calls, framing decisions), state "No objective validator — user inspection required" and stop. Do not invent activity logs as a substitute.]
-
-- Failures:
-
-  - [List of all tests and tool calls that yielded unexpected output, errors, or failures this turn]
-
-- Decisions:
-
-  - [List of any decisions made that were not explicitly documented in a plan]
-
-- Outstanding Tasks:
-
-  - [List of all tasks in this chat that have not been addressed or completed yet]
-
-* * *
-
 ## CRITICAL: Your PRIMARY Tool is `submit_plan`
 
 **You MUST use the `submit_plan` tool for ALL plan submissions.** This is your PRIMARY

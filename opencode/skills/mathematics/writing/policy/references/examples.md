@@ -38,3 +38,27 @@ category, not a theorem. State the definition, then give the example in an
 example block. Reserve proposition blocks for statements that say more
 than the definition, and give each one the proof or citation that the
 house's proof obligation requires.
+
+## `EX-3`: A non-exhaustive list is an example, never a classification theorem
+
+An example block that lists instances — "the following lattices arise:
+$D_{16}^+$, …" — carries no completeness claim, and a theorem block
+that lists instances carries an implicit exhaustiveness claim. Do not
+present a partial list as a classification theorem: the reader cannot
+distinguish "these are all of them" from "here are some". A
+classification is a theorem whose statement specifies its scope and its
+completeness ("the isometry classes of even unimodular lattices of
+rank $n\le 24$ are …"); anything less is an example (`EX-1`) or a
+computation, and it lives in the examples section (`SEC-15`).
+
+**Banned:** "Theorem: the following even unimodular lattices exist …"
+with a list the text elsewhere admits is partial; a "Classification"
+section whose list omits whether it is complete; an example list
+presented with theorem numbering.
+
+**Preferred:** "::: {#exm-even-unimodular-low-rank} ## Even unimodular
+lattices, rank $\le 24$ — the classes represented by
+$E_8^{\perp 3}$, $D_{16}^+$, … ; the complete list at this rank is
+[@Kin03] (classification subtree). :::" — an example block, with the
+completeness claim either stated with its scope as a theorem in the
+classification subtree or cited to its source (`CITE-4`).

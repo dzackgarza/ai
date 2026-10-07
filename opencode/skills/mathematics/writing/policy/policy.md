@@ -12,14 +12,44 @@ review.
 
 ## The single principle
 
-Write the mathematical object itself, at its natural level of generality and
-in its natural categorical location; do not replace it by explanatory prose
-about the object, implementation details about the object, or a
-lower-structure approximation to the object.
+Write the internal mathematical representation, not an English
+description of it. Write the mathematical object itself, at its natural
+level of generality and in its natural categorical location; do not
+replace it by explanatory prose about the object, implementation
+details about the object, or a lower-structure approximation to the
+object.
+
+The recovery criterion makes this checkable: a reader must be able to
+recover the ambient category, objects, morphisms, universal properties,
+exact sequences, chosen bases, value modules, and equivalence relations
+directly from the notation. Prose explains consequences of the formal
+structure; it never substitutes for the structure.
+
+The recurring defect this principle names is **loss of type
+information through prose**: a precise construction flattened one or
+more levels —
+
+diagram / functor / exact sequence → isolated map or property →
+set-theoretic description → English paraphrase —
+
+and the preferred direction is the reverse. If a sentence says "$A$ sits
+inside $B$", the mono is owed; "injective" is owed the exact sequence
+with vanishing kernel; "agree" is owed the comparison morphism or
+commuting diagram; "transports" is owed the functor; an elementwise
+collection may already be a fiber, preimage, Hom-object, embedding
+object, orbit object, kernel, or subcategory.
+
+Paired with it is the economy rule: formalism is wanted exactly when it
+carries mathematical information that removes ambiguity — explicit
+categories, functors, sequences, diagrams, and formulas are favored
+because they remove ambiguity. Extra notation, announcing prose,
+trivial remarks, redundant adjectives, and low-level calculations are
+rejected when they add none. The style is maximum semantic density,
+minimum narration — not "more formal notation everywhere."
 
 When a correction seems new, find which part of the principle it applies —
-generality, categorical location, or layer — and which family covers it. The
-rules below are this principle made checkable.
+generality, categorical location, layer, or recoverability — and which
+family covers it. The rules below are this principle made checkable.
 
 ## Scope
 

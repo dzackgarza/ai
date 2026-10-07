@@ -40,3 +40,24 @@ used.
 **Preferred:** "The structure theorem for the automorphism group we use
 is [@Vin85, Theorem 2.1]; the arithmeticity result is [@Nik80, Prop.
 1.15.1]" — each citation at the claim it supports, with a locator.
+
+## `CITE-5`: Attribution belongs to the statement, not appended to it
+
+Provenance is metadata of the theorem or definition it belongs to, not
+a trailing clause after a proof sketch. Do not write "this is due to X"
+after a vague sketch — the attribution then certifies prose rather
+than a stated result, and the reader cannot tell which claim is X's.
+Put attribution in the statement block: in the theorem's title, in a
+provenance field, or as the citation attached to the precise
+mathematical claim it supports (`CITE-4`). A vague claim with a famous
+name attached is still a vague claim.
+
+**Banned:** "…and the map is injective. This is due to Kitaoka." with no
+theorem block and no locator; a proof sketch followed by "see Miranda
+and Morrison for this."
+
+**Preferred:** the theorem block with the citation at the claim —
+"::: {.Theorem} ### Discriminant factorization — $\rho_L$ factors …
+([@MM99, Theorem 4.2]) :::" — and the proof either present or omitted
+per the house's proof obligation (`SEC-6`); provenance claims in the
+statement's metadata, never in trailing prose.

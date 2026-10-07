@@ -100,3 +100,60 @@ projections."
 $\lambda_a$, $\varrho_a$ are the unique isomorphisms supplied by the
 universal property of the product." Name the universal property and the
 object that supplies it.
+
+## `EV-9`: An exact sequence at the theorem's strength, not a convenient truncation
+
+A theorem supplies structure — a factorization, a group, a functor, a
+quotient with meaning beyond its bare existence. Do not replace it by an
+ad hoc short exact sequence merely because some image makes one
+formally available, and do not compress a theory to the fragment a
+local computation needs. Name the object the theorem actually produces
+($Q_f$ as the cokernel of $f$, with the property the theorem imposes on
+it), and state the surrounding structure — the epi–mono factorization,
+the kernel, the invariant the theorem computes — at the strength the
+source proves. An injectivity claim after base change comes from the
+kernel/exactness statement, not from prose about it.
+
+The type case is the discriminant representation: a short exact
+sequence on an image $I_L$ does not stand in for Miranda–Morrison
+theory. Preserve the mathematically meaningful objects — $\rho_L$, the
+epi–mono factorization through $I_L$, and the genus invariant $g(L)$ —
+and cite the source theorem; do not truncate it to a sequence that
+carries less information.
+
+**Banned:** "there is a short exact sequence
+$1\to K\to\Orth(L)\to I_L\to 1$" presented as the theorem when the
+source proves a factorization with further structure; "the sequence
+shows injectivity after base change" with no kernel named; "there is a
+short exact sequence" for an object ($Q_f$) never defined as a
+cokernel.
+
+**Preferred:** "$\rho_L\colon\Orth(L)\to\operatorname{Aut}(D_L)$ is the
+discriminant representation; it factors as an epi–mono factorization
+$\Orth(L)\twoheadrightarrow I_L\hookrightarrow\operatorname{Aut}(D_L)$
+([@MM99, Theorem 4.2]), and the quotient $g(L):=I_L/\rho_L(\Orth(L))$
+is the genus invariant" — the theorem's structure, stated at its
+strength, with the citation at the claim (`CITE-4`).
+
+## `EV-10`: A computational surrogate for the structural statement
+
+When the claimed mathematical object has a direct structural
+description — a diagonalization, a maximal definite subspace, a
+canonical decomposition, an invariant — a calculation does not stand
+in for it. An eigenvalue computation proves a numerical consequence of
+diagonalization; it does not exhibit the decomposition, the subspace,
+or the isometry the statement is about. Prove the structural statement
+directly; state the calculation as its evaluation in the concrete case.
+The surrogate is the same defect as `EV-9` one level down: a theorem
+truncated to the fragment a local computation can reach.
+
+**Banned:** an eigenvalue computation of $G_e(b)$ presented as the
+proof that a form is definite, with no maximal definite subspace or
+diagonalization named; a determinant calculation standing in for the
+statement that $b^{\sharp}$ is an isomorphism (`DEF-39`).
+
+**Preferred:** the structural proof — the orthogonal decomposition
+$V\cong P\perp Q\perp\operatorname{rad}(V)$ with $b_{|P}>0$, or
+$G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ via an exhibited
+isometry (`PR-69`) — with the eigenvalue computation, if kept, as a
+verification of the exhibited structure.

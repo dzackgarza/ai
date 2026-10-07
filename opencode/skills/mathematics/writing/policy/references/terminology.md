@@ -476,3 +476,58 @@ instead of the standard $L[n]$ and $L^{\mathrm{prim}}[n]$.
 at their natural owner (SEC-12); $\widetilde\Orth$, $\Orth^+$,
 $\widetilde\Orth^+$ with their definitions as kernels. A local name is
 recorded only as a pointer to the standard one.
+
+## `TERM-17`: Set-theoretic adjectives do not replace algebraic properties
+
+"Finite", "countable", "infinite" describe the underlying set. When the
+property doing mathematical work is algebraic — finitely generated,
+torsion, finite length, finite presentation, finite exponent, finite
+cardinality — name that property, because the proof uses it and the
+reader cannot recover which one from the set adjective. "Finite
+module" is usually the wrong phrase: a finitely generated torsion
+$\mathbb Z$-module is finite, but finiteness as a bare adjective hides
+whether the proof uses generation, torsion, or both. Name the
+algebraic property actually used (`STR-3`).
+
+**Banned:** "finite module" where the proof uses finitely generated
+torsion; "finite group" where the proof uses finite exponent or finite
+length; "a finite object" as the hypothesis of a theorem whose proof
+invokes structure theory (classification of finite abelian groups,
+Jordan–Hölder, structure of f.g. modules over a PID).
+
+**Preferred:** "let $M$ be a finitely generated torsion
+$R$-module"; "$M$ has finite length, so
+$\operatorname{length}_R(M)<\infty$ and $M$ has a Jordan–Hölder
+filtration"; "the discriminant group $D_L$ is finite of exponent $N$"
+— each property named at the place the proof uses it, with the
+set-theoretic consequence ("therefore $|M|<\infty$") as the corollary
+it is.
+
+## `TERM-18`: The parametrized notion before its special cases
+
+A notion that exists in parametrized form is defined with its
+parameter, and the special case is introduced as the parameter's
+value — never the reverse. "Unimodular" is the case $I=R$ of
+$I$-modularity; a signature indexed by one real place is the fiber of
+the family $(p_\sigma,q_\sigma,r_\sigma)_{\sigma\text{ real}}$
+(`PR-72`); an elementwise evenness condition is the value-module
+formulation evaluated (`PR-45`, `DEF-39`). Defining the special case
+first presents an accident as the notion and forces every later
+generalization to be a rewrite (`DEF-38`). Identify the parametrized
+construction first; specialize later, at the point the special case is
+used.
+
+**Banned:** defining "unimodular" ($b^{\sharp}$ an isomorphism) with no
+$I$-modular notion in sight, when the theory of
+$I$-modularity — $I$ an ideal or invertible module — is what the later
+chapters use; a "signature" defined at a single real place when $R$
+has a family of real embeddings.
+
+**Preferred:** "for an invertible $R$-module (ideal) $I$, $b$ is
+$I$-modular if $b^{\sharp}\colon M\to\operatorname{Hom}_R(M,I)$ is an
+isomorphism; *unimodular* is the case $I=R$" (`DEF-38`,
+`DEF-39`); "$\operatorname{sig}_\sigma(L):=\operatorname{sig}(
+L\otimes_R\mathbb R\xrightarrow{\sigma}-)$ for each real place
+$\sigma\colon R\to\mathbb R$, with
+$\operatorname{sig}(L):=(p_\sigma,q_\sigma,r_\sigma)_{\sigma}$ the
+family" (`PR-72`).

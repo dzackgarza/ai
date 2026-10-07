@@ -60,3 +60,29 @@ construction is compatible with base change" with no square.
 & S \arrow[dl,"\iota_1"'] \arrow[dr,"\iota_2"] & \\
 M_1 \arrow[rr,"\varphi"'] && M_2
 ```
+
+## `DIA-8`: A diagram is authored in the accepted source form, with its metadata where the renderer reads it
+
+A `tikzcd` diagram is authored in one of the accepted source forms —
+a fenced `tikz`/`tikzcd` code block whose info string is bare, a raw
+`\begin{tikzcd} … \end{tikzcd}` block, or an `\input{...}` of a shared
+diagram file — never in an invented form. Two invented forms are
+banned as recurring: attributes on the fence's info string, and the
+environment embedded inside `$$` display math. Both break silently:
+an info string with attributes turns the fence into ordinary inline
+code, so the diagram renders as literal text and no compiler error is
+raised; `$$\begin{tikzcd} … \end{tikzcd}$$` parses as display *math*,
+so the diagram source reaches the math renderer instead of the
+diagram compiler. A figure that needs an ID, title, or
+cross-reference carries them where the renderer reads them: a Pandoc
+attribute block on the fence, or a fenced figure div around the
+diagram, per the house's syntax.
+
+**Banned:** ```` ```tikzcd id="main-square" ```` and any other
+attribute on the fence info string; `$$\begin{tikzcd} ... \end{tikzcd}$$`
+in place of the fence or raw block.
+
+**Preferred:** a bare ```` ```tikzcd ```` fence (or the raw
+environment, or `\input{diagrams/example.tikzcd}`); metadata in the
+house's accepted form — `::: {#fig-square caption="…"}` around the
+diagram — where the cross-reference resolver finds it (`XREF-1`).

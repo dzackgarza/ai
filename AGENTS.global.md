@@ -151,6 +151,16 @@ symptom names needs a grep and an edit, not a debugging protocol.
 
 ## Hard rules
 
+- **ALL AUTOFORMATTING IS ACCEPTED AND MANDATORY.** When a formatter, hook, or
+  pre-commit check rewrites a file — whitespace, line breaks, import order,
+  string quotes, anything — that rewrite is correct by definition. Keep it,
+  commit it, move on. **NEVER revert auto-formatting.** **NEVER fight hooks
+  for formatters**: if a hook rewrites your change, re-stage and commit the
+  rewrite; do not `--amend` it away, do not restore your version, do not tune
+  the formatter config to make your preferred style pass, and do not retry the
+  commit hoping for a different result. The formatter's output is the
+  canonical form. Hand-styled code that disagrees with the formatter is the
+  bug, not the formatter output.
 - Explicit user directives override every rule, skill, and guideline here.
 - Never run destructive git operations (`checkout`, `reset`, `restore`, `stash`, history
   rewrites) unless literally requested.

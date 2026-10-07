@@ -233,3 +233,54 @@ quantifiers hidden in prose.
 **Preferred:** define $\operatorname{Ann}_R(m)$ once, then "$M$ is
 torsion if $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$;
 torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$."
+
+## `MA-16`: Base change stated as a functor on the diagram, not as prose about it
+
+"Compatible with base change," "behaves well under extension of
+scalars," "after tensoring with $F$" replace the mathematics — the
+functor $-\otimes_RF$ applied to the diagram, sequence, or morphism
+under discussion — by an assertion about how that application behaves.
+The claim is that the image of the construction under the functor
+satisfies a property; write the image, not the adjective. The same
+holds for restriction, pullback of sheaves, completion, and any functor
+between the ambient categories: apply it and show the resulting square
+or sequence (`DIA-7`, `EV-9`).
+
+**Banned:** "the discriminant construction is compatible with base
+change" with no functor named and no square drawn; "after extending
+scalars to $\mathbb R$ the form is positive definite" with no
+$b\otimes_{\mathbb Z}\mathbb R$ written; "restriction preserves the
+decomposition" with no restricted decomposition named.
+
+**Preferred:** "$\operatorname{disc}(L\otimes_RR')=
+\operatorname{disc}(L)\otimes_RR'$ in the commuting square
+drawn once (`DIA-7`)"; "$b\otimes_{\mathbb Z}\mathbb R$ is positive
+definite, i.e. $V\cong P\perp\operatorname{rad}(V)$ with
+$b_{|P}>0$ (`PR-69`)"; "$N'\perp N''\hookrightarrow M'$ with
+$N'=N\otimes_RR'$, $M'=M\otimes_RR'$ the restricted decomposition
+(`STR-5`)."
+
+## `MA-17`: "Vanishes" has a typed referent
+
+"Vanishes," "is zero," "kills," "splits off," and similar verbs take a
+typed referent: a named map, a named component, or a named composite
+whose being zero is the claim. Free-floating vanishing prose — "the
+mixed terms vanish," "the radical vanishes," "the obstruction dies" —
+names no map, so the reader cannot recover *what* mathematical object
+is asserted to be zero, cannot check the claim, and cannot cite it
+(`PR-52`: the mass noun with no fixed referent, in verbal form). The
+remediation is always the same: write the map or component that is
+zero.
+
+**Banned:** "the mixed terms vanish" for
+$\beta(L_i,L_j)=0$ for $i\neq j$; "the radical vanishes" for
+$\operatorname{rad}(b)=0$ or $b^\sharp$ injective (`DEF-39`);
+"the obstruction vanishes" for a named class in a named group being
+zero (`NOT-1`).
+
+**Preferred:** "$\beta(L_i,L_j)=0$ for $i\neq j$, so
+$L=L_1\perp\cdots\perp L_n$"; "$\operatorname{rad}(b)=0$, i.e.
+$b^\sharp\colon M\to\operatorname{Hom}_R(M,W)$ is injective
+(`DEF-39`)"; "$\partial(q)=0$ in $\operatorname{Val}(b)$" — the
+zeroed map named at each use, its type recoverable from the notation
+(`PR-74`, `NOT-1`).

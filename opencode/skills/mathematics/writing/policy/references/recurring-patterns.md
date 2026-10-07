@@ -514,3 +514,107 @@ All three are instances of the timeless weasel mass-noun problem:
 context-dependent truth where the context is never stated, and no named
 $R$-submodule / functor / category to check (PR-52) — audit by those
 semantic indicators, not by the word list, which will change.
+
+**37. Write the internal representation, not a description of it — the
+recovery criterion.** The 18-point annotation synthesis sharpens the
+single principle into a checkable criterion: a reader must be able to
+recover the ambient category, objects, morphisms, universal properties,
+exact sequences, chosen bases, value modules, and equivalence relations
+directly from the notation (policy, "The single principle"). The forms
+not coded before this tranche: adjectival map prose — "$R$-linear",
+"the inclusion", "the matrix of $f$" — instead of the typed membership
+$f\in\operatorname{Hom}_{\mathcal C}(M,N)$ (SYM-14); set containment
+standing for categorical structure — subobjects as monos, common
+subobjects as pullbacks, fixed objects as equalizers, orthogonal
+complements as kernels, and construction-space containments like
+$\operatorname{PrimEmb}(L,M)\subseteq\Hom(L,M)$ (STR-5); an exact
+sequence at the theorem's strength rather than a convenient truncation
+— Miranda–Morrison's factorization, $g(L)$, and the epi–mono structure
+preserved, not compressed to an ad hoc sequence on the image (EV-9);
+actual mathematics compressed into English — "the morphism $e\mapsto
+e, f\mapsto f$", "the remaining summands give", "multiplies pairings by
+$4$" instead of the exhibited isometry $L\to L(4)$ (PR-74); value
+objects coarser than the mathematics permits — $\mathbb Q/\mathbb Z$
+where the form factors through $\tfrac1N\mathbb Z/\mathbb Z$
+(PRECISION-05); set-theoretic adjectives for algebraic properties —
+"finite module" where the proof uses finitely generated torsion or
+finite length (TERM-17); gratuitous temporary notation — $L:=M(2)$ to
+save two characters (NOT-5); macros that encode mathematical
+normalization — one uniform spelling of discriminant, hyperbolic
+lattice, $p$-adic completion, primitive norm-$n$ vectors, so equivalent
+constructions look equivalent (NOT-6); attribution appended to a sketch
+instead of belonging to the statement (CITE-5); catch-all chapters with
+no single subject — theory split by natural ownership: pairings,
+bilinear modules, lattices, torsion forms, definite, indefinite
+unimodular, hyperbolic, embedding theory, classification, examples
+(SEC-14); non-exhaustive lists masquerading as classification theorems
+(SEC-15, EX-3).
+
+**38. Loss of type information through prose — the flattening ladder,
+and the economy rule.** The 81-annotation synthesis across five
+annotated documents confirms the single principle is a *general*
+mathematical-writing style, not a lattice-specific one: the recurring
+defect is that a precise construction is flattened one or more levels —
+diagram/functor/exact sequence $\to$ isolated map/property $\to$
+set-theoretic description $\to$ English paraphrase — and the preferred
+direction is the reverse. If a sentence says "$A$ sits inside $B$", ask
+for the mono (STR-5, SYM-14); if it says "$f$ is injective", ask for
+the exact sequence with vanishing kernel (DEF-40, EV-9); if two
+constructions "agree", ask for the comparison morphism or commuting
+diagram (DIA-7, PR-74); if a result "transports", ask for the functor
+(MA-16); if a collection is described elementwise, ask whether it is
+already a fiber, preimage, Hom-object, embedding object, orbit object,
+kernel, or subcategory (PR-46, STR-6). Forms coded by this tranche:
+existence prose replacing a point of the construction object —
+"$M$ admits an embedding" for $\iota\in\Emb(L,M)$ (STR-6); the
+parametrized notion before its special cases — $I$-modular before
+unimodular, the real-place family before the single-place signature
+(TERM-18); base change and transport stated as adjectives instead of
+the functor applied to the diagram (MA-16); computational surrogates —
+eigenvalue calculations where diagonalization or the maximal definite
+subspace is the mathematical object (EV-10). The paired economy rule:
+formalism is wanted exactly when it carries mathematical information
+that removes ambiguity — explicit categories, functors, sequences,
+diagrams, formulas (STR-5, SYM-14, DEF-40, DIA-7); extra notation,
+announcing prose, trivial remarks, redundant adjectives, and
+low-level calculations are rejected when they add none (PROSE-17,
+PR-27, NOT-5, EV-10). The style is maximum semantic density, minimum
+narration — not "more formal notation everywhere."
+
+**39. The annotation corpus's second tranche: source-level conventions
+and the categorical location of constructions.** The discriminant-
+annotation round exposed gaps the first tranche left implicit, in two
+groups. Source-level conventions that the annotations treated as
+systematic but no rule stated: display mathematics that had not earned
+display status — isolated signatures and one-line identities broken
+out of their sentences (PR-75); the atomic semantic-macro rule —
+`\disc` followed by an adjacent operand is a typographic fragment,
+because every semantic operand belongs in the argument list, as the
+pandoc macro repository's own policy already required (NOT-7);
+cardinality written with absolute-value bars (NOT-8); manual
+`\bigl(…\bigr)` sizing where the house delimiter API exists
+(NOT-9); invented diagram-source syntax — attributes on the tikzcd
+fence info string, `\begin{tikzcd}` embedded in `$$` — both of which
+parse as something other than a diagram (DIA-8); and vanishing verbs
+with no typed referent — "the mixed terms vanish" where
+$\beta(L_i,L_j)=0$ is the claim (MA-17). Mathematical structure the
+annotations demanded but the catalogue only implied: limits, kernels,
+cokernels, and exact sequences taken in the relevant structured
+category, not silently downstairs after a forgetful functor — the
+cokernel in the abelian category of bilinear modules is not the
+module cokernel with a form remembered afterward (FORM-11); the
+statement/proof boundary — a proposition contains the claim, and the
+retraction, section, representative calculation, or witness-building
+algorithm belongs to the proof unless the witness is asserted data
+(SEC-16); and side-sensitive settings that must expose every side —
+left and right radicals and adjoints both stated, nondegeneracy as
+the joint condition, no symmetry imported silently (STR-7). Two
+placements were deliberate: the atomic-macro rule extends NOT-6 from
+"one macro per construction" to the macro's call shape, and the
+structured-category rule extends the single principle's "natural
+categorical location" to where limits are computed, so both cite the
+rules they sharpen rather than founding a parallel family. The
+`getHelp` API surface carrying the writing policy is recorded with
+the API guide, not here: an agent reading only the Pandoc mechanics
+can comply with the syntax while reproducing every mathematical-style
+failure, so the help points at this policy as normative.

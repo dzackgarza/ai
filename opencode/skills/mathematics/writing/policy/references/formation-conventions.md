@@ -81,3 +81,41 @@ primitive embeddings", "the orbit set $\Orth(L)\backslash\Emb(S,L)$",
 "the double quotient
 $\Orth(L)\backslash\Emb(S,L)/\Orth(S)$, which is not the same object as
 $\Orth(L)\backslash\Emb(S,L)$".
+
+## `FORM-11`: Take limits, kernels, cokernels, and exact sequences in the relevant category
+
+A structured category that has its own limits, colimits, or abelian
+structure owns those constructions. Kernels, cokernels, quotients,
+exact sequences, fibers, and subobjects of a structured object are
+taken in the category the object lives in — the category of bilinear
+modules, of lattices and integral maps, of quadratic forms — not in
+the module category reached by silently applying the forgetful
+functor. A construction computed "downstairs" on the underlying
+modules has a different type: the cokernel of a map of lattices in
+$R\text{-}\mathbf{Mod}$ is again an $R$-module, while the cokernel in
+the structured category carries the induced structure, and the two are
+related by the forgetful functor only after that functor is stated to
+create or preserve the construction (`STR-1`). Applying the forgetful
+functor first and presenting the module-level construction as the
+result hides the structure the theorem asserts; the underlying-module
+computation is a corollary, stated with the comparison that relates
+the two (`STR-4`).
+
+**Banned:** "the cokernel $A_L$ of the map $L\to L^\vee$, with the
+induced form remembered" where $L\to L^\vee$ is a map of bilinear
+modules and the cokernel belongs to the abelian category of bilinear
+modules — the module cokernel plus a form remembered afterward is a
+different object with a different universal property; "the kernel of
+$\rho_L$" with no category, when $\rho_L$ is a map of groups, of
+lattices, or of modules and the three kernels differ; "an exact
+sequence of modules" standing in for the exact sequence in the
+structured abelian category the theorem works in.
+
+**Preferred:** "in the abelian category of $W$-valued $R$-bilinear
+modules, $A_L:=\operatorname{coker}(b^\sharp)$ with its induced
+pairing; applying the forgetful functor $U$ to the sequence gives the
+module sequence, since $U$ creates kernels and cokernels"; "the
+kernel of $\rho_L\colon\Orth(L)\to\operatorname{Aut}(D_L)$ in
+$\mathbf{Grp}$". Name the category at the construction; state the
+creation/preservation claim before computing downstairs
+(`SEC-12`, `EV-9`).

@@ -66,3 +66,31 @@ When one is found, replace it by the object that already has a name, or define t
 “Obtained by pulling back” is an instruction without the square, maps, or universal property.
 Appeals to “the projections”, “the universal property”, or “the unique map” leave the reader unable to verify the uniqueness until the property, the object supplying it, and the target are identified.
 Give the diagram or state the property that characterizes the object, and name the object that supplies it.
+
+## `PRECISION-05`: Value objects at the precision the mathematics permits
+
+A value object — the codomain of a form, a character, a pairing, a
+torsion invariant — is written at the precision the mathematics
+produces, not at the precision of the nearest available ambient group.
+Writing a coarser ambient object because it exists is a loss of
+information in the type: the statement becomes weaker than the theorem,
+and constructions that need the finer structure cannot be transported.
+State the value module the construction produces; state coarser
+presentations as corollaries with the map that relates them. Evenness
+and similar normalization conditions are stated through the value
+module $\operatorname{Val}(b)\subseteq W$ once, not re-derived as
+integer-valued formulas at each use (`PR-45`, `DEF-39`).
+
+**Banned:** "the discriminant form takes values in $\mathbb Q/\mathbb
+Z$" when the form factors through $\tfrac1N\mathbb Z/\mathbb Z$ with
+$N$ the level, stated nowhere; "there is a homomorphism
+$D_L\to\mathbb Q/2\mathbb Z$" as the whole statement where the
+structure theorem supplies the exponent and the factorization.
+
+**Preferred:** "the discriminant form
+$\bar b\colon D_L\to\tfrac1N\mathbb Z/\mathbb Z$ factors through the
+exponent-$N$ torsion group, with
+$\bar b(x+L,y+L):=b(x,y)\bmod\mathbb Z$ and $N\cdot D_L\subseteq L$
+(`PR-56`); the composite into $\mathbb Q/\mathbb Z$ is the coarser
+presentation." The value object carries the theorem's structure; the
+ambient group is its target, not its type.

@@ -119,6 +119,17 @@ Apply these writing conventions from scholarly research:
 
 - Use logical progression: motivation → problem → solution → validation
 
+**Mathematical content:**
+
+- When the paper's content is mathematical — proofs, definitions, theorem
+  blocks, mathematical notation — write it under
+  [[mathematics/writing/policy/policy|mathematical-writing-policy]]: state
+  the mathematics at its highest natural structural level (named ambient
+  category, typed morphisms, complete exact/(co)fiber sequences, diagrams
+  where the fact is diagrammatic), never an English paraphrase of it.
+  Proofs default to the Lamport-style structured format of
+  [[mathematics/writing/writing|dzack-mathematical-writing]].
+
 - Compare and contrast with related work explicitly
 
 - Address limitations and counterarguments
