@@ -157,3 +157,45 @@ $V\cong P\perp Q\perp\operatorname{rad}(V)$ with $b_{|P}>0$, or
 $G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ via an exhibited
 isometry (`PR-69`) — with the eigenvalue computation, if kept, as a
 verification of the exhibited structure.
+
+## `EV-11`: A relationship phrase asserts nothing until the map is written
+
+"Identifies with", "agree canonically", "is canonically isomorphic to",
+"the symmetry isomorphism", "the canonical map", and "there is a
+decomposition $G\cong N\rtimes H$" sound like mathematics and assert
+nothing checkable: the reader cannot tell which map is meant, cannot
+verify it, and cannot cite it. Each is owed a specific object — the map
+with source, target, and formula; the equation between two named maps;
+or the exact sequence with its section. A definite article on a map is
+the tell: "the symmetry isomorphism" of a fourfold tensor product names
+a family of permutations, not one map. A decomposition claim is a
+construction: $G\cong N\rtimes H$ owes the normal subgroup, the quotient
+map, the section, and the action (`STR-6`, `DEF-40`); where only
+existence is proved, write "the sequence $1\to N\to G\to H\to1$ splits"
+and cite the proof. `MA-1` governs the related substitution of $=$ for
+a constructed isomorphism.
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `26d4e303bc`), the tensor product of forms;
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/700-folding.md`
+at `26d4e303bc`, "Examples of Classical Foldings".
+
+**Banned:** "after the symmetry isomorphism carrying
+$(M\tensor_RN)^{\tensor2}$ to $M\tensor_RM\tensor_RN\tensor_RN$"; "there
+is a decomposition $\Orth(L)\cong W(L)\semidirect P$ where
+$P\leq\Sym(G_{\Phi(L)})$ is some subgroup of diagram symmetries"; "the
+two constructions agree canonically"; "$A$ identifies with $B$".
+
+**Preferred:**
+"$\sigma\colon(M\otimes_RN)^{\otimes2}\xrightarrow{\sim}M^{\otimes2}\otimes_RN^{\otimes2}$,
+$x\otimes u\otimes y\otimes v\mapsto x\otimes y\otimes u\otimes v$, and
+$b_M\otimes b_N:=(b_M\otimes b_N)\circ\sigma$"; for a root lattice
+$L=\langle\Phi\rangle$: "fix a base $\Delta\subseteq\Phi$; the
+stabilizer $\operatorname{Stab}_{\Orth(L)}(\Delta)$ maps isomorphically
+onto the automorphism group of the Dynkin diagram of $\Delta$ and splits
+$1\to W(L)\to\Orth(L)\to\Orth(L)/W(L)\to1$, so
+$\Orth(L)=W(L)\rtimes\operatorname{Stab}_{\Orth(L)}(\Delta)$
+[Humphreys, *Introduction to Lie Algebras and Representation Theory*,
+§12.2]"; the comparison morphism $\theta\colon A\to B$ with its formula
+and the statement that it is an isomorphism (`DIA-7`, `PR-74`).

@@ -61,3 +61,34 @@ and Morrison for this."
 ([@MM99, Theorem 4.2]) :::" — and the proof either present or omitted
 per the house's proof obligation (`SEC-6`); provenance claims in the
 statement's metadata, never in trailing prose.
+
+## `CITE-6`: Hypotheses are stated in the block, never delegated to a citation
+
+A citation records where a result is proved. It does not carry the
+hypotheses of the block that cites it. "If $L$ satisfies the hypotheses
+of [@X, Thm. n]" states no hypothesis: the reader must open the source
+to learn what the block assumes, the block cannot be checked against
+its own text, and a different edition or numbering silently changes the
+theorem. Transcribe the hypotheses from the source into the block
+(`DEF-2`, `STR-3`) and keep the citation as provenance at the claim
+(`CITE-4`). "In particular" after such a clause is the tell: it lists
+one hypothesis and hides the rest.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `26d4e303bc`), corollary "Nikulin stable-range
+vanishing", and
+`research/lattice-theory/classification/two-elementary-lattices.md` at
+`26d4e303bc`.
+
+**Banned:** "If $L$ satisfies the hypotheses of [@Nik80, Thm. 1.14.2],
+in particular $\rank L\geq\ell(A_L)+2$, then $\operatorname{MM}(L)=0$";
+"… subject to the admissibility conditions of [@Nik80, Thm. 3.6.2]".
+
+**Preferred:** the block opens with every hypothesis of the cited
+theorem in its own words — the parity and signature conditions on $L$
+and the rank-versus-length inequality at each prime, transcribed from
+[@Nik80, Thm. 1.14.2] — and then states "$\operatorname{MM}(L)=0$ and
+$g(L)=1$" with the citation at the claim; the admissibility conditions
+of the classification theorem listed in the block, the citation after
+them.

@@ -12,44 +12,78 @@ review.
 
 ## The single principle
 
-Write the internal mathematical representation, not an English
-description of it. Write the mathematical object itself, at its natural
-level of generality and in its natural categorical location; do not
-replace it by explanatory prose about the object, implementation
-details about the object, or a lower-structure approximation to the
-object.
+Mathematical writing is the economical, logically organized presentation
+of objects, constructions, relationships, and proofs in the native
+language and established conventions of the subject. It is not
+explanatory prose made rigorous by adding notation, categorical
+vocabulary, construction detail, or citations, and it is not notation
+made readable by adding prose. Notation, diagrams, sequences, and
+displayed formulas are the primary language. Prose carries only what the
+notation does not already state: hypotheses, the claim, the reason a step
+holds, and the consequence drawn.
 
-The recovery criterion makes this checkable: a reader must be able to
-recover the ambient category, objects, morphisms, universal properties,
-exact sequences, chosen bases, value modules, and equivalence relations
-directly from the notation. Prose explains consequences of the formal
-structure; it never substitutes for the structure.
+One test decides every sentence, in both directions: **does the sentence
+state information the reader cannot recover from the notation already on
+the page?**
 
-The recurring defect this principle names is **loss of type
-information through prose**: a precise construction flattened one or
-more levels —
+- If the notation is absent, the sentence is a paraphrase and owes the
+  object. "$A$ sits inside $B$" owes the mono; "the two constructions
+  agree" owes the comparison morphism or the commuting diagram; "$M$
+  admits an embedding" owes the point of the embedding object; "the
+  mixed terms vanish" owes the zeroed map (`STR-5`, `STR-6`, `DIA-7`,
+  `MA-17`, `PR-74`).
+- If the notation is present, the sentence is bookkeeping and is deleted.
+  An arrow written $\iota\colon S\injects M$ is a monomorphism; writing
+  "the image subobject" or "the underlying monomorphism" beside it adds
+  no information (`PR-76`). A display enlarges nothing: it exposes
+  structure the sentence cannot hold (`PR-75`).
 
-diagram / functor / exact sequence → isolated map or property →
-set-theoretic description → English paraphrase —
+The same test fixes the level at which the mathematics is stated. The
+level is the one at which the claim is a theorem of the subject: the
+category in which the construction has its universal property
+(`FORM-11`), the formulation the standard literature uses (`TERM-16`,
+`DEF-41`), and the hypotheses the claim needs rather than the hypotheses
+a proof found convenient (`STR-8`). Categorical vocabulary is not
+categorical reasoning: naming a forgetful functor, calling a map a
+morphism, or writing "underlying" does not place the argument in the
+category; computing the kernel, cokernel, or splitting there does
+(`MA-18`).
 
-and the preferred direction is the reverse. If a sentence says "$A$ sits
-inside $B$", the mono is owed; "injective" is owed the exact sequence
-with vanishing kernel; "agree" is owed the comparison morphism or
-commuting diagram; "transports" is owed the functor; an elementwise
-collection may already be a fiber, preimage, Hom-object, embedding
-object, orbit object, kernel, or subcategory.
+Six judgments apply the test. Each is answered by a cited rule, never by
+the writer's recollection of what rigorous writing looks like.
 
-Paired with it is the economy rule: formalism is wanted exactly when it
-carries mathematical information that removes ambiguity — explicit
-categories, functors, sequences, diagrams, and formulas are favored
-because they remove ambiguity. Extra notation, announcing prose,
-trivial remarks, redundant adjectives, and low-level calculations are
-rejected when they add none. The style is maximum semantic density,
-minimum narration — not "more formal notation everywhere."
+| Judgment | Rule |
+| --- | --- |
+| Which formulation states the mathematics | `TERM-16`, `DEF-39`, `DEF-41`, `PR-15` |
+| Which hypotheses are intrinsic and which are proof artifacts | `STR-3`, `STR-8`, `CITE-6` |
+| Which notation is standard, which is necessary, which is redundant | `NOT-4`, `NOT-5`, `NOT-10`, `SYM-14` |
+| Which relation earns a diagram or sequence, which an equation | `DIA-7`, `DEF-40`, `PR-75` |
+| Which construction is foundational, which an immediate consequence | `DEF-22`, `SEC-16`, `SEC-18`, `STR-6` |
+| Which fact is obvious, which needs a proof or a citation | `PR-9`, `EV-1`, `CITE-1`, `SEC-6` |
 
-When a correction seems new, find which part of the principle it applies —
-generality, categorical location, layer, or recoverability — and which
-family covers it. The rules below are this principle made checkable.
+## Oscillation gate
+
+A one-directional instruction, "write the structure," produces the
+opposite defect: verbalized formalism, gratuitous displays, categorical
+vocabulary in place of categorical reasoning. A revision that patches a
+reported defect with its opposite does not converge. The gate is
+mandatory and has no judgment clause.
+
+**Trigger.** A review reports, at a location revised in response to an
+earlier review, a defect in the opposite family from the earlier report:
+precision asked and formalism reported, or the reverse; a symbol asked
+and overdefined notation reported, or the reverse; a display asked and
+unreadable displays reported, or the reverse.
+
+**Consequence.** Stop editing the sentence. Write down three facts
+before the rewrite: the object or claim in the notation of the subject's
+standard source; what the reader must know at this point that the
+notation does not state; the hypotheses the claim needs. Rewrite the
+passage from those facts, then apply the test above to each sentence of
+the rewrite.
+
+A writer who cannot name the standard source's formulation has not
+reached the rewrite step (`TERM-16`, `DEF-41`).
 
 ## Scope
 
@@ -132,6 +166,9 @@ failure that produced them.
   many small sentences set up, not one adjective.
 - Before applying a writing correction, find the rule it instantiates and
   cite it. If no rule covers it, record the new rule here in the same change.
+- Apply the sentence test in both directions. A finding of missing structure
+  and a finding of verbalized formalism are one defect seen from two sides; a
+  fix that trades one for the other triggers the oscillation gate.
 - Never write a definition or a citation from memory. Read the source and
   transcribe from it (`DEF-2`, `CITE-1`).
 - The [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] also
@@ -173,6 +210,9 @@ A change to this policy requires the same work it demands of other writing.
 - When a later correction shows that an earlier rule has the wrong model,
   rewrite or delete the earlier rule. An appended stronger rule that leaves
   the contradiction authoritative keeps the defect.
+- A rule states the test that decides both directions. A rule that only
+  pushes toward more formalism, or only toward less, reproduces the
+  oscillation it was written to stop.
 - Keep one source of truth. Integrate a new rule into its family under the
   next free code. Do not start an overlapping catalogue or a parallel policy
   document. Never reuse or renumber a code: repositories and commit histories

@@ -942,3 +942,55 @@ $N\hookrightarrow M\twoheadrightarrow M/N$ with its maps named (PR-56);
 "the map $K\mapsto K/L$ is an order isomorphism from the overlattice
 poset to the isotropic-subgroup poset of $D_L$" — the statement at the
 structure level the theorem has.
+
+## `DEF-41`: An established notion is defined by its established formulation
+
+A notion the literature defines is defined here as the literature
+defines it, in the framework the document has already set up; every
+reformulation is a proposition with the equivalence proved or cited
+(`DEF-22`). Three substitutions fail this rule: a characterization
+through heavier machinery presented as the definition of an elementary
+notion; a standard universal construction presented as an improvised
+list of relations in running prose, with no name, no block, and no
+citation; and an elementary reformulation of a notion the document has
+already placed in a more structured framework. Each hides where the
+notion comes from. The third also makes the document's architecture
+inconsistent: once the adelic objects $\widehat L$ and
+$\Orth(V_{\mathbb A_f})$ are introduced, every notion that lives in them
+is stated in them. An ad hoc reformulation is also where errors enter:
+a place-by-place condition rewritten from memory can quantify over the
+wrong objects. Before writing a definition, read the standard source's
+formulation (`DEF-2`) and name the object the source names (`TERM-16`).
+
+Observed in `dzackgarza/research` (working tree over `26d4e303bc`):
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+definition "Symmetry, alternation, and evenness" and the running text
+that introduces $\Gamma_R^2(M)$;
+`research/lattice-theory/discriminant-forms-and-genus.md`, definition
+"Genus and class set".
+
+**Banned:** "the form $b$ is **even** when there is a quadratic map
+$\widetilde q_b\in\operatorname{Quad}_{R,2W}(M)$ for which
+$q_b=U(2W\injects W)\circ U(\widetilde q_b)$" as the definition of
+evenness; "let $\Gamma_R^2(M)$ be the quotient of the free $R$-module on
+symbols $[x]$ … by the relations …" in running text, with
+$\operatorname{Quad}_{R,W}(M):=\Hom(\Gamma_R^2(M),W)$ derived from it
+and no source named; "the full subgroupoid on lattices $M$ satisfying
+$M\otimes_RK_v\isoto L\otimes_RK_v$ for every place $v$ of $K$" as the
+definition of the genus, in a document whose spinor genus is defined
+through $\widehat L$ and $\Orth(V_{\mathbb A_f})$ — and which, with
+$K_v$ at the finite places, states isometry of the completed spaces
+rather than of the completed lattices.
+
+**Preferred:** "$b$ is **even** if $b(x,x)\in2W$ for all $x\in M$",
+equivalently $\operatorname{Val}(b)\subseteq2W$ (`PR-45`), with the
+lift to $\operatorname{Quad}_{R,2W}(M)$ as a proposition; a definition
+block "the universal quadratic module $\Gamma_R^2(M)$, the module of
+degree-two divided powers, with $\gamma_M\colon M\to\Gamma_R^2(M)$
+universal among quadratic maps out of $M$", and its presentation by
+generators and relations as a proposition with the citation; for
+lattices $L,M$ on one quadratic space $V$ over $K$: "$M$ lies in the
+genus of $L$ if $\widehat M=\alpha\widehat L$ for some
+$\alpha\in\Orth(V_{\mathbb A_f})$", with the local condition
+$M\otimes_RR_v\cong L\otimes_RR_v$ at every finite place $v$ as the
+proposition that connects it (`TERM-16`, `DEF-22`).

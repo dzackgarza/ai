@@ -2645,3 +2645,41 @@ necessary; keep the signature inline — "for
 $\iota_v\colon\langle v\rangle\to L$ the adjoint is …"; display for
 the derivation, the aligned computation, and the numbered equation the
 later text cites.
+
+## `PR-76`: Do not verbalize what the notation already states
+
+A decorated arrow is a statement. $\iota\colon S\hookrightarrow M$
+states that $\iota$ is a monomorphism; $\pi\colon G\twoheadrightarrow Q$
+states an epimorphism; $\varphi\colon A\xrightarrow{\sim}B$ states an
+isomorphism; a factorization $G\twoheadrightarrow I\hookrightarrow H$
+states that $I$ is the image. A noun phrase that names the class of an
+arrow already on the page — "the image subobject", "the underlying
+monomorphism", "the underlying function", "the identification", "the
+inclusion morphism" — repeats the decoration in words and adds no
+information. `SYM-14` governs the reverse case, an adjective standing in
+for an arrow that was never written. Replacing the phrase by a synonym
+produces the same defect under a new phrase; the fix is deletion of the
+phrase and, where the arrow is missing, the arrow. Test every sentence
+against the notation on the page: a sentence that states only what the
+reader can read off the arrows is deleted.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `26d4e303bc`), definition "Bilinear and quadratic
+discriminant representations" and proposition "Lattice morphisms are
+monomorphisms".
+
+**Banned:** "Let $I_L\injects\Orth(A_L)$ be the image subobject" beside
+the exact sequence that already exhibits $I_L$ as the image of $\rho_L$;
+"every morphism $f\colon L\to M$ of $\mathbf{Lat}_R^{\mathrm{nd}}$ has
+underlying monomorphism $Uf\colon UL\injects UM$ in
+$R\text{-}\mathbf{Mod}$" followed by "the forgetful functions … are
+monomorphisms in $\mathbf{Set}$"; "$\varphi\colon A\xrightarrow{\sim}B$
+identifies $A$ with $B$".
+
+**Preferred:** the displayed epi–mono factorization
+$\Orth(L)\twoheadrightarrow I_L\hookrightarrow\Orth(A_L)$ of $\rho_L$,
+with no sentence about it; "for $f\colon L\to M$ in
+$\mathbf{Lat}_R^{\mathrm{nd}}$, $f$ is injective", with the one-line
+reason in the proof (`MA-18`); the arrow
+$\varphi\colon A\xrightarrow{\sim}B$ with its formula and nothing more.

@@ -163,3 +163,32 @@ from a magnitude after editing; `\abs{v}` survives it.
 `\abs{\det(G_e(b))}`; `\bqty{0,1}`; the house macro at every
 delimiter that carries mathematical structure, with manual sizing
 reserved for genuine typographic fixes inside macro *definitions*.
+
+## `NOT-10`: A map is named only where later mathematics uses the name
+
+A symbol for a map, object, or set is introduced when a later sentence,
+display, proof, or block refers to it. A map that occurs once is
+written as an arrow or a formula at that occurrence. A map whose only
+later use is a sentence restating its type has no later use (`PR-76`).
+Subscripted names for a family of forgetful or inclusion maps —
+$j_{L,M}$, $U_{L,M}$ — index nothing unless the family is quantified
+over later. Naming is bookkeeping, and bookkeeping that nothing reads
+is deleted. `NOT-5` governs aliases for objects that already have a
+name; this rule governs names for objects that need none.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `26d4e303bc`), proposition "Lattice morphisms are
+monomorphisms".
+
+**Banned:** displaying
+"$j_{L,M}\colon\operatorname{PrimEmb}(L,M)\injects\Hom_{\mathbf{Lat}_R}(L,M)$,
+$U_{L,M}\colon\Hom_{\mathbf{Lat}_R}(L,M)\injects\Hom_{R\text{-}\mathbf{Mod}}(UL,UM)$"
+when the only later occurrence of either name is "faithfulness of the
+forgetful functor gives the monomorphism $U_{L,M}$, while $j_{L,M}$ is
+the defining inclusion of the primitive-embedding subobject".
+
+**Preferred:** nothing, when $\operatorname{PrimEmb}(L,M)$ is defined as
+a subset of $\Hom_{\mathbf{Lat}_R}(L,M)$ and faithfulness of $U$ is
+stated at $U$'s definition; otherwise the one sentence that states the
+fact the later text uses, with no symbol attached.

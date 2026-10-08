@@ -618,3 +618,33 @@ rules they sharpen rather than founding a parallel family. The
 the API guide, not here: an agent reading only the Pandoc mechanics
 can comply with the syntax while reproducing every mathematical-style
 failure, so the help points at this policy as normative.
+
+**40. One missing model, two opposite defects.** The lattice-theory and
+bilinear-form documents in `dzackgarza/research` (working tree over
+`26d4e303bc`) show corrections toward precision producing verbalized
+formalism — "the image subobject" beside $I_L\hookrightarrow\Orth(A_L)$,
+"underlying monomorphism" and "monomorphisms in $\mathbf{Set}$" around
+an injectivity claim, forgetful maps named $j_{L,M}$ and $U_{L,M}$ that
+nothing later reads — and corrections toward economy producing the
+earlier flattening again. The revisions oscillated because the single
+principle was read one-directionally ("write the structure") and the
+economy rule as a separate, weaker counterweight. This tranche rewrites
+the principle around one test that decides both directions — does the
+sentence state what the notation on the page does not — adds the
+oscillation gate to the policy, tabulates the six editorial judgments
+against the rules that answer them, and codes the forms the documents
+show: prose restating a written arrow (PR-76); categorical vocabulary
+around an elementwise argument, the mirror of FORM-11's downstairs
+construction (MA-18); relationship phrases and decomposition claims
+with no map or splitting — "the symmetry isomorphism", "identifies
+with", $\Orth(L)\cong W(L)\rtimes P$ (EV-11); established notions
+defined by a characterization, an improvised presentation, or an
+elementary reformulation that the document's own adelic framework
+supersedes — evenness through a $\operatorname{Quad}_{R,2W}$ lift,
+$\Gamma_R^2(M)$ as inline relations, the genus place by place with
+$K_v$ where the lattice condition is local-integral (DEF-41);
+hypotheses at a proof's strength — Sylvester's law stated for perfect
+forms and extended to degenerate ones inside the same block (STR-8);
+hypotheses delegated to a citation — "satisfies the hypotheses of
+[@Nik80, Thm. 1.14.2]" (CITE-6); and names for maps that no later
+sentence uses (NOT-10).

@@ -143,3 +143,39 @@ $\operatorname{rad}_r(b):=\ker(b^{\sharp\,\mathrm{op}})$; $b$ is
 nondegenerate when both vanish" — every side named, the joint
 condition stated, the symmetry that would identify them cited, not
 assumed (`STR-2`, `STR-3`).
+
+## `STR-8`: State the hypotheses the claim needs, not the ones a proof used
+
+A statement block carries the hypotheses under which its conclusion is
+a theorem, at that strength. A hypothesis that one proof route finds
+convenient — perfectness where nondegeneracy or nothing is needed,
+freeness where finite generation suffices, a field where a domain
+suffices — is a proof artifact. Stated in the block, it narrows the
+theorem, breaks the generality `DEF-38` asks for, and misleads every
+later citation of the block. The tell is a proof, remark, or later
+block that removes the hypothesis it was stated under. The test is to
+ask, for each hypothesis, which step of the proof uses it and whether
+the conclusion fails without it: a hypothesis that no step uses in full
+strength is weakened to what the step uses, and a hypothesis removed
+later in the same block was never a hypothesis. `STR-3` governs the
+opposite defect, a hypothesis used and not stated.
+
+Observed in `dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `26d4e303bc`), theorem "Sylvester's law of inertia".
+
+**Banned:** "Let $F$ be an ordered field and let $b$ be a perfect
+symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
+Then $V\cong V^{+}\perp V^{-}$ …" followed, inside the same block, by
+"For a degenerate $b$, choose a complement $N$ to $\radic(V)$ … hence
+perfect because $N$ is finite dimensional. Applying the above to $N$
+gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$" — the hypothesis the
+block opens with is removed by the block's last paragraph.
+
+**Preferred:** "Let $F$ be an ordered field and $(V,b)$ a
+finite-dimensional symmetric bilinear space over $F$. Then
+$V\cong V^{+}\perp V^{-}\perp\radic(V)$ with $b$ positive definite on
+$V^{+}$ and negative definite on $V^{-}$, and
+$(\dim V^{+},\dim V^{-},\dim\radic(V))$ depends only on the isomorphism
+class of $(V,b)$"; the nondegenerate case is the case $\radic(V)=0$,
+and the reduction to it is the first step of the proof.

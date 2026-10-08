@@ -6,20 +6,24 @@ description: Use when producing mathematical content, proofs, problem solutions,
 
 ## Philosophy
 
-This skill exists because LLMs naturally produce sloppy, hand-wavy, generic mathematical
-output. They reward-hack with words like “clearly” and “obviously” to avoid hard
-arguments. They skip steps, leave variables unbound, invent inconsistent notation, and
-produce unreadable proofs that no human mathematician would accept.
+Mathematical writing is the economical, logically organized presentation of
+objects, constructions, relationships, and proofs in the native language and
+established conventions of the subject. Notation, diagrams, and sequences are
+the primary language; prose carries the hypotheses, claims, reasons, and
+consequences that the notation does not state. Rigor is a property of what is
+stated and proved, not of how much notation, categorical vocabulary,
+construction detail, or citation surrounds it.
 
-The goal is **elegant, rigorous, checkable mathematics** — not just “correct” answers.
-Every output should be readable without making the reader’s eyes bleed.
+The goal is **elegant, rigorous, checkable mathematics**.
 Every proof should be verifiable by a human reader.
 Every step should be justified.
 Every variable should be bound.
 Every claim should be proven, not asserted.
 
-This is a **behavioral intervention system**, not a style guide.
-The rules below exist to prevent specific, observed failure modes.
+The rules below exist to prevent specific, observed failure modes: skipped
+steps, unbound variables, inconsistent notation, hand-waving behind "clearly",
+prose standing in for an object that was never written, and notation or
+vocabulary standing in for reasoning that was never done.
 
 ## Core Policy: Why These Rules Exist
 
@@ -117,21 +121,24 @@ Load `references/structured-proofs.md` before writing any proof; it carries the 
 format, numbering/citation scheme, worked examples, calibration table, and
 anti-patterns.
 
-### 10. State the structure, not its English shadow
+### 10. Native language, one test per sentence
 
-**Failure mode:** Agents flatten a precise construction into prose — "sits
-inside" for a monomorphism, "injective" for a vanishing kernel, "agrees" for
-a comparison morphism, "admits an embedding" for a point of the embedding
-object, "compatible with base change" for a functor applied to a diagram.
-Each level of flattening (diagram/functor/exact sequence → isolated property →
-set description → paraphrase) discards type information the reader needs and
-cannot recover.
+**Failure mode:** Two opposite defects from one missing model. In one
+direction a construction is flattened into prose: "sits inside" for a
+monomorphism, "agrees" for a comparison morphism, "admits an embedding" for a
+point of the embedding object, "the mixed terms vanish" for a zeroed map. In
+the other direction prose restates what the notation already says: "the image
+subobject" beside $I\hookrightarrow G$, "the underlying monomorphism" beside
+$Uf\colon UL\hookrightarrow UM$, "monomorphism in $\mathbf{Set}$" for an
+injective function, a display for a one-line signature, a name for a map that
+nothing later reads. Patching one direction produces the other.
 
-**Philosophy:** State mathematics at its highest natural structural level:
-named ambient category, typed morphisms, complete exact/(co)fiber sequences,
-commuting diagrams where the fact is diagrammatic. Formalism is wanted when
-it carries mathematical information; announcing prose, local re-notation,
-and computational surrogates are not. The full checkable catalogue is
+**Philosophy:** One test decides each sentence: does it state information the
+reader cannot recover from the notation on the page? If the notation is
+absent, write the object. If the notation is present, delete the sentence.
+Categorical vocabulary is used when the argument uses a categorical property,
+and the construction is then taken in that category. The checkable catalogue,
+the six editorial judgments, and the oscillation gate are in
 [[mathematics/writing/policy/policy|mathematical-writing-policy]] — load it
 for any reader-facing mathematical prose and cite its codes in review.
 
@@ -279,9 +286,17 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 
 - [ ] No skipped algebraic steps in derivations
 
-- [ ] No prose shadow of a construction: monos for "sits inside", exact
-  sequences for injectivity, comparison morphisms for "agree", functors
-  for "transports", points of construction objects for "admits"
+- [ ] Each sentence states something the notation on the page does not: an
+  unwritten object is written (`STR-5`, `STR-6`, `MA-17`, `PR-74`); a sentence
+  restating a written arrow is deleted (`PR-76`, `NOT-10`)
+
+- [ ] Categorical vocabulary only where a categorical property is used, and
+  the construction then taken in that category (`MA-18`, `FORM-11`)
+
+- [ ] Established notions carry their established definitions (`DEF-41`);
+  hypotheses are the claim's, stated in the block (`STR-8`, `CITE-6`);
+  relationship phrases are replaced by the map or the split sequence
+  (`EV-11`)
 
 - [ ] Limits, kernels, cokernels, and exact sequences taken in the
   structured category the objects live in; the forgetful functor named
@@ -329,6 +344,11 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | Skipping base case in induction | Invalid proof | Always verify base case separately |
 | Non-exhaustive cases | Missing paths; potential counterexample | List all cases explicitly |
 | Prose shadow of a construction | Type information lost: "sits inside", "admits", "compatible with base change" name no map, object, or functor | Write the mono, the point of the embedding object, the functor on the diagram; cite the policy code |
+| Verbalized formalism: "the image subobject" beside $I\hookrightarrow G$ | Restates the arrow; replacing the phrase breeds the next phrase | Delete the sentence and keep the arrow (`PR-76`, `NOT-10`) |
+| Categorical vocabulary around an elementwise argument | Arrows added, no reasoning added; the native statement is the elementwise one | State it in the subject's words, or take the construction in the category (`MA-18`, `FORM-11`) |
+| "Identifies with", "the symmetry isomorphism", $G\cong N\rtimes H$ asserted | Names no map; cannot be checked or cited | The map with its formula, or the split sequence with its section (`EV-11`) |
+| Characterization or improvised reformulation as the definition of an established notion | Hides the source; a reformulation from memory misstates the notion | The literature's definition in the document's framework; the reformulation as a proposition (`DEF-41`) |
+| Hypothesis at the proof's strength, or delegated to a citation | Narrows the theorem; the block cannot be checked against its own text | The claim's hypotheses transcribed into the block (`STR-8`, `CITE-6`) |
 | Constructions taken downstairs silently | The module cokernel is not the cokernel in the structured category; the forgetful functor is a datum | Name the category at the construction; state creation/preservation before computing downstairs (`FORM-11`) |
 | "Mixed terms vanish" | No typed referent: the reader cannot recover what is zero | Write the zeroed map or component: $\beta(L_i,L_j)=0$ (`MA-17`) |
 | Zero-argument semantic macro + adjacent operand | Typographic fragment: the source no longer records which object is meant | All semantic operands inside the argument list: `\disc{L}`, `\cardinality{X}` (`NOT-7`) |
