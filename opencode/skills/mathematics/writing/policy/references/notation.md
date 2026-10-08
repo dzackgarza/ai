@@ -55,10 +55,17 @@ standard construction with a standard symbol keeps it (`NOT-4`,
 
 **Banned:** "In this section write $L:=M(2)$" with $M(2)$ used three
 times; "put $G:=\Orth(L)$" to avoid repeating $\Orth(L)$; a local alias
-defined once and used once.
+defined once and used once; "$Q_f$" for $\operatorname{coker}(Uf)$ in
+the displayed sequence $0\to UL\to UM\to Q_f\to0$ and then
+"$0\to Q_f\to Q_{gf}\to Q_g\to0$" (`dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`,
+working tree over `26d4e303bc`, definition of primitive embeddings).
 
-**Preferred:** $M(2)$, $\Orth(L)$, $L^{\mathrm{prim}}[n]$ written out at
-each occurrence — the construction stays visible and linked to its owner.
+**Preferred:** $M(2)$, $\Orth(L)$, $L^{\mathrm{prim}}[n]$,
+$\operatorname{coker}(Uf)$, $\operatorname{coker}(U(gf))$ written out at
+each occurrence — the construction stays visible and linked to its
+owner, and a standard construction keeps its standard symbol
+(`NOT-4`).
 
 ## `NOT-6`: Macros encode mathematical normalization, not just typography
 
@@ -76,7 +83,12 @@ macro once at the natural owner (`SEC-12`), link every use to it
 **Banned:** a chapter that re-derives $L\otimes_{\mathbb Z}\mathbb Z_p$
 as "the completion" with fresh local notation, when the $p$-adic
 completion macro was defined in the foundations chapter; "discriminant
-form" re-defined locally in one chapter and cited from another.
+form" re-defined locally in one chapter and cited from another; "the
+*twist* $b(\lambda)$ of $(M,b)$ is the form $\lambda b$ on the same
+module, written $M(\lambda)$" — two symbols introduced in one sentence
+for one object (`dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+working tree over `26d4e303bc`, the twist).
 
 **Preferred:** one defining occurrence per construction, one macro or
 symbol reused everywhere, every use linked (`DEF-26`, `NOT-3`,

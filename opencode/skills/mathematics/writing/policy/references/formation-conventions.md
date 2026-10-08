@@ -119,3 +119,45 @@ kernel of $\rho_L\colon\Orth(L)\to\operatorname{Aut}(D_L)$ in
 $\mathbf{Grp}$". Name the category at the construction; state the
 creation/preservation claim before computing downstairs
 (`SEC-12`, `EV-9`).
+
+## `FORM-12`: Hom-objects, functors, and non-linear maps keep their ambient category
+
+A Hom-object carries the structure its category gives it:
+$\Hom_{R\text{-}\mathbf{Mod}}(M,N)$ is an $R$-module and an object of
+$R\text{-}\mathbf{Mod}$; $\Orth(L)$ is a group; $\Emb(L,M)$ is an
+$\Orth(L)\times\Orth(M)$-set. A forgetful functor is a functor between
+named categories, and a statement about it is a statement about a
+functor — faithful, conservative, creating limits — not about
+"forgetful functions" that are "monomorphisms in $\mathbf{Set}$".
+Descending to $\mathbf{Set}$ is legitimate only when $\mathbf{Set}$ is
+the category the claim lives in. Conversely, a construction that is not
+a morphism of the category at hand is placed in the category where it is
+one, not asserted to be a morphism there, not dropped, and not left as
+a bare function: the diagonal $x\mapsto x\otimes x$ is not $R$-linear,
+and its structural account is a natural transformation
+$\Delta\colon U\Rightarrow U\circ(-)^{\otimes2}$ of underlying-set
+functors, or a quadratic map, with the category stated (`SYM-14`,
+`MA-18`).
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `26d4e303bc`), proposition "Lattice morphisms are
+monomorphisms"; the preferred diagonal is the same repository's
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+definition "Symmetry, alternation, and evenness".
+
+**Banned:** "the forgetful functions
+$j_{L,M}\colon\operatorname{PrimEmb}(L,M)\injects\Hom_{\mathbf{Lat}_R}(L,M)$,
+$U_{L,M}\colon\Hom_{\mathbf{Lat}_R}(L,M)\injects\Hom_{R\text{-}\mathbf{Mod}}(UL,UM)$
+are monomorphisms in $\mathbf{Set}$", with
+$\Hom_{R\text{-}\mathbf{Mod}}(UL,UM)$ treated as a set; "the diagonal
+$M\to M\otimes_RM$, $x\mapsto x\otimes x$" written as a morphism of
+$R\text{-}\mathbf{Mod}$.
+
+**Preferred:** "$U\colon\mathbf{Lat}_R\to R\text{-}\mathbf{Mod}$ is
+faithful, and $\operatorname{PrimEmb}(L,M)\hookrightarrow\Hom_{\mathbf{Lat}_R}(L,M)$
+is the subobject on which $\operatorname{coker}(Uf)$ is torsion-free"
+(`STR-5`); "let $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$ be the
+forgetful functor and $\Delta_M\colon U(M)\to U(M\otimes_RM)$,
+$x\mapsto x\otimes x$, the natural diagonal of underlying sets", with
+$q_b:=U(b)\circ\Delta_M$ — the map in the category where it is a map.

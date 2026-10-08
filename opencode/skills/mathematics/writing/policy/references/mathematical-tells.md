@@ -287,40 +287,44 @@ zeroed map named at each use, its type recoverable from the notation
 
 ## `MA-18`: Categorical vocabulary is not reasoning in the category
 
-Categorical language is used when the argument uses a categorical
-property: a universal property, a functor that preserves or creates a
-limit, the naturality of a comparison map. It is not a register that
-makes an elementwise argument rigorous. Writing "the forgetful functor
-$U$", "monomorphism in $\mathbf{Set}$", "the underlying morphism", or
-"$\Hom_{\mathbf{Set}}$" around a claim whose proof is an elementwise
-computation adds arrows and no reasoning; the native statement of such
-a claim is the elementwise one, in the words of the subject. The
+Categorical language carries an argument when the argument uses a
+categorical property: a universal property, a functor that preserves or
+creates a limit, the naturality of a comparison map, a factorization
+through an adjoint. Writing "the forgetful functor $U$", "monomorphism
+in $\mathbf{Set}$", "the underlying morphism", or "$\Hom_{\mathbf{Set}}$"
+around an elementwise computation adds arrows and no reasoning: the
+argument still runs on elements, with a category named beside it. The
 converse defect is `FORM-11`: a kernel, cokernel, or splitting taken in
 the module category and presented as the construction in the category
 of bilinear modules or lattices. Both come from the same missing act,
-reasoning inside the category the objects live in, and one test covers
-both: name the categorical property the argument uses. If there is
-none, delete the vocabulary. If there is one, carry the construction
-out in that category.
+reasoning inside the category the objects live in through the maps the
+theory has already named — adjoints, kernels, cokernels, the functors
+between the named categories. The test: name the categorical property
+the argument uses. If the argument uses none, it is not yet the native
+argument; find the one that does and write it. If it uses one, carry
+the construction out in that category (`FORM-12`).
 
 Observed in `dzackgarza/research`,
 `research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
 (working tree over `26d4e303bc`), proposition "Lattice morphisms are
-monomorphisms"; the elementwise form below is the same file's text at
-`26d4e303bc`.
+monomorphisms".
 
 **Banned:** a proposition whose content is that a morphism of
-nondegenerate lattices is injective, stated as "has underlying
+nondegenerate lattices is a monomorphism, stated as "has underlying
 monomorphism $Uf\colon UL\injects UM$ in $R\text{-}\mathbf{Mod}$", with
 $\operatorname{PrimEmb}(L,M)$ and $\Hom(L,M)$ related by "forgetful
 functions … monomorphisms in $\mathbf{Set}$", and proved by "applying
-$U$ gives the kernel sequence $0\to\ker(Uf)\to UL\to UM$"; "the
-cokernel $A_L$ … with the induced form remembered" (`FORM-11`).
+$U$ gives the kernel sequence $0\to\ker(Uf)\to UL\to UM$" followed by
+an elementwise check; "the cokernel $A_L$ … with the induced form
+remembered" (`FORM-11`).
 
-**Preferred:** "Let $f\colon(L,b_L)\to(M,b_M)$ be a morphism with $b_L$
-nondegenerate. Then $f$ is injective: if $f(x)=0$ then
-$b_L(x,y)=b_M(fx,fy)=0$ for every $y\in L$, so $x\in\radic(L)=0$";
-when the categorical property is the content, the construction in the
-category: "$A_L:=\operatorname{coker}(b_L^\sharp)$ in the abelian
-category of $W$-valued bilinear $R$-modules; $U$ creates cokernels, so
+**Preferred:** "For $f\colon(L,b_L)\to(M,b_M)$ in $\mathbf{Lat}_R$,
+$b_L=b_M\circ(f\otimes f)$ gives
+$b_L^\sharp=f^\vee\circ b_M^\sharp\circ f$, so
+$\ker(f)\hookrightarrow\ker(b_L^\sharp)=\radic(L)$; for $b_L$
+nondegenerate, $f$ is a monomorphism" — the argument through the
+adjoint the theory already names (`DEF-39`); when the categorical
+property is the content, the construction in the category:
+"$A_L:=\operatorname{coker}(b_L^\sharp)$ in the abelian category of
+$W$-valued bilinear $R$-modules; $U$ creates cokernels, so
 $U(A_L)=\operatorname{coker}(Ub_L^\sharp)$" (`FORM-11`, `STR-1`).

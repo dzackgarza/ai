@@ -49,11 +49,19 @@ isolated equation between composites. An equation $\varphi\circ\iota_1
 vertices $S$, $M_1$, $M_2$ and arrows $\iota_1$, $\iota_2$, $\varphi$
 exhibits the objects and the maps, which is the mathematical type of the
 relation (DIA-2). If a diagram expresses the type more faithfully than an
-equation, the diagram is owed.
+equation, the diagram is owed. The converse holds with the same test: a
+declaration whose content is a source and a target is an arrow in prose,
+and a diagram with one arrow, or a display holding one signature, is
+typography standing where a relation would be (`PR-75`, `PR-77`). A
+pullback is drawn when a pullback is defined; an exact sequence is
+displayed when exactness is the assertion; a map is written
+$f\colon M\to N$ when the assertion is that it exists.
 
 **Banned:** "An equivalence of embeddings is an isometry $\varphi\colon
 M_1\isoto M_2$ with $\varphi\circ\iota_1=\iota_2$" standing alone; "the
-construction is compatible with base change" with no square.
+construction is compatible with base change" with no square; a
+`tikzcd` environment containing one arrow $L\to M$ where the sentence
+"let $f\colon L\to M$ be a morphism" says the same.
 
 **Preferred:** the triangle or square, drawn once, referenced thereafter:
 ```tikzcd

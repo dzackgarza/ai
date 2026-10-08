@@ -136,8 +136,16 @@ nothing later reads. Patching one direction produces the other.
 **Philosophy:** One test decides each sentence: does it state information the
 reader cannot recover from the notation on the page? If the notation is
 absent, write the object. If the notation is present, delete the sentence.
-Categorical vocabulary is used when the argument uses a categorical property,
-and the construction is then taken in that category. The checkable catalogue,
+The mathematics is stated in the category where its constructions have their
+universal properties: constructions arise from universal properties, functors,
+and coherent diagrams, the general construction comes first and its variants
+are recovered as fibers and pullbacks, and kernels, cokernels, and exact
+sequences are stated through the relationships they stand in. The textbook
+formulation is the floor, not the ceiling: a notion the document has placed in
+a more structured setting is stated there, and the elementary formulation is
+the proposition recovered from it. Categorical vocabulary carries an argument
+only when the argument uses a categorical property, and the construction is
+then taken in that category. The checkable catalogue,
 the six editorial judgments, and the oscillation gate are in
 [[mathematics/writing/policy/policy|mathematical-writing-policy]] — load it
 for any reader-facing mathematical prose and cite its codes in review.
@@ -291,12 +299,22 @@ Load these patterns into context as one-shot demonstrations of the exact style e
   restating a written arrow is deleted (`PR-76`, `NOT-10`)
 
 - [ ] Categorical vocabulary only where a categorical property is used, and
-  the construction then taken in that category (`MA-18`, `FORM-11`)
+  the construction then taken in that category (`MA-18`, `FORM-11`);
+  Hom-objects, functors, and non-linear maps keep their ambient category
+  (`FORM-12`)
 
-- [ ] Established notions carry their established definitions (`DEF-41`);
-  hypotheses are the claim's, stated in the block (`STR-8`, `CITE-6`);
-  relationship phrases are replaced by the map or the split sequence
-  (`EV-11`)
+- [ ] Established notions are defined in the most structured framework the
+  document has set up, with the textbook formulation as a proposition
+  (`DEF-41`); variants of one construction are its fibers and parameter
+  values (`DEF-42`); consequences of a definition follow the block
+  (`DEF-16`); hypotheses are the claim's, stated in the block (`STR-8`,
+  `CITE-6`); every symbol a theorem uses is defined in the document's
+  notation, not by citation (`CITE-7`); relationship phrases are replaced by
+  the map, the split sequence, or the independence statement (`EV-11`)
+
+- [ ] A map and its defining condition are one unit, inline or in one
+  display; a diagram is drawn when the relation is diagrammatic and not for
+  a declaration (`PR-77`, `DIA-7`, `PR-75`)
 
 - [ ] Limits, kernels, cokernels, and exact sequences taken in the
   structured category the objects live in; the forgetful functor named
@@ -345,9 +363,15 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | Non-exhaustive cases | Missing paths; potential counterexample | List all cases explicitly |
 | Prose shadow of a construction | Type information lost: "sits inside", "admits", "compatible with base change" name no map, object, or functor | Write the mono, the point of the embedding object, the functor on the diagram; cite the policy code |
 | Verbalized formalism: "the image subobject" beside $I\hookrightarrow G$ | Restates the arrow; replacing the phrase breeds the next phrase | Delete the sentence and keep the arrow (`PR-76`, `NOT-10`) |
-| Categorical vocabulary around an elementwise argument | Arrows added, no reasoning added; the native statement is the elementwise one | State it in the subject's words, or take the construction in the category (`MA-18`, `FORM-11`) |
-| "Identifies with", "the symmetry isomorphism", $G\cong N\rtimes H$ asserted | Names no map; cannot be checked or cited | The map with its formula, or the split sequence with its section (`EV-11`) |
-| Characterization or improvised reformulation as the definition of an established notion | Hides the source; a reformulation from memory misstates the notion | The literature's definition in the document's framework; the reformulation as a proposition (`DEF-41`) |
+| Categorical vocabulary around an elementwise argument | Arrows added, no reasoning added; the argument still runs on elements | Find the argument that uses a categorical property — the adjoint, the kernel, the functor — and take the construction in that category (`MA-18`, `FORM-11`) |
+| Hom-object treated as a set; "forgetful function"; the diagonal $x\mapsto x\otimes x$ written as $R$-linear | The structure the category gives the object is dropped, or a map is asserted in a category where it is not one | The Hom-object with its structure; the functor between named categories; the map in the category where it is a map (`FORM-12`) |
+| "Identifies with", "the symmetry isomorphism", $G\cong N\rtimes H$ asserted, "canonical" after a choice | Names no map; cannot be checked or cited | The map with its formula, the split sequence with its section, or the independence-of-choice statement (`EV-11`) |
+| Characterization, improvised reformulation, or textbook retreat as the definition of an established notion | Hides the source; abandons the document's own structured setting; a reformulation from memory misstates the notion | The definition in the most structured framework the document has set up; the elementary formulation as a proposition (`DEF-41`) |
+| Variants of one construction by near-identical parallel paragraphs | The relation between the variants is hidden; each later comparison compares unrelated definitions | One general construction; each variant as a fiber, pullback, or factorization through a monomorphism (`DEF-42`) |
+| Signature on one display, "satisfying" on its own line, condition on a second display | One statement split into fragments none of which carries it | The map and its defining condition as one unit, inline or in one display (`PR-77`) |
+| "In the notation of [@X], let $\operatorname{MM}(L)$ be …" | The theorem is about an object the document never defined | Definition blocks transcribed into the document's notation; the citation at the claim (`CITE-7`) |
+| Consequences inside the definition block | The defining occurrence drags its corollaries along wherever it is cited | Close the block after the defining sentences; the consequences as a proposition (`DEF-16`) |
+| $Q_f$ for $\operatorname{coker}(Uf)$; $b(\lambda)$ and $M(\lambda)$ for one object | An alias hides a standard construction; two symbols present one object as two | The standard symbol at each use; one notation per object (`NOT-5`, `NOT-6`) |
 | Hypothesis at the proof's strength, or delegated to a citation | Narrows the theorem; the block cannot be checked against its own text | The claim's hypotheses transcribed into the block (`STR-8`, `CITE-6`) |
 | Constructions taken downstairs silently | The module cokernel is not the cokernel in the structured category; the forgetful functor is a datum | Name the category at the construction; state creation/preservation before computing downstairs (`FORM-11`) |
 | "Mixed terms vanish" | No typed referent: the reader cannot recover what is zero | Write the zeroed map or component: $\beta(L_i,L_j)=0$ (`MA-17`) |

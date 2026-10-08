@@ -108,7 +108,7 @@ quotient with meaning beyond its bare existence. Do not replace it by an
 ad hoc short exact sequence merely because some image makes one
 formally available, and do not compress a theory to the fragment a
 local computation needs. Name the object the theorem actually produces
-($Q_f$ as the cokernel of $f$, with the property the theorem imposes on
+($\operatorname{coker}(f)$, with the property the theorem imposes on
 it), and state the surrounding structure — the epi–mono factorization,
 the kernel, the invariant the theorem computes — at the strength the
 source proves. An injectivity claim after base change comes from the
@@ -172,8 +172,16 @@ a family of permutations, not one map. A decomposition claim is a
 construction: $G\cong N\rtimes H$ owes the normal subgroup, the quotient
 map, the section, and the action (`STR-6`, `DEF-40`); where only
 existence is proved, write "the sequence $1\to N\to G\to H\to1$ splits"
-and cite the proof. `MA-1` governs the related substitution of $=$ for
-a constructed isomorphism.
+and cite the proof. "The map factors through the kernel" owes the lift
+$\bar f\colon X\to\ker(g)$ with $k\circ\bar f=f$, drawn as the triangle
+when the lift is what the argument uses (`DIA-7`). "Canonical" after a
+choice — of a section, a representative, a basis — owes the statement
+that the result is independent of the choice, or the dependence kept
+explicit in the notation. "Unique up to isometry" owes the uniqueness
+it asserts: between which two objects, which isometry, compatible with
+which maps; where no two objects are compared, the phrase is deleted and
+the object is named (`DEF-32`). `MA-1` governs the related substitution
+of $=$ for a constructed isomorphism.
 
 Observed in `dzackgarza/research`:
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`

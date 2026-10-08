@@ -41,25 +41,69 @@ the page?**
 The same test fixes the level at which the mathematics is stated. The
 level is the one at which the claim is a theorem of the subject: the
 category in which the construction has its universal property
-(`FORM-11`), the formulation the standard literature uses (`TERM-16`,
-`DEF-41`), and the hypotheses the claim needs rather than the hypotheses
-a proof found convenient (`STR-8`). Categorical vocabulary is not
-categorical reasoning: naming a forgetful functor, calling a map a
-morphism, or writing "underlying" does not place the argument in the
-category; computing the kernel, cokernel, or splitting there does
-(`MA-18`).
+(`FORM-11`, `FORM-12`), and the hypotheses the claim needs rather than
+the hypotheses a proof found convenient (`STR-8`). At that level the
+mathematics has a definite shape:
+
+- Constructions arise from universal properties, functors, and coherent
+  diagrams, not from elementwise descriptions (`EV-5`, `EV-8`, `DIA-7`).
+- The general construction comes first, and its variants are recovered
+  by established categorical operations: fibers, pullbacks, factorization
+  through a monomorphism (`DEF-42`, `TERM-18`, `SEC-12`).
+- Kernels, cokernels, exact sequences, and obstructions are stated
+  through the relationships they stand in, never as isolated symbols
+  (`EV-9`, `PR-75`, `CITE-7`).
+- The conventional textbook formulation is the floor, not the ceiling.
+  A notion the document has placed in a more structured setting is
+  stated there, and the elementary formulation is the proposition
+  recovered from it (`DEF-41`, `TERM-16`).
+- Concision follows from structure: an established construction carries
+  its meaning, so prose that re-explains it is deleted (`PR-76`), and
+  standard terminology and notation record that the writer recognizes
+  the established theory (`NOT-4`, `NOT-5`).
+
+Categorical vocabulary is not categorical reasoning: naming a forgetful
+functor, calling a map a morphism, or writing "underlying" does not
+place the argument in the category; computing the kernel, cokernel, or
+splitting there does (`MA-18`).
 
 Six judgments apply the test. Each is answered by a cited rule, never by
 the writer's recollection of what rigorous writing looks like.
 
 | Judgment | Rule |
 | --- | --- |
-| Which formulation states the mathematics | `TERM-16`, `DEF-39`, `DEF-41`, `PR-15` |
+| Which formulation states the mathematics | `TERM-16`, `DEF-39`, `DEF-41`, `DEF-42`, `PR-15` |
 | Which hypotheses are intrinsic and which are proof artifacts | `STR-3`, `STR-8`, `CITE-6` |
-| Which notation is standard, which is necessary, which is redundant | `NOT-4`, `NOT-5`, `NOT-10`, `SYM-14` |
-| Which relation earns a diagram or sequence, which an equation | `DIA-7`, `DEF-40`, `PR-75` |
-| Which construction is foundational, which an immediate consequence | `DEF-22`, `SEC-16`, `SEC-18`, `STR-6` |
-| Which fact is obvious, which needs a proof or a citation | `PR-9`, `EV-1`, `CITE-1`, `SEC-6` |
+| Which notation is standard, which is necessary, which is redundant | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `SYM-14` |
+| Which relation earns a diagram or sequence, which an equation | `DIA-7`, `DEF-40`, `PR-75`, `PR-77` |
+| Which construction is foundational, which an immediate consequence | `DEF-16`, `DEF-22`, `SEC-16`, `SEC-18`, `STR-6` |
+| Which fact is obvious, which needs a proof or a citation | `PR-9`, `EV-1`, `CITE-1`, `CITE-7`, `SEC-6` |
+
+## Gradients
+
+Each axis below runs from an underspecified formulation through an
+overshoot to the target. The overshoot is a defect of the same rank as
+the underspecification: a revision that lands there has moved along the
+axis without reaching the mathematics. The rules column names the tests
+that decide the position.
+
+| Axis | Underspecified | Overshoot | Target | Rules |
+| --- | --- | --- | --- | --- |
+| Maps | "the map factors through the kernel" | the lift, its triangle, and a sentence restating each, at every occurrence | the lift and its triangle where the argument uses them; the kernel's notation thereafter | `EV-11`, `EV-8`, `DIA-7`, `PR-76` |
+| Ambient category | a morphism by its "underlying function"; a Hom-object as a set | arrows and "forgetful" around an argument that runs on elements | the construction in the category where it has its universal property; Hom-objects with their structure | `FORM-11`, `FORM-12`, `MA-18` |
+| Precision | "the image subobject determined by $f$" | "injective monomorphism"; a paragraph of category terminology | $\operatorname{im}(f)$; the signature with its defining equation | `PR-76`, `PR-77`, `NOT-10` |
+| Set theory | "the underlying set of the cokernel consists of classes" | categorical vocabulary as a reformulation after the fact | the adjoint and its kernel; the structure organizes the argument | `MA-18`, `DEF-39`, `STR-1` |
+| Diagrams | prose for a pullback | a display for every declaration; one construction over several displays | the square when the relation is diagrammatic; one display per construction | `DIA-7`, `PR-75`, `PR-77` |
+| Constructions | variants by near-identical formulas | named variants with no relation between them | one general construction; variants as fibers and pullbacks; the standard construction at its owner | `DEF-42`, `SEC-12`, `DEF-41` |
+| Definitions | a formula-dependent definition; consequences inside the block | a characterization through machinery the notion is not an instance of | the definition in the framework where the notion is an instance; consequences as propositions | `DEF-41`, `DEF-16`, `DEF-22` |
+| Theorems | a recipe as the statement | notation setup as the statement | the assertion; the construction in the proof | `SEC-16`, `SEC-18` |
+| Hypotheses | an unjustified restriction | the hypotheses one proof used | the claim's hypotheses, in the block | `STR-8`, `STR-3`, `CITE-6` |
+| Notation | $Q_f$, $b(\lambda)$ beside $M(\lambda)$, "the primitivity proposition" | a name for every map | standard, minimal, stable | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `XREF-7` |
+| Sameness | "the same", "agree canonically" | "canonical" asserted after a choice | the specified isomorphism; naturality; independence of the choice | `EV-11`, `MA-1` |
+| Classification | elementary conditions | a local classification with no global object | the global structural formulation, with the local description as its consequence | `DEF-41`, `TERM-16` |
+| Provenance | an unsupported claim | a citation in place of the statement or construction | the complete statement with its provenance | `CITE-1`, `CITE-6`, `CITE-7`, `EV-9` |
+| Density | pedagogical overexplanation | technical density with no reader | economy calibrated to the reader | `PR-18`, `PR-9`, `PR-76` |
+| Register | "objects satisfying $P$ form a subcategory" | formal register with no formal content | "the $P$-objects form a full subcategory", when that is the claim | `PR-15`, `TERM-16` |
 
 ## Oscillation gate
 

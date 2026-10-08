@@ -648,3 +648,30 @@ forms and extended to degenerate ones inside the same block (STR-8);
 hypotheses delegated to a citation — "satisfies the hypotheses of
 [@Nik80, Thm. 1.14.2]" (CITE-6); and names for maps that no later
 sentence uses (NOT-10).
+
+**41. Fifteen gradients, one overshoot each.** A second review of the
+same documents organized the defects of pattern 40 as axes, each with
+an underspecified end, a target, and an overshoot between them that a
+one-directional fix lands on: a map described in words, then a lift
+restated at every occurrence; a morphism by its underlying function,
+then "forgetful" and "$\mathbf{Set}$" around an elementwise argument;
+variants by near-identical formulas, then variants named and unrelated;
+an unsupported claim, then a citation in place of the construction.
+This tranche adds the gradients table to the policy, states the
+structural commitments the target positions share — constructions from
+universal properties, the general construction before its fibers,
+sequences through their relationships, the textbook formulation as floor
+and not ceiling — and codes the forms the documents show: Hom-objects
+treated as sets and the diagonal asserted $R$-linear (FORM-12);
+$\mathcal B_{R,W}$ and $\mathcal Q_{R,W}$, $\rho_L$ and $\rho_{L,q}$
+defined by parallel paragraphs (DEF-42); a signature on one display and
+its condition on the next (PR-77); $\operatorname{MM}(L)$, $g(L)$, and
+$K_L$ introduced "in the notation of [@MM09, Thm. V.5.1]" (CITE-7);
+consequences closing a definition block (DEF-16); $Q_f$ for
+$\operatorname{coker}(Uf)$ and $b(\lambda)$ beside $M(\lambda)$ (NOT-5,
+NOT-6); "canonical" after a choice and "unique up to isometry" with no
+two objects compared (EV-11); and the diagram or display for a plain
+declaration (DIA-7). MA-18 and DEF-41 are rewritten so that neither
+reads as a preference for the elementwise or textbook formulation: the
+test is whether the argument uses a categorical property, and whether
+the notion is an instance of the framework it is defined in.

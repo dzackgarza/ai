@@ -2675,11 +2675,42 @@ the exact sequence that already exhibits $I_L$ as the image of $\rho_L$;
 underlying monomorphism $Uf\colon UL\injects UM$ in
 $R\text{-}\mathbf{Mod}$" followed by "the forgetful functions … are
 monomorphisms in $\mathbf{Set}$"; "$\varphi\colon A\xrightarrow{\sim}B$
-identifies $A$ with $B$".
+identifies $A$ with $B$"; "an injective monomorphism".
 
 **Preferred:** the displayed epi–mono factorization
 $\Orth(L)\twoheadrightarrow I_L\hookrightarrow\Orth(A_L)$ of $\rho_L$,
-with no sentence about it; "for $f\colon L\to M$ in
-$\mathbf{Lat}_R^{\mathrm{nd}}$, $f$ is injective", with the one-line
-reason in the proof (`MA-18`); the arrow
+with no sentence about it; "every morphism of
+$\mathbf{Lat}_R^{\mathrm{nd}}$ is a monomorphism", with the reason
+$\ker(f)\hookrightarrow\radic(L)=0$ in the proof (`MA-18`); the arrow
 $\varphi\colon A\xrightarrow{\sim}B$ with its formula and nothing more.
+
+## `PR-77`: A map and its defining condition are one unit
+
+A map is declared with its source, target, and defining condition in one
+place: inline — "a morphism $f\colon M\to N$ with
+$b_M=b_N\circ(f\otimes_Rf)$" — or in one display with the condition
+beside the signature. A signature on one display, the word "satisfying"
+or "such that" on its own line, and the condition on a second display
+split one mathematical statement into fragments that none of the three
+pieces carries (`PR-75`). The reader reassembles a definition
+the writer had in one piece. The same applies to a construction given as
+several displays joined by minimal prose: a single construction is one
+display, aligned if it needs more than one line, or one diagram when its
+relation is diagrammatic (`DIA-7`).
+
+Observed in `dzackgarza/research` (working tree over `26d4e303bc`):
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+definition "Form categories";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md`, the
+definition of the discriminant quadratic form.
+
+**Banned:** "morphisms $$f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$$
+satisfying $$b_M=b_N\circ(f\tensor_Rf).$$"; "the unique quadratic
+morphism $$q_L\colon A_L^\sharp\too\tfrac2{N_q(L)}\bZ/J_L$$ satisfying
+$$q_L\circ\pi_L(x)=\beta_{L_\bQ}(x,x)+J_L.$$"
+
+**Preferred:** "morphisms $f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$ with
+$b_M=b_N\circ(f\otimes_Rf)$"; one display,
+"$q_L\colon A_L^\sharp\to\tfrac2{N_q(L)}\mathbb Z/J_L,\qquad
+q_L(\pi_L(x))=\beta_{L_{\mathbb Q}}(x,x)+J_L$", the signature and its
+condition read as one statement.

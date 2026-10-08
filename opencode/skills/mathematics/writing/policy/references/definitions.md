@@ -344,13 +344,23 @@ general ring, a comment on additional data, a pointer to a subtlety —
 belongs in a Remark block or in the paragraph following the definition,
 not inside the definition block. An example belongs in its own Example
 block, and a comparison of alternative formulations in its own Remark block
-(`DEF-28`). A definition that contains its own counterexample, warning, or
-example cannot be cited, linked, or included elsewhere as the defining
-occurrence without dragging them along.
+(`DEF-28`). A consequence of the definition — an implication between
+the notions just defined, a condition under which two of them coincide —
+is a proposition with its proof or citation, placed after the block
+(`SEC-16`). A definition that contains its own counterexample, warning,
+example, or consequences cannot be cited, linked, or included elsewhere
+as the defining occurrence without dragging them along.
 
 **Banned:** a "::: {#def-modules-over-ring}" block whose last sentence is
 "For a general ring, an equivalence between left and right module
-categories is additional data …"
+categories is additional data …"; a definition block for symmetric,
+alternating, and even forms that closes with "Alternating forms are
+skew-symmetric. The converse holds when multiplication by $2$ on $W$ is
+a monomorphism. When multiplication by $2$ is an epimorphism, every
+bilinear form is even" (`dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+working tree over `26d4e303bc`, definition "Symmetry, alternation, and
+evenness").
 
 **Preferred:** close the definition after its defining sentences, then
 write "::: {.Remark}" or a plain paragraph for the warning. The
@@ -945,22 +955,34 @@ structure level the theorem has.
 
 ## `DEF-41`: An established notion is defined by its established formulation
 
-A notion the literature defines is defined here as the literature
-defines it, in the framework the document has already set up; every
-reformulation is a proposition with the equivalence proved or cited
-(`DEF-22`). Three substitutions fail this rule: a characterization
-through heavier machinery presented as the definition of an elementary
-notion; a standard universal construction presented as an improvised
-list of relations in running prose, with no name, no block, and no
-citation; and an elementary reformulation of a notion the document has
+A notion the literature defines is defined here by a formulation the
+literature recognizes, stated in the most structured framework the
+document has set up; every other formulation is a proposition with the
+equivalence proved or cited (`DEF-22`). The textbook formulation is the
+floor, not the ceiling. A document that has introduced the adelic group
+$\Orth(V_{\mathbb A_f})$, the category $\mathbf{Bil}_R$, or the
+universal quadratic module $\Gamma_R^2(M)$ states each notion that lives
+there in those terms — the genus as an orbit, the discriminant form as a
+cokernel in $\mathbf{Bil}_R$ — and recovers the elementary formulation as
+a proposition. The test that separates the structured definition from a
+gratuitous one: a framework in which the notion is an instance of a
+general construction is where the notion is defined; a framework that
+merely detects the notion supplies a characterization. Evenness is a
+condition on the values of $b$ in $W$, so it is defined in $W$; the
+quadratic refinement that detects it is the proposition. Three
+substitutions fail this rule: a characterization through machinery the
+notion is not an instance of, presented as its definition; a standard
+universal construction presented as an improvised list of relations in
+running prose, with no name, no block, and no citation; and a retreat
+to the elementary textbook formulation for a notion the document has
 already placed in a more structured framework. Each hides where the
 notion comes from. The third also makes the document's architecture
-inconsistent: once the adelic objects $\widehat L$ and
-$\Orth(V_{\mathbb A_f})$ are introduced, every notion that lives in them
-is stated in them. An ad hoc reformulation is also where errors enter:
-a place-by-place condition rewritten from memory can quantify over the
-wrong objects. Before writing a definition, read the standard source's
-formulation (`DEF-2`) and name the object the source names (`TERM-16`).
+inconsistent: once $\widehat L$ and $\Orth(V_{\mathbb A_f})$ are
+introduced, every notion that lives in them is stated in them. An ad hoc
+reformulation is also where errors enter: a place-by-place condition
+rewritten from memory can quantify over the wrong objects. Before
+writing a definition, read the standard source's formulation (`DEF-2`)
+and name the object the source names (`TERM-16`).
 
 Observed in `dzackgarza/research` (working tree over `26d4e303bc`):
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
@@ -994,3 +1016,43 @@ genus of $L$ if $\widehat M=\alpha\widehat L$ for some
 $\alpha\in\Orth(V_{\mathbb A_f})$", with the local condition
 $M\otimes_RR_v\cong L\otimes_RR_v$ at every finite place $v$ as the
 proposition that connects it (`TERM-16`, `DEF-22`).
+
+## `DEF-42`: Variants of one construction are its fibers and parameter values
+
+Several notions defined by nearly identical paragraphs — the same
+construction for bilinear and for quadratic forms, for each value module,
+for each type of lattice — are one construction with a parameter. Define
+the general construction once, at its owner (`SEC-12`), and obtain each
+variant by an established categorical operation: the fiber of a
+projection over a parameter value, the pullback along a monomorphism,
+the category of elements of a presheaf, the factorization of a map
+through a subobject. "Define $\mathcal Q$ similarly" and a second
+paragraph that repeats the first with one letter changed both hide that
+the variants are related, and they make every later statement about the
+relation a comparison of two unrelated definitions. The elementary
+variant is recovered as a proposition from the general construction, not
+defined first and generalized later (`DEF-38`, `TERM-18`).
+
+Observed in `dzackgarza/research` (working tree over `26d4e303bc`):
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+definition "Form categories";
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`,
+definition "Bilinear and quadratic discriminant representations".
+
+**Banned:** "define $\mathcal B_{R,W}$ to have pairs $(M,b)$ with
+$b\in\Bil_{R,W}(M)$ and morphisms … satisfying $b_M=b_N\circ(f\otimes_Rf)$.
+Define $\mathcal Q_{R,W}$ similarly from $\operatorname{Quad}_{R,W}$";
+two parallel paragraphs "Let $I_L\injects\Orth(A_L)$ be the image
+subobject. Then $1\to\widetilde\Orth(L)\to\Orth(L)\to I_L\to1$ is exact"
+and "Let $I_{L,q}\injects\Orth(A_{L,q})$ be the image subobject. … Then
+$1\to\widetilde\Orth(L)\to\Orth(L)\to I_{L,q}\to1$ is exact".
+
+**Preferred:** "$\mathcal B_{R,W}:=\int\Bil_{R,W}$ and
+$\mathcal Q_{R,W}:=\int\operatorname{Quad}_{R,W}$, the categories of
+elements of the presheaves $\Bil_{R,W}$ and $\operatorname{Quad}_{R,W}$
+on $R\text{-}\mathbf{Mod}$", with $\mathcal B_{R,W}$ also the fiber of
+$p_{\mathrm{Bil}}\colon\mathbf{BilMod}_R\to R\text{-}\mathbf{Mod}$ over
+$W$; "$\rho_{L,q}$ is the factorization of $\rho_L$ through the
+monomorphism $j_q\colon\Orth(A_{L,q})\hookrightarrow\Orth(A_L)$, and its
+exact sequence is the pullback of the sequence for $\rho_L$ along $j_q$"
+— one construction, the variant as an operation on it.

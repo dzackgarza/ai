@@ -92,3 +92,37 @@ and the rank-versus-length inequality at each prime, transcribed from
 $g(L)=1$" with the citation at the claim; the admissibility conditions
 of the classification theorem listed in the block, the citation after
 them.
+
+## `CITE-7`: A citation defines no symbol and supplies no construction
+
+Every object that a statement uses is defined in the document's own
+notation, at a defining occurrence the statement can cite (`DEF-26`,
+`SYM-1`). "In the notation of [@X, Thm. n], let $\operatorname{MM}(L)$
+be …", "the subgroup appearing in [@X]", and "as constructed in [@X]"
+define nothing: the reader must leave the page to learn what the symbol
+denotes, and the document's theorem is a theorem about an object it
+never introduced. The citation records where the object was first
+constructed or the result first proved; the construction itself is
+transcribed into the document (`DEF-2`) in the document's conventions,
+and the cited theorem is stated with the hypotheses it needs
+(`CITE-6`). A result whose objects are defined only by reference is a
+borrowed assertion, not a statement the document makes.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `26d4e303bc`), theorem "The Miranda–Morrison exact
+sequence".
+
+**Banned:** "In the notation of [@MM09, Thm. V.5.1], let
+$\delta_L\colon\Orth(A_{L,q})\too\operatorname{MM}(L)$ be the
+Miranda–Morrison connecting morphism and let $g(L)$ be the genus group";
+"If $K_L\injects\Sigma(L)$ denotes the pullback subgroup appearing in
+[@MM09, Thm. V.5.1], then …".
+
+**Preferred:** definition blocks for $\Sigma(L)$, $\Sigma^\#(L)$, and
+$K_L$ transcribed from the source into the document's notation, with
+$\operatorname{MM}(L)$ defined as the cokernel the document's own
+sequence $1\to K_L\Sigma^\#(L)\to\Sigma(L)\to\operatorname{MM}(L)\to1$
+exhibits and $g(L)$ defined as the genus group of the genus chapter
+(`SEC-12`); then the theorem, with [@MM09, Thm. V.5.1] cited at the
+exactness claim.
