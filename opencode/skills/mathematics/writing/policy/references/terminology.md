@@ -179,16 +179,35 @@ is the (terminal) cone $(P\to X, P\to Z)$ over $X\to Y\leftarrow Z$ that
 is terminal among cones, introduced once in the definition of pullbacks.
 Every technical term beyond what an undergraduate would know is defined
 at a defining occurrence before use; a colloquial term is not used in its place.
+A term imported from a neighboring literature as the name of a hypothesis
+— "the homocyclic case" for a torsion module whose invariant factors
+coincide — is the same defect: the document never defines it, the reader
+cannot recover the hypothesis from it, and the hypothesis is one
+isomorphism the page already has the notation to write (`TERM-16`,
+`TERM-17`).
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `76d4ef22ae`), proposition "Matrix realizations of
+isometry and automorphism groups", and
+`references/mathematical-theory-foundations.md` at `76d4ef22ae`, Remark
+26.5.
 
 **Banned:** "the fiber … is the apex of the cartesian square";
 "objects that carry both structures" (EV-2); "the discriminant package"
-(EV-3); "a torsion theory has been specified" (TERM-4).
+(EV-3); "a torsion theory has been specified" (TERM-4); "In the
+homocyclic case this gives
+$\Aut\qty{(\bZ/d\bZ)^n}\cong\GL_n(\bZ/d\bZ)$"; "In the homocyclic case
+$A\simeq(R/I)^n$, the familiar matrix subgroup description is valid".
 
 **Preferred:** "the fiber is the pullback $X\times_Y 1$ with its terminal
 cone $(X\times_Y 1\to X, X\times_Y 1\to1)$"; "a structure on $X$ is a
 chosen object in the fiber over $X$ of $U\colon\mathcal{S}\to\mathcal{C}$";
 "a hereditary torsion pair $(\mathcal{T},\mathcal{F})$ has been
-specified."
+specified"; "when $d_1=\dots=d_r=d$, so that $A\cong(\bZ/d\bZ)^{\oplus r}$
+is a free $\bZ/d\bZ$-module of rank $r$,
+$\Aut_{\bZ}(A)\cong\GL_r(\bZ/d\bZ)$" — the hypothesis written as the
+condition on the invariant factors already on the page.
 
 ## `TERM-8`: Colloquial "cartesian square" and technical term not defined in the document
 
@@ -473,7 +492,13 @@ $\gamma\colon A_T\xrightarrow{\sim}A_S$ be the gluing anti-isometry" in
 a document whose twist functor $(-)(-1)$ already makes the object an
 isometry (`dzackgarza/research`,
 `research/coble/surfaces-and-moduli/k3-automorphisms.md` at
-`2b758e124b`).
+`2b758e124b`); "the corresponding invariants of $T_{-1}(L)$" for the
+twist $L(-1)$, in a document whose definition of the signature
+subcategories writes the same functor as $(-)(-1)$
+(`dzackgarza/research`,
+`research/lattice-theory/definite/minima-and-regularity.md` at
+`76d4ef22ae`, definitions "Minimum, minimal vectors, and kissing number"
+and "Regular and spinor-regular ternary lattices"; `NOT-6`).
 
 **Preferred:** the standard term and symbol at the defining occurrence —
 *reducible*, *completely reducible*, *simple*, *indecomposable*,
@@ -482,8 +507,9 @@ at their natural owner (SEC-12); $\widetilde\Orth$, $\Orth^+$,
 $\widetilde\Orth^+$ with their definitions as kernels; "the gluing
 isometry $\gamma\colon A_{T,q}\xrightarrow{\sim}A_{S,q}(-1)$", a
 morphism of the document's category of torsion quadratic modules
-(`FORM-12`). A local name is recorded only as a pointer to the standard
-one.
+(`FORM-12`); "$L(-1)$", the twist of the document's twist definition, at
+every occurrence. A local name is recorded only as a pointer to the
+standard one.
 
 ## `TERM-17`: Set-theoretic adjectives do not replace algebraic properties
 

@@ -687,7 +687,11 @@ value object its construction determines, not into $\mathbb Q/\mathbb Z$
 radical–coradical sequence (DEF-39); a category with its morphisms and a
 functor with its action on morphisms at the defining occurrence
 (MA-13); "finitely generated free" for "finite free" (TERM-17) and the
-isometry to a twist for "anti-isometry" (TERM-16); the genus and
+isometry to a twist for "anti-isometry" (TERM-16); the invariant-factor
+condition written out for "the homocyclic case" (TERM-7); $L(-1)$ for
+$T_{-1}(L)$ (TERM-16); the citation for "the quadratic character itself
+is standard" (CITE-4); the equation of images for "the same image"
+(EV-11); the genus and
 Miranda–Morrison theory out of the isometries chapter (SEC-14); two
 equations for "the rank adds and the determinant multiplies" (PR-74);
 the map that realizes $dL$ for "differs from the twist" (EV-11); and the

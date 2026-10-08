@@ -33,13 +33,26 @@ computation, or attribution it supports, with a locator that reaches it
 (CITE-1). A bare list of works at the end of a passage — names and years
 with no stated result — is a reading list, not a citation: the reader
 cannot tell which work proves which claim. Cite each result where it is
-used.
+used. The converse holds: a sentence that calls an object "standard",
+"classical", or "the usual one" is a citation owed and not given. The
+word asserts that a source exists; the citation at the definition is
+what records it, and a remark about what a database or implementation
+stores is not mathematics the reader of the chapter uses (`SEC-17`).
 
-**Banned:** "We refer to: [@Vin85]; [@Vin75]."
+Observed in `dzackgarza/research`,
+`research/lattice-theory/lattice-theory.md` at `f80def8175`, remark
+"What the database stores".
+
+**Banned:** "We refer to: [@Vin85]; [@Vin75]."; "The quadratic
+character itself is standard; the database field
+`integral.quadratic_character` stores its conductor-discriminant datum
+$d_L$, not a table of character values."
 
 **Preferred:** "The structure theorem for the automorphism group we use
 is [@Vin85, Theorem 2.1]; the arithmeticity result is [@Nik80, Prop.
-1.15.1]" — each citation at the claim it supports, with a locator.
+1.15.1]" — each citation at the claim it supports, with a locator; the
+definition block of $\chi_L$ carrying the citation to the source that
+defines the discriminant character, and no remark about storage.
 
 ## `CITE-5`: Attribution belongs to the statement, not appended to it
 

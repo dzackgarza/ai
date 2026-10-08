@@ -191,7 +191,9 @@ Observed in `dzackgarza/research`:
 `research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/700-folding.md`
 at `26d4e303bc`, "Examples of Classical Foldings";
 `research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/200-examples.md`
-(working tree over `2b758e124b`), "Type $D$".
+(working tree over `2b758e124b`), "Type $D$";
+`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py`
+at `76d4ef22ae`, the docstring of `has_same_image_as`.
 
 **Banned:** "after the symmetry isomorphism carrying
 $(M\tensor_RN)^{\tensor2}$ to $M\tensor_RM\tensor_RN\tensor_RN$"; "there
@@ -199,7 +201,9 @@ is a decomposition $\Orth(L)\cong W(L)\semidirect P$ where
 $P\leq\Sym(G_{\Phi(L)})$ is some subgroup of diagram symmetries"; "the
 two constructions agree canonically"; "$A$ identifies with $B$"; "the
 lattice $dL:=\{d\cdot v\mid v\in L\}$, noting that this differs from
-the twist $L(d)$".
+the twist $L(d)$"; "a subgroup of the same discriminant module with the
+same image" — "same" for two subobjects names neither the equation of
+images nor the isomorphism over $A$ that witnesses it.
 
 **Preferred:**
 "$\sigma\colon(M\otimes_RN)^{\otimes2}\xrightarrow{\sim}M^{\otimes2}\otimes_RN^{\otimes2}$,
@@ -213,6 +217,11 @@ $\Orth(L)=W(L)\rtimes\operatorname{Stab}_{\Orth(L)}(\Delta)$
 [Humphreys, *Introduction to Lie Algebras and Representation Theory*,
 §12.2]"; "$dL=\operatorname{im}(d\cdot\colon L\to L)$, and
 $x\mapsto dx$ is an isometry $L(d^2)\xrightarrow{\sim}dL$" — the
-relation to the twist stated as the map that realizes it; the
-comparison morphism $\theta\colon A\to B$ with its formula and the
-statement that it is an isomorphism (`DIA-7`, `PR-74`).
+relation to the twist stated as the map that realizes it; "two
+subobjects $\iota\colon H\hookrightarrow A$ and
+$\iota'\colon H'\hookrightarrow A$ are equal when
+$\operatorname{im}(\iota)=\operatorname{im}(\iota')$, equivalently when
+there is an isomorphism $\varphi\colon H\xrightarrow{\sim}H'$ with
+$\iota'\circ\varphi=\iota$"; the comparison morphism
+$\theta\colon A\to B$ with its formula and the statement that it is an
+isomorphism (`DIA-7`, `PR-74`).
