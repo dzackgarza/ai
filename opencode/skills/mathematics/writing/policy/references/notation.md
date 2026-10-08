@@ -88,10 +88,18 @@ form" re-defined locally in one chapter and cited from another; "the
 module, written $M(\lambda)$" — two symbols introduced in one sentence
 for one object (`dzackgarza/research`,
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
-working tree over `26d4e303bc`, the twist).
+working tree over `26d4e303bc`, the twist); "the corresponding
+invariants of $T_{-1}(L)$" in a document whose definition of the
+signature subcategories writes the same functor as $(-)(-1)$ and whose
+twist definition writes $M(\lambda)$ — a third spelling, introduced
+where the construction is used rather than where it is defined
+(`research/lattice-theory/definite/minima-and-regularity.md` at
+`76d4ef22ae`, definitions "Minimum, minimal vectors, and kissing number"
+and "Regular and spinor-regular ternary lattices").
 
 **Preferred:** one defining occurrence per construction, one macro or
-symbol reused everywhere, every use linked (`DEF-26`, `NOT-3`,
+symbol reused everywhere — the symbol of the defining occurrence at
+every later occurrence — every use linked (`DEF-26`, `NOT-3`,
 `SEC-12`).
 
 ## `NOT-7`: A semantic macro is an atomic object-valued API

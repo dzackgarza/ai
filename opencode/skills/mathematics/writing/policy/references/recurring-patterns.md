@@ -688,8 +688,9 @@ radical–coradical sequence (DEF-39); a category with its morphisms and a
 functor with its action on morphisms at the defining occurrence
 (MA-13); "finitely generated free" for "finite free" (TERM-17) and the
 isometry to a twist for "anti-isometry" (TERM-16); the invariant-factor
-condition written out for "the homocyclic case" (TERM-7); $L(-1)$ for
-$T_{-1}(L)$ (TERM-16); the citation for "the quadratic character itself
+condition written out for "the homocyclic case" (TERM-7); the defining
+occurrence's symbol for
+$T_{-1}(L)$ (NOT-6); the citation for "the quadratic character itself
 is standard" (CITE-4); the equation of images for "the same image"
 (EV-11); the genus and
 Miranda–Morrison theory out of the isometries chapter (SEC-14); two
