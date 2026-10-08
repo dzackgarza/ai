@@ -225,3 +225,32 @@ there is an isomorphism $\varphi\colon H\xrightarrow{\sim}H'$ with
 $\iota'\circ\varphi=\iota$"; the comparison morphism
 $\theta\colon A\to B$ with its formula and the statement that it is an
 isomorphism (`DIA-7`, `PR-74`).
+
+"Agree canonically" for two constructions defined on different sides
+— the left and right orthogonal complements of a symmetric form — owes
+the inducing map and the proof: for $b\circ\tau=b$ the two adjoints
+coincide, so the two kernels are equal subobjects, and that equation
+is the content. "Identifies $A$ with $B$" and "the geometric
+identification of" are the same phrase with the map in a different
+grammatical slot.
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definition "Left and right
+orthogonal complements";
+`research/lattice-theory/embeddings/orthogonal-complements.md`
+(working tree over `57c8eb1cb0`), proposition "Primitive isotropic
+complements";
+`research/lattice-theory/special-lattices-and-transformations.md` at
+`ab530c1dcc`, proof under "The scaled hyperbolic plane $U(2)$".
+
+**Banned:** "For a symmetric bilinear module over the commutative base
+ring $R$, the two kernel objects agree canonically."; "The morphism
+$\lambda_v$ identifies $\generators{v}_{\bZ}$ with"; "geometric
+identification of".
+
+**Preferred:** "for $b\circ\tau=b$,
+$b^\sharp_{\mathrm L}=b^\sharp_{\mathrm R}$, so
+${}^{\perp_b}T=T^{\perp_b}$ as subobjects of $M$";
+"$\lambda_v\colon\langle v\rangle_\bZ\injects v^{\perp_L}$ is the
+unique morphism with $\kappa_v\circ\lambda_v=\iota_v$"; the map named.

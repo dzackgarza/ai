@@ -120,6 +120,28 @@ $\mathbf{Grp}$". Name the category at the construction; state the
 creation/preservation claim before computing downstairs
 (`SEC-12`, `EV-9`).
 
+The forgetful functor also decides where a property is defined. A
+module-theoretic property of a structured object $(L,b)$ — primitivity
+of a sublattice, torsion-freeness of a cokernel, finite generation —
+is the property of $U(L,b)$, defined once for modules and applied to
+the underlying module (`DEF-45`); re-spelling it per structure with
+$U$ in the sentence ("the cokernel sequence of $U(f)$ in
+$R\text{-}\mathbf{Mod}$ … has torsion-free $Q_f$") names the functor
+the definition should have made invisible and takes the cokernel
+downstairs where the structured cokernel exists (`PR-76`, `NOT-5`).
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `57c8eb1cb0`), definition "Primitive embeddings".
+
+**Banned:** "is a *primitive embedding* when the cokernel sequence of
+$U(f)$ in $R\text{-}\mathbf{Mod}$ … has torsion-free $Q_f$".
+
+**Preferred:** "a morphism $f\colon S\to L$ of $\mathbf{Lat}_R$ is
+**primitive** when $\operatorname{coker}(f)$ is torsion-free" — the
+cokernel taken in $\mathbf{Bil}_R$, torsion-freeness the property of
+its underlying module.
+
 ## `FORM-12`: Hom-objects, functors, and non-linear maps keep their ambient category
 
 A Hom-object carries the structure its category gives it:

@@ -366,6 +366,24 @@ evenness").
 write "::: {.Remark}" or a plain paragraph for the warning. The
 definition is citable; the remark is separate.
 
+Observed also in `dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definition "Rank one forms, the
+hyperbolic plane, and split forms": the block defines *split* and
+continues with a classification theorem and its specialization to
+fields.
+
+**Banned:** "A perfect symmetric form $b$ on $M$ is *split* if $M$ has
+a direct summand $N$ with $N=N^{\perp_b}$ [@MH73, I §6.1]. Over a ring
+whose finitely generated projective modules are free and in which $2$
+is a unit, a split form is an orthogonal sum of hyperbolic planes
+[@MH73, I §6.3]; this applies to a field of characteristic other than
+$2$." as one definition block.
+
+**Preferred:** the definition of *split* closed after its defining
+sentence; the theorem of [@MH73, I §6.3] in its own block with its
+hypotheses; the field case as its corollary.
+
 ## `DEF-17`: Reminder masquerading as a definition
 
 A paragraph that writes "For a ring $A$, write $A\text{-}\mathbf{Mod}$
@@ -935,6 +953,32 @@ characterization as a proposition. Likewise: reframe a notion in terms of the va
 $\operatorname{Val}(b)\subseteq W$ instead of carrying $b(x,x)\in 2W$
 through every use (PR-45).
 
+A surjectivity claim is the same statement from the other end:
+"$\Orth(L)\to\Orth(T)$ is surjective" is "the cokernel, or the
+obstruction group, of a stated sequence vanishes", and the sequence,
+not the adjective, is what the later theory uses — the next question
+is always the kernel, and a surjectivity sentence leaves it unnamed
+(`DEF-40`, `CITE-8`).
+
+Observed in `dzackgarza/research`:
+`research/coble/lattices-and-moduli/lattices.md` (working tree over
+`57c8eb1cb0`), proof under "Period domain embeddings and
+normalization";
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, theorem "$\Orth(H)\to\Orth(A_{H,q})$ is surjective for
+indefinite $2$-elementary $H$".
+
+**Banned:** "the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is
+surjective."; a theorem whose statement ends "is surjective." with no
+sequence stated.
+
+**Preferred:** "for the restriction $r\colon\Orth(\lkt)\to\Orth(T_\Co)$,
+the sequence $1\to\ker(r)\to\Orth(\lkt)\xrightarrow{r}\Orth(T_\Co)$
+with $\ker(r)$ identified, and the claim $\operatorname{im}(r)=\Orth(T_\Co)$
+with the extension criterion that proves it cited at the step"; the
+exact sequence $1\to\widetilde\Orth(H)\to\Orth(H)\to\Orth(A_{H,q})\to1$,
+the theorem being exactness at the last term.
+
 ## `DEF-40`: Give the complete structural construction
 
 A construction that comes as a fiber, cofiber, or short exact sequence is
@@ -959,6 +1003,49 @@ $N\hookrightarrow M\twoheadrightarrow M/N$ with its maps named (PR-56);
 "the map $K\mapsto K/L$ is an order isomorphism from the overlattice
 poset to the isotropic-subgroup poset of $D_L$" — the statement at the
 structure level the theorem has.
+
+The same rule fixes the terms. The codomain of the morphism is its
+natural codomain, and the sequence continues to the cokernel:
+$0\to\ker f\to M\xrightarrow{f}N\to\operatorname{coker}f\to0$.
+Truncating at $\operatorname{im}(f)$ specializes early; the image is
+recovered from the full sequence by epi–mono factorization and need
+not be a term (`PR-76`). A two-sided construction is given on both
+sides (`STR-7`). An object produced by a kernel or cokernel is defined
+by its place in the sequence — "$B^{\mathrm{nd}}$ is defined by the
+exact sequence $0\to\radic(B)\xrightarrow{\rho_B}B\to B^{\mathrm{nd}}\to0$
+in $\mathbf{BilMod}_R$" — not by a separate "Define
+$B^{\mathrm{nd}}:=\coker(\rho_B)$" that restates the sequence as a
+formula (`PR-75`, `NOT-10`). And a condition on a morphism is a
+condition on a term: "when there is a short exact sequence
+$0\to S\to L\to Q\to0$" conditions on the existence of a cokernel,
+which every morphism of modules has, where the intended condition is
+on $\operatorname{coker}(f)$ (`DEF-39`).
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definitions "Left and right
+orthogonal complements" and "Nondegenerate reduction";
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md` at
+`ab530c1dcc`, definition "Primitive embeddings".
+
+**Banned:** "Define the **left orthogonal complement**
+\({}^{\perp_b}T\) and the **right orthogonal complement**
+\(T^{\perp_b}\) by the kernel exact sequences
+$$0\too{}^{\perp_b}T\xrightarrow{\kappa_{\iota}^{\mathrm L}}M\xrightarrow{\lambda_{\iota}^{\mathrm L}}\operatorname{im}(\lambda_{\iota}^{\mathrm L})\too0$$
+and" — the codomain truncated to the image, the right complement
+promised and not displayed; "Let $B$ be a symmetric bilinear module
+and let $$\rho_B\colon\radic(B)\too B$$ be its radical morphism.
+Define $$B^{\mathrm{nd}}\definedas\coker_{\mathbf{BilMod}_R}(\rho_B).$$";
+a primitive embedding defined "when there is a short exact sequence".
+
+**Preferred:**
+"$0\to{}^{\perp_b}T\to M\xrightarrow{\iota^*\circ b^\sharp_{\mathrm L}}\Hom_R(T,W)\to\operatorname{coker}\to0$,
+and $T^{\perp_b}$ by the same sequence with $b^\sharp_{\mathrm R}$" —
+both sides, the natural codomain, the cokernel named;
+"$B^{\mathrm{nd}}$ is defined by the exact sequence
+$0\to\radic(B)\xrightarrow{\rho_B}B\to B^{\mathrm{nd}}\to0$ in
+$\mathbf{BilMod}_R$"; "$\iota\colon S\to L$ is **primitive** when
+$\operatorname{coker}(\iota)$ is torsion-free".
 
 ## `DEF-41`: An established notion is defined by its established formulation
 
@@ -1104,3 +1191,183 @@ $\cardinality{\operatorname{Gen}(L)}=\sum_{[M]\in\Cl(L)}1/\cardinality{\Orth(M)}
 [Baez–Dolan, *From finite sets to Feynman diagrams*, 2001; Conway–Sloane,
 *Sphere Packings, Lattices and Groups*, Ch. 16] — each count an
 operation on the groupoid, with the genus itself defined as in `DEF-41`.
+
+The same distinction governs the embedding object: $\Emb(S,L)$, its
+orbit set $\Orth(L)\backslash\Emb(S,L)$, and the double quotient
+$\Orth(L)\backslash\Emb(S,L)/\Orth(S)$ are three objects, and
+"describing $\Emb(S,L)$ amounts to classifying the $\Orth(L)$-orbits"
+passes from the first to the second in a verb (`FORM-10`).
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/embeddings-and-overlattices.md` at
+`ab530c1dcc`, the remark under "Equivalence of embeddings".
+
+**Banned:** "Since an equivalence identifies $\iota_1(S)$ with
+$\iota_2(S)$ as sublattices of $L$, describing $\Emb(S, L)$ amounts to
+classifying the $\Orth(L)$-orbits of primitive sublattices of $L$
+isometric to $S$, together with the choice of isometry onto each such
+sublattice."
+
+**Preferred:** "$\Orth(L)\backslash\operatorname{PrimEmb}(S,L)$ is the
+set of $\Orth(L)$-orbits of primitive embeddings;
+$\Orth(L)\backslash\operatorname{PrimEmb}(S,L)/\Orth(S)$ is the set of
+orbits of primitive sublattices isometric to $S$" — each quotient
+named, the passage between them a map.
+
+## `DEF-44`: A block has one lede, and the lede comes first
+
+A fenced block exists for one sentence: the definiens, the assertion, or
+the instance. That sentence is the first sentence after the hypotheses
+needed to parse it. Auxiliary objects the sentence uses are defined in
+their own earlier block or recalled with a link (`XREF-6`, `DEF-45`);
+the construction that witnesses the assertion is the proof (`SEC-16`,
+`SEC-18`); consequences are propositions after the block (`DEF-16`); a
+second claim is a second sentence, not a subordinate clause. The test:
+delete every sentence of the block but one. If no single surviving
+sentence is the block's reason to exist, the block is setup, a
+construction, or a remark wearing a block type (`PR-64`, `EX-2`). The
+tells: the defined term or the claim arrives after "Then" at the end of
+a paragraph of "Put" and "Define" constructions; the content-carrying
+sentence is subordinated to a construction — "under this isomorphism,
+$\id_X$ corresponds to …", "therefore … is determined by …"; "the
+analogous statement holds for $Y$" closes the block and asserts nothing
+checkable, where the statement for $Y$ is one more sentence.
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/embeddings/orthogonal-complements.md` (working
+tree over `57c8eb1cb0`), propositions "Splitting an isotropic
+orthogonal complement" and "Discriminants of orthogonal sums";
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, definition "Spinor genera and their class numbers";
+`research/category-theory/framework/Categorical-Foundations.md` at
+`ab530c1dcc`, definition "Representable presheaves" and theorem "The
+Yoneda lemma".
+
+**Banned:** a proposition whose statement reads "By
+@prop:primitive-characterization there exists a retraction
+$$\epsilon\colon L\too\bZ,\qquad\epsilon\circ\iota_v=\id_{\bZ}.$$ Put
+$$\epsilon_v\definedas\epsilon\circ\kappa_v\colon v^{\perp_L}\too\bZ.$$
+Then $$\epsilon_v\circ\lambda_v=\id_{\bZ},$$ so the exact sequence of
+@prop:primitive-isotropic-complement splits in
+$\bZ\text{-}\mathbf{Mod}$." — the claim is the last clause, and the
+construction before it is the proof; "Then $N_q(L)=N_q$ and the
+analogous orthogonal-sum isometry holds for the quadratic discriminant
+forms after postcomposition by the $u_{q,i}$."; a definition block that
+opens "Define $\Theta(V_p)$ by the short exact sequence" and reaches the
+spinor genus several sentences later; "The presheaf $F$ is
+*representable* if there is an object $X$ and a natural isomorphism
+$F\cong\Hom_C(-,X)$. Under this isomorphism, $\id_X$ corresponds to the
+universal element." — the universal element defined in a subordinate
+clause; a theorem block whose assertion is its trailing sentence "A
+representation is therefore determined by its universal element, and
+two representations of the same functor are related by a unique
+isomorphism compatible with the universal elements."
+
+**Preferred:** "**Proposition.** The exact sequence of
+@prop:primitive-isotropic-complement splits in
+$\bZ\text{-}\mathbf{Mod}$." with the retraction $\epsilon$ and the
+section constructed in the proof; two stated claims,
+"$N_q(L_1\perp\dots\perp L_n)=\operatorname{lcm}_iN_q(L_i)$, and
+$u_q\colon A_{L_1\perp\dots\perp L_n,q}\isoto\perp_iA_{L_i,q}$ is an
+isometry"; $\Theta(V_p)$ in its own definition block, then
+"**Definition.** The **spinor genus** of $L$ is …" as the first
+sentence of the next; "the **universal element** of a representation
+$\eta\colon\Hom_C(-,X)\isoto F$ is $\eta_X(\id_X)\in F(X)$"; a theorem
+opening "A representation $(X,\eta)$ of $F$ is determined by its
+universal element: for representations $(X,\eta)$ and $(X',\eta')$
+there is a unique isomorphism $X\isoto X'$ carrying $\eta_X(\id_X)$ to
+$\eta'_{X'}(\id_{X'})$."
+
+## `DEF-45`: Recall a notion at its general owner; define the special case through it
+
+A notion already defined on a class that contains the current objects
+or their components — the length of a module, an elementary $p$-group,
+the divisibility ideal of a vector, the exponent of a finite group — is
+not defined again where a lattice-theoretic instance of it is needed.
+The general notion is recalled with a link to its defining occurrence
+(`XREF-6`), and the lattice notion is defined as the general notion
+evaluated on the component: "$\ell(L):=\ell(A_L)$"; "$L$ is
+**$p$-elementary** when $A_L$ is an elementary $p$-group
+(@def-elementary-module)". A local redefinition creates a second
+defining occurrence of one notion (`NOT-6`, `NOT-3`), detaches the
+lattice notion from the theory that owns the general one, and can
+define a different notion under the owner's symbol: a gloss "the
+minimal number of generators" written beside $\ell$, when $\ell$
+denotes composition length at its owner, puts two invariants that agree
+only on elementary abelian $p$-groups under one symbol. When the
+lattice theory needs the other invariant — the minimal number of
+generators of $A_L$ of [@Nik80] — that invariant is defined at its own
+owner under its own name, and the lattice notion is defined through it.
+The same mechanism governs a property of a structured object that is a
+property of its underlying module (`FORM-11`, `TERM-19`): it is
+defined once for modules and applied, not re-spelled per structure.
+The companion rule `SEC-19` governs classical notions that need no
+definition in the document at all.
+
+Observed in `dzackgarza/research` (working tree over `57c8eb1cb0`):
+`research/lattice-theory/discriminant-forms-and-genus.md`, the
+definition of the discriminant length beside definition "Discriminant
+bilinear and quadratic forms";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md`,
+definition "$p$-elementary lattices".
+
+**Banned:** "The **discriminant length** is
+$$\ell(L)\definedas\ell\qty{A_L^\sharp},$$ the minimal number of
+generators of the finite-length $\bZ$-module $A_L^\sharp$." — $\ell$ on
+the right is the length of a module, defined elsewhere, and the gloss
+redefines it; "A $\bZ$-lattice $S$ is **$p$-elementary** when its
+discriminant carrier module is elementary:" followed by a restatement
+of the elementary condition.
+
+**Preferred:** "Recall (@def-length) that $\ell(A)$ is the length of a
+finite-length $\bZ$-module $A$. The **discriminant length** of $L$ is
+$\ell(L):=\ell(A_L)$."; "$L$ is **$p$-elementary** when $A_L$ is an
+elementary $p$-group (@def-elementary-module), equivalently when
+$pA_L=0$" — the general notion owned elsewhere, the lattice notion as
+its evaluation.
+
+## `DEF-46`: A local–global condition is one adelic condition over the base ring
+
+A condition quantified over places — "for every place $v$ of $K$", "for
+every prime $p$", "$\sigma_p$ for every prime $p$, with $\sigma_p$ the
+identity for almost all $p$" — is one condition on one object over the
+adelic ring: the profinite completion
+$\widehat R=\prod_{\mathfrak p}R_{\mathfrak p}$, the restricted product,
+or the adele ring $\mathbb A_K$. The place-by-place family is the
+projection of that object onto its components, a corollary of the
+adelic statement, and the construction is stated over the document's
+base ring $R$ with $\bZ$ as the specialization (`PR-72`, `PR-71`,
+`DEF-38`, `TERM-18`). Writing the family in place of the object leaves
+the group that acts, the double coset that counts, and the exact
+sequence that measures the obstruction unnamed, so the theory built on
+them — class sets, spinor genera, the Hasse principle — is reached by
+prose instead of by the standard constructions. A quantifier over
+places where a module over the adelic ring is meant is the tell;
+"lattices in the same rational quadratic space" is a second: it names
+no map, where the datum is an isometry $L\otimes_RK\isoto M\otimes_RK$
+(`EV-11`).
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `57c8eb1cb0`), definition "Genus and class set";
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, definition "Spinor genera and their class numbers".
+
+**Banned:** the genus as the "full subgroupoid on lattices $M$
+satisfying $M\otimes_RK_v\isoto L\otimes_RK_v$ for every place $v$ of
+$K$"; "elements $\sigma_p\in\Theta(V_p)$ for every prime $p$, with
+$\sigma_p$ equal to the identity for almost all $p$, such that"; "in
+the same rational quadratic space" for two lattices with no isometry of
+their ambient spaces named.
+
+**Preferred:** "$\operatorname{Gen}(L)$ is the full subgroupoid of
+$\mathbf{Lat}_R^{\mathrm{nd},\simeq}$ on the lattices $M$ with
+$M\otimes_R\widehat R\cong L\otimes_R\widehat R$ in
+$\mathbf{Lat}_{\widehat R}$ and
+$M\otimes_RK_\sigma\cong L\otimes_RK_\sigma$ at the archimedean places
+$\sigma$"; the class set as the double coset space
+$O(V)\backslash O(V_{\mathbb A})/O(L_{\mathbb A})$ [O'Meara,
+*Introduction to Quadratic Forms*, §§101–102]; the spinor genus through
+the spinor norm on $O^+(V_{\mathbb A})$, an element of the restricted
+product $\prod'_{\mathfrak p}\Theta(V_{\mathfrak p})$ being one object;
+"for an isometry $\varphi\colon L\otimes_RK\isoto M\otimes_RK$".

@@ -205,6 +205,33 @@ discusses provenance bookkeeping, internal status, what is or is not
 included, collection membership, missing sources, or any other curation
 concern (`PROSE-11`).
 
+A remark, or a sentence inside a block, that describes the shape of
+the mathematics instead of stating mathematics — which object a
+condition is a condition on, that two properties are additional, that
+constructions proceed from an object, that notions are recalled —
+states nothing the reader can use or check. The test is that of
+`SEC-6`: delete the sentence; if no definition, claim, or example is
+lost, the sentence was commentary (`PROSE-17`, `PR-36`).
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`57c8eb1cb0`, example "Determinant order does not imply
+2-elementarity", and at `ab530c1dcc`, the untitled remark at the head
+of the file; `research/lattice-theory/lattice-theory.md` (working tree
+over `57c8eb1cb0`), convention "Integral lattice specialization", and
+at `ab530c1dcc`, the remark under "Basic Theory".
+
+**Banned:** "Membership is a condition on the group $A_S$, while its
+order is only the scalar invariant $\abs{\disc{S}}=p^a$."; "Positive
+definiteness and unimodularity are additional properties."; "and
+scalar extensions are formed from this integral object."; "We recall
+the basic lattice-theoretic notions and arithmetic invariants used
+throughout this section."
+
+**Preferred:** the sentences deleted; the example closes with its
+computation, the convention with its definition, and the section opens
+with its first block.
+
 ## `SEC-8`: Specialization of a general construction with no new claim
 
 A general construction is already defined — extension of scalars
@@ -323,6 +350,27 @@ section where it is defined, and let the specialized sections cite it
 pairings, then $W$-valued bilinear modules, then $W$-valued lattices,
 then torsion forms, then definite, indefinite, and hyperbolic lattices,
 then embedding theory.
+
+Invariants and coinvariants of a group action are owned by the section
+on isotypic decomposition — $L^G=\Hom_{\bZ[G]}(\bZ,L)$ and $L_G$ as
+the fixed and the complementary parts of a $\bZ[G]$-module — and the
+lattice section recalls them; a definition that builds $L^G$ as "the
+common equalizer in $\bZ\text{-}\mathbf{Mod}$" inside the lattice
+chapter constructs a module-theoretic object at the wrong owner, under
+a local name (`TERM-16`, `DEF-45`).
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(working tree over `9be9b833a6`), definition "Invariant and
+coinvariant lattices".
+
+**Banned:** "Define $\iota^G\colon L^G\injects L$ to be the common
+equalizer in $\bZ\text{-}\mathbf{Mod}$ of".
+
+**Preferred:** "Recall (@def-invariants) that
+$L^G=\Hom_{\bZ[G]}(\bZ,L)$ is the module of invariants of the
+$\bZ[G]$-module $L$. The **invariant lattice** of
+$\rho\colon G\to\Orth(L)$ is $L^G$ with the restricted form."
 
 ## `SEC-13`: Complexity is monotone through the exposition
 
@@ -460,3 +508,48 @@ prove.
 
 **Preferred:** state the conclusion with its necessary quantified data;
 then define the auxiliary objects in the proof or in a cited construction.
+
+## `SEC-19`: Classical background at the declared audience level is cited and used, not re-exposed
+
+A document declares its reader by its subject: a research monograph on
+lattices addresses a reader who knows the representability of a
+functor, the Yoneda lemma, the underlying set of an object of a
+concrete category, and the definition of a Grothendieck topology. A
+notion at or below that level is used with a citation at its first
+occurrence ([@Mac98, §III.2]) and is defined in the document only when
+the document's usage is nonstandard, bespoke, or a choice among
+conventions the reader cannot infer (`DEF-26`, `NOT-4`). Re-exposing
+the classical notion has three costs: the reader is addressed as a
+student (`PR-32`); the skeleton fills with blocks that no later block
+cites (`SEC-6`); and material reproduced from memory is wrong where a
+citation would have been right — a table assigning a class of
+geometric objects to each Grothendieck topology is a claim about
+several theories at once, each with its own literature. The boundary
+with `CITE-7`: an object constructed by a particular source is
+transcribed into the document's notation, because the document's
+theorems are about it; a classical notion is cited, because the
+document's theorems only use it. The boundary with `DEF-45`: a general
+notion the document owns is recalled, not redefined, at its special
+cases.
+
+Observed in `dzackgarza/research`,
+`research/category-theory/framework/Categorical-Foundations.md` at
+`ab530c1dcc`, definitions "Representable presheaves", "Concrete
+categories", and "Generalization by Grothendieck topology", and
+theorem "The Yoneda lemma".
+
+**Banned:** "The presheaf $F$ is *representable* if there is an object
+$X$ and a natural isomorphism $F\cong\Hom_C(-,X)$. Under this
+isomorphism, $\id_X$ corresponds to the universal element. The dual
+convention applies to corepresentable covariant functors." as a
+definition block in a monograph on lattices; "The set $U(X)$ is the
+underlying set of $X$."; a theorem block stating the Yoneda lemma with
+its proof; a table headed "| Admissible morphisms $\mca$ | Topology |
+Geometric objects |" assigning a class of geometric objects to each
+topology.
+
+**Preferred:** "a representable presheaf [@Mac98, §III.2]" at the first
+use, with the universal element named where the argument uses it; the
+Yoneda lemma cited at the step that applies it; the Grothendieck
+topology the document uses named with its covering families and a
+citation, and no survey of the others.

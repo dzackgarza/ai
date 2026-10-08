@@ -15,6 +15,20 @@ isomorphism invariant has the form $\pi_0(\mathcal C^{\simeq})\to S$; a
 functorial invariant with a richer codomain states that codomain and its
 functoriality.
 
+The type of a symbol's argument is part of the type: $L^G$ is defined
+for a group $G$ acting on $L$, so "$L^I$" for an involution $I$ is
+$L^{\langle I\rangle}$ or $\ker(I-\id_L)$, and $L^I$ as written has no
+defining occurrence.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/invariant-and-coinvariant-lattices.md` at
+`57c8eb1cb0`, proposition `prop:coinvariant_involution_2elementary`.
+
+**Banned:** "$L^I$" for an involution $I$ where $L^G$ is defined for
+groups $G$.
+
+**Preferred:** "$L^{\langle I\rangle}$", or "$\ker(I-\id_L)$".
+
 ## `NOT-2`: Typed equality symbols
 
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
@@ -23,6 +37,24 @@ equality. $\hookrightarrow$ denotes a stated inclusion,
 embedding, or monomorphism; fullness, faithfulness, and repleteness are
 asserted separately. Strict pullbacks and pseudo-pullbacks are not identified
 by notation.
+
+$\xrightarrow{\sim}$ is written on a map that has been shown to be an
+isomorphism, and on nothing else: "$L\isoto E_{10}\perp E_{10}^{\perp L}$"
+where the text has constructed only the inclusion
+$E_{10}\perp E_{10}^{\perp L}\injects L$ asserts the isomorphism by
+decoration, in the wrong direction, with no argument.
+
+Observed in `dzackgarza/research`,
+`research/coble/lattices-and-moduli/lattices.md` (working tree over
+`57c8eb1cb0`), proof under "Period domain embeddings and
+normalization".
+
+**Banned:** "$L\isoto E_{10}\perp E_{10}^{\perp L}$" with only the
+inclusion constructed.
+
+**Preferred:** "$E_{10}\perp E_{10}^{\perp L}\injects L$, an
+isomorphism since $E_{10}$ is unimodular" — the arrow in the direction
+of the map, the isomorphism as a claim with its reason.
 
 ## `NOT-3`: One symbol, one meaning
 
@@ -40,6 +72,32 @@ natural isomorphism, automorphism group, torsor, monoidal category, abelian
 category, preadditive category, kernel, cokernel, discriminant form, genus,
 isometry, classifying object, classifying space, classifying category, total
 category. Do not coin a name for a notion that already has one.
+
+A standard name is also used for exactly its standard extension. The
+discriminant form of a lattice is $\operatorname{coker}(b^\sharp)$
+with its induced form, so "discriminant" names the torsion forms that
+arise as cokernels; the category of all nondegenerate torsion
+quadratic modules is $\mathbf{TorQuad}$, and which of its objects are
+discriminant forms of lattices of a given signature is a theorem
+[@Nik80, Thm. 1.10.1], not a definition. "Polarization" names the
+bilinear form $b_q$ of a quadratic form $q$ (`TERM-12`); a label that
+uses it for the adjoint morphisms of a bilinear form reassigns a
+standard name.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`57c8eb1cb0`, definition "Discriminant quadratic forms", and (working
+tree over `57c8eb1cb0`) definition "Lattices".
+
+**Banned:** "Let $\mathbf{DiscQuad}_{\bZ}$ be the category of
+nondegenerate quadratic modules"; "@def:polarization" cited for the
+adjoint morphisms $b^\sharp$.
+
+**Preferred:** "$\mathbf{TorQuad}_\bZ$, the category of nondegenerate
+torsion quadratic modules; the discriminant form $A_{L,q}$ of an even
+lattice is an object of it, and the objects of a given signature
+modulo $8$ that arise are those of [@Nik80, Thm. 1.10.1]"; "the
+adjoint $b^\sharp$ (@def:adjoint)".
 
 ## `NOT-5`: No gratuitous temporary notation
 
@@ -133,6 +191,30 @@ inside the argument list at every call site. A macro whose arity must
 change is migrated together with all its authored call sites, in one
 change.
 
+The same rule governs functor application in prose mathematics: a
+functor applied to a morphism is written as application, $T(k)$ and
+$S(h)$, not by juxtaposition $Tk$, $Sh$, which the reader parses as a
+product or a two-letter symbol. And a semantic macro with no operand
+at all — `\radic` standing alone in "$G_2\ \text{splits as}\
+\radic\perp\langle-2\rangle$" — is a fragment of the same kind: the
+construction has an operand, the radical of a specific form, and the
+source does not record it.
+
+Observed in `dzackgarza/research` (working tree over `ab530c1dcc`):
+`research/category-theory/framework/Categorical-Foundations.md`,
+definition "Comma categories";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md`, the
+example of two degenerate forms given by Gram matrices.
+
+**Banned:** "$f'\circ Tk=Sh\circ f$"; "$$G_2\ \text{splits as}\
+\radic\perp\langle-2\rangle,\qquad G_3\ \text{splits as}\
+\radic\perp\begin{pmatrix}-2&1\\1&-2\end{pmatrix},$$".
+
+**Preferred:** "$f'\circ T(k)=S(h)\circ f$";
+"$(\bZ^2,G_2)\cong\radic{G_2}\perp\langle-2\rangle$ and
+$(\bZ^3,G_3)\cong\radic{G_3}\perp A_2(-1)$" — the operand inside the
+macro, the splitting written as an isometry between named objects.
+
 ## `NOT-8`: Cardinality is not absolute value
 
 Cardinality and scalar magnitude are different mathematical notions
@@ -212,3 +294,36 @@ the defining inclusion of the primitive-embedding subobject".
 a subset of $\Hom_{\mathbf{Lat}_R}(L,M)$ and faithfulness of $U$ is
 stated at $U$'s definition; otherwise the one sentence that states the
 fact the later text uses, with no symbol attached.
+
+## `NOT-11`: A graded functor is used as the functor, not by extracted components
+
+Homotopy groups $\pi_*$, homology $H_*$, the terms of a long exact
+sequence, a family indexed by the places of a field: each is one
+functor to a graded or indexed category, and the statement that uses
+it is a statement about the functor — the long exact sequence of
+$\pi_*$ for a fiber sequence [@May99, Ch. 9], the family as one adelic
+object (`DEF-46`). Extracting components — $\pi_0$ and $\pi_1$ listed,
+a four-term fragment displayed — and then stating what the extracted
+components fail to determine is a truncation followed by a negative
+(`PR-36`): the reader is told that the fiber of $\pi_0(E)\to\pi_0(B)$
+"need not equal" $\pi_0(F)$, where the long exact sequence states what
+it is, the orbit set of $\pi_0(F)$ under $\pi_1(B,b)$. The components
+are written when the argument reads one of them off; the functor is
+written when the statement is about the sequence.
+
+Observed in `dzackgarza/research`,
+`research/category-theory/framework/Categorical-Foundations.md`
+(working tree over `ab530c1dcc`), the paragraph on fiber sequences and
+$\pi_0$ in the groupoid material.
+
+**Banned:** "For a fiber sequence $F\to E\to B$, the associated exact
+sequence of pointed sets contains
+$$\pi_1(B,b)\too\pi_0(F)\too\pi_0(E)\too\pi_0(B).$$ Consequently, the
+fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May99]."
+
+**Preferred:** "A fiber sequence $F\to E\to B$ has a long exact
+sequence
+$$\cdots\to\pi_1(E,e)\to\pi_1(B,b)\to\pi_0(F)\to\pi_0(E)\to\pi_0(B)$$
+[@May99, Ch. 9]; exactness at $\pi_0(F)$ is the statement that the
+fiber of $\pi_0(E)\to\pi_0(B)$ over the base point is
+$\pi_0(F)/\pi_1(B,b)$, the orbit set of the connecting action."

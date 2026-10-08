@@ -69,6 +69,19 @@ convergent subsequence."
 of holomorphic functions in which every sequence has a locally uniformly
 convergent subsequence."
 
+A reference label is a pointer to a block, not a name for the object
+the block defines. "The twist of @def:form-twist by $-1$" makes the
+label the noun; the object has a symbol, and the label follows it as
+the link.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` (working
+tree over `57c8eb1cb0`), definition "Signature subcategories".
+
+**Banned:** "the twist of @def:form-twist by $-1$".
+
+**Preferred:** "the twist $L(-1)$ (@def:form-twist)".
+
 ## `XREF-7`: Internal results have references, not nicknames
 
 Refer to an internally authored theorem, lemma, proposition, corollary, or

@@ -353,6 +353,24 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 - [ ] Distant bespoke notation is locally glossed at its first substantive
   reuse (`SYM-15`)
 
+- [ ] Each block has one lede, first after its hypotheses; a general notion
+  is recalled at its owner and the special case defined through it;
+  classical background at the audience level is cited, not re-exposed
+  (`DEF-44`, `DEF-45`, `SEC-19`)
+
+- [ ] A local–global condition is one adelic object over the base ring,
+  the place-by-place family its projection (`DEF-46`)
+
+- [ ] Later statements are written in the structure the document has
+  established, and standard statements in the field's locutions
+  (`MA-19`, `TERM-19`)
+
+- [ ] Every assertion has an argument, a referent, or a citation; logical
+  relations are stated in logical vocabulary (`CITE-8`, `PR-78`)
+
+- [ ] A functor in a Hom-set acts on both sides; a graded functor is used
+  as the functor, not by extracted components (`MA-20`, `NOT-11`)
+
 - [ ] Standard names match target formal library conventions
 
 - [ ] Sociological markers (`*Theorem.*`, `*Lemma.*`, `*Proof.*`) used consistently
@@ -405,6 +423,17 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | Signature and assignment compressed onto one display line with `\qquad` | One statement with a hidden seam | An `aligned` display, signature on the first line and assignment on the second (`PR-77`) |
 | A theory filed as facts inside a chapter on another subject | The theory has no owner; its dependencies are hidden | Each theory as its own development, in dependency order (`SEC-14`, `SEC-9`) |
 | Witness arithmetic inside a statement block | The proposition is the claim; citing it cites the paragraph | Statement states hypotheses and conclusion; the proof builds the witness (`SEC-16`) |
+| The claim after a paragraph of constructions; the defined term in a subordinate clause; "the analogous statement holds" | The block has no sentence that is its reason to exist; it cannot be cited for one claim | One lede, first after its hypotheses; constructions in the proof; the analogous statement written (`DEF-44`) |
+| A general notion redefined where its lattice instance is needed | A second defining occurrence; the gloss can define a different notion | Recall the notion at its owner; define the special case as the general notion evaluated (`DEF-45`) |
+| A condition quantified "for every place" or "for every prime" | The adelic object, its group, and its double coset are unnamed | One condition on one object over $\widehat R$ or $\mathbb A_K$; the local family as its projection (`DEF-46`) |
+| Representability, Yoneda, "underlying set" defined in a research monograph | The reader is addressed as a student; uncited blocks fill the skeleton; material from memory is wrong | Cite the classical notion at first use; define only the nonstandard (`SEC-19`) |
+| An established object re-described in prose where its symbol exists | The structure is abandoned at the point where it pays | The symbol at every later statement, with a gloss beside it if distant (`MA-19`) |
+| A paraphrase of a standard statement: "exactly one", "cut out by", "the hyperbolic signature", "form a subcategory" for morphisms | Outsider prose; the paraphrase often changes the content | The sentence the field uses (`TERM-19`) |
+| "Is the source of", "is asked of", an object that remembers or wants | No checkable relation between the statements | "Implies", "follows from", "for", "let" (`PR-78`) |
+| "Consequently", "classical", "well known", or a semidirect product displayed, with no argument, referent, or citation | Appeal to authority | The argument, the block, or the located citation; the exact sequence before the splitting (`CITE-8`) |
+| A twist or other functor applied to one object of a Hom-set and to no morphism | The class of maps has no composition, identities, or inverses | The functor on morphisms, used: $f(\mu)\colon M(\lambda\mu)\to N(\mu)$ (`MA-20`) |
+| $\pi_0$ and $\pi_1$ extracted from a fiber sequence and a "need not equal" about them | A truncation followed by a negative | The long exact sequence of $\pi_*$, with the fiber of $\pi_0(E)\to\pi_0(B)$ as its exactness statement (`NOT-11`) |
+
 | Using informal set builder notation in formalization | Lean/mathlib mismatch | Use explicit class/instance definitions |
 | Missing sociological markers | Unparseable structure; indistinguishable prose | Wrap every claim and proof in italic markers |
 | Sloppy algebraic manipulation | Errors hide in skipped steps | Show every expansion, factorization, simplification |

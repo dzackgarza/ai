@@ -702,3 +702,60 @@ categories, obstructions, counting, ontology, coordinates, fluency,
 architecture, blocks, and commentary, and the principle records that
 the style presupposes a writer who knows the theory at the generality
 where its constructions are native.
+
+**43. The annotation round on the lattice and foundations chapters.** A
+reading of the review annotations across the lattice-theory,
+bilinear-form, and categorical-foundations documents in
+`dzackgarza/research` (working trees over `ab530c1dcc`, `57c8eb1cb0`,
+and `9be9b833a6`) exposed mechanisms the catalogue had stated only for
+their first instances. New codes: a block has one lede and the lede
+comes first — the claim after a paragraph of "Put" constructions, the
+defined term in a subordinate clause, "the analogous statement holds"
+(DEF-44); a general notion recalled at its owner and the special case
+defined through it — length, $p$-elementary (DEF-45); a local–global
+condition as one adelic object over the base ring, not a quantifier
+over places (DEF-46); classical background at the audience level cited
+and not re-exposed — representability, Yoneda, the underlying set, a
+table of topologies (SEC-19); later statements written in the
+structure the document has established — $L[n]/\Orth(L)$,
+$\operatorname{PrimEmb}(U^{\perp2},L)$, $[v^*]$,
+$\operatorname{Gen}(L)$, $\Cl(\mathrm{II}_{0,24})$ (MA-19); a functor
+in a Hom-set used on both sides — the twist on morphisms, so
+similarities compose (MA-20); the field's sentence for the field's
+statement — "where $L$ is a finitely generated projective $R$-module",
+"the full subcategory on", "there is a unique", "the wide
+subcategory", an injective $G\injects\Orth(L)$ (TERM-19); logical
+relations in logical vocabulary, objects not agents (PR-78); every
+assertion with an argument, a referent, or a citation —
+"Consequently … is finite", "the classical finiteness theorem", a
+semidirect product displayed with no splitting (CITE-8); a graded
+functor used as the functor — the long exact sequence of $\pi_*$, not
+$\pi_0$ and $\pi_1$ with a "need not equal" (NOT-11). Extensions: the
+natural codomain and the continuation cokernel, the object defined by
+its place in the sequence, the condition on a term and not on the
+existence of a sequence (DEF-40); the functor applied to the defining
+sequence with the vanishing kernel named (MA-16); "$X$ is distinct
+from $Y$" as the implication that holds and the counterexample to the
+one that fails (PR-36); a module-theoretic property of a structured
+object defined once on its underlying module (FORM-11); the level of
+each summand glossed at the lcm (SYM-15); a reference label as a
+pointer, not a noun (XREF-6); parallel displays as one `aligned`
+display, and a family of parallel identities as one display (PR-77,
+PR-75); functor application as $T(k)$, and a semantic macro with no
+operand (NOT-7); type nouns and "underlying" as restatement (PR-76); a
+value read in the coarse codomain (SYM-16); "discriminant" for
+cokernels only, and "polarization" for the bilinear form of a
+quadratic form (NOT-4); the monoidal tuple with $b_M\perp b_N$ as a
+composite, for "the mixed terms vanish" and the sentence asserting the
+structure (MA-13); an example enumerating a partitioned class set
+(EX-1); surjectivity as a vanishing term (DEF-39); a classification
+theorem inside the block defining "split" (DEF-16); the coinages
+"carrier module", "adjoint cokernel", "common equalizer", "dual form",
+"finite module", "$q(v)\neq0$", and "split" for a decomposition
+(TERM-16); "the local homothetic condition" (TERM-7); "$R$-linear" as
+a type (TERM-11); "refining its length" with no map (TERM-12); "agree
+canonically", "identifies", "geometric identification" (EV-11);
+$\isoto$ on an inclusion (NOT-2); $L^I$ for an involution (NOT-1);
+$\Emb(S,L)$ for its orbit set (DEF-43); invariants built at the
+lattice chapter (SEC-12); commentary sentences whose deletion loses
+nothing (SEC-7); a heading naming the coordinate shadow (PR-61).

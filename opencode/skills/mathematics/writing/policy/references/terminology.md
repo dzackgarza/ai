@@ -207,6 +207,20 @@ is a free $\bZ/d\bZ$-module of rank $r$,
 $\Aut_{\bZ}(A)\cong\GL_r(\bZ/d\bZ)$" — the hypothesis written as the
 condition on the invariant factors already on the page.
 
+"The local homothetic condition" is the same tell at a hypothesis: a
+noun phrase for a condition the document has not stated, where the
+condition is one clause in the notation on the page.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, definition "Local modular Jordan constituents".
+
+**Banned:** "the local homothetic condition".
+
+**Preferred:** the condition the phrase abbreviates, written as an
+equation in the block's notation — for $\mathfrak p^k$-modularity,
+"$\mathfrak p^kL_{\mathfrak p}^\vee=L_{\mathfrak p}$".
+
 ## `TERM-8`: Colloquial "cartesian square" and technical term not defined in the document
 
 "Cartesian square" is colloquial for a pullback square and, when used
@@ -351,6 +365,23 @@ for bilinear/symmetric/quadratic never write bare "maps $M\to W$" or
 "$M\times M\to W$" once the classifier ($\otimes$, $\operatorname{Sym}^2$,
 $\Gamma^2$) is defined.
 
+"$R$-linear" as the whole type of a map between structured objects is
+the same imprecision from the other side: it names the forgetful
+category where the document has the structured Hom-set, so "an
+$R$-linear map $f$ with $b_N(fx,fy)=\lambda b_M(x,y)$" is
+"$f\in\Hom_{\mathbf{Bil}_R}(M(\lambda),N)$" (`SYM-14`, `MA-20`).
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md` at
+`ab530c1dcc`, the definition of a similarity of scale.
+
+**Banned:** "A *similarity of scale* $\lambda\in R$ … is an $R$-linear
+map $f$ with".
+
+**Preferred:** "$f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$" when the
+module category is meant; "$f\in\Hom_{\mathbf{Bil}_R}(M(\lambda),N)$"
+when the condition makes it a morphism of forms.
+
 ## `TERM-12`: "Quadratic refinements" with no defined refinement relation — fossilized adjective with no map
 
 "Refinement" is plausible because the polar
@@ -387,6 +418,24 @@ no $b$, no fiber.
 **Preferred:** "the fiber of $\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to
 \operatorname{Bil}_{R,W}(M)$ over $b$" / "the set of $q$ with $b_q=b$"
 with $\gamma^*$ named; or just "$q\in\operatorname{Quad}_{R,W}(M)$."
+
+The same adjective appears as a verb: "refining its length $v^2$" for
+the pair $(\div_L(v),[v^*])$ asserts a map from the pair to $v^2$ that
+does not exist — $v^2$ is determined by $(\div_L(v),[v^*])$ only
+modulo $2\div_L(v)^2$ — so "refines" names no relation and the
+sentence is false.
+
+Observed in `dzackgarza/research`,
+`research/coble/compactifications/scattone-cusp-method.md` (working
+tree over `9be9b833a6`), the remark under "Divisibility and the
+discriminant group".
+
+**Banned:** "refining its length $v^2$."
+
+**Preferred:** "$(\div_L(v),[v^*])$ determines $v^2$ modulo
+$2\div_L(v)^2$:
+$v^2\equiv\div_L(v)^2\,q_L([v^*])\pmod{2\div_L(v)^2}$" — the relation
+that holds, as an equation.
 
 ## `TERM-13`: "Discriminant setting" is not a mathematical object — the object is the category of torsion bilinear/quadratic modules
 
@@ -502,6 +551,45 @@ morphism of the document's category of torsion quadratic modules
 (`FORM-12`). A local name is recorded only as a pointer to the
 standard one.
 
+The coinages the annotation round found have standard counterparts in
+the literature the documents cite: "carrier module" for the
+underlying module; "adjoint cokernel" for the coradical (`DEF-39`);
+"common equalizer" for the invariants $L^G=\Hom_{\bZ[G]}(\bZ,L)$;
+"dual form" for the form $b_K|_{L^\vee}$ on the dual lattice
+$L^\vee\subseteq L\otimes_RK$; "finite module" for a torsion module of
+finite length (`TERM-17`); "$v$ with $q(v)\neq0$" for an anisotropic
+vector; and a new adjective "split" for a lattice that decomposes as
+$U^{\perp2}\perp M$, where the standard sentence is "$L'$ splits
+$U^{\perp2}$" or "$L'\cong U^{\perp2}\perp M$" and the adjective
+collides with the split forms of [@MH73] (`DEF-16`).
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` (working
+tree over `57c8eb1cb0`), definition "$p$-elementary lattices", and at
+`57c8eb1cb0`, definition "Radical and adjoint cokernel";
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(working tree over `9be9b833a6`), definition "Invariant and
+coinvariant lattices";
+`research/lattice-theory/special-lattices-and-transformations.md` at
+`ab530c1dcc`, proof under "The scaled hyperbolic plane $U(2)$";
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md` at
+`ab530c1dcc`, definition "Reflection in a vector" and proposition
+"Matrix realizations of isometry and automorphism groups";
+`research/lattice-theory/embeddings-and-overlattices.md` at
+`ab530c1dcc`, definition "Split maximal lattices".
+
+**Banned:** "discriminant carrier module"; "the **adjoint cokernel**
+$Q_b$"; "common equalizer"; "dual form"; "For a finite module with mixed invariant factors"; "let
+$v\in L$ satisfy $q(v)\neq0$" where the sentence means an anisotropic
+vector; "A maximal lattice $L'$ of signature $(2, n)$ is **split** if
+it decomposes as".
+
+**Preferred:** "$A_L$" or "the underlying module $U(A_L)$"; "the
+coradical $\operatorname{corad}(b)$"; "the invariants
+$L^G=\Hom_{\bZ[G]}(\bZ,L)$"; "the form $b_K|_{L^\vee}$ on $L^\vee$";
+"a finite-length torsion module"; "an anisotropic vector $v$"; "a
+maximal lattice $L'$ of signature $(2,n)$ with $L'\cong U^{\perp2}\perp M$".
+
 ## `TERM-17`: Set-theoretic adjectives do not replace algebraic properties
 
 "Finite", "countable", "infinite" describe the underlying set. When the
@@ -562,3 +650,56 @@ L\otimes_R\mathbb R\xrightarrow{\sigma}-)$ for each real place
 $\sigma\colon R\to\mathbb R$, with
 $\operatorname{sig}(L):=(p_\sigma,q_\sigma,r_\sigma)_{\sigma}$ the
 family" (`PR-72`).
+
+## `TERM-19`: Standard locutions for standard statements
+
+`TERM-16` governs terms and symbols; this rule governs the sentence.
+For a statement that every text in the field makes — a lattice is a
+finitely generated projective module with a form; the nondegenerate
+objects form a full subcategory; a universal property holds; an
+invariant is additive over a sum; a form has a signature; a group acts
+through an injective homomorphism — the field has a sentence, and the
+document uses it. A paraphrase that keeps the content and changes the
+locution signals prose written from outside the field and often
+changes the content: a nominalized adjective ("the hyperbolic
+signature") turns a property of forms into an object with no referent;
+a counting phrase ("exactly one") where the standard word is "unique";
+a property attached to a derived noun ("whose underlying module is
+finitely generated projective") where the standard sentence attaches
+it to the object; a coined verb ("cut out by") for the standard "the
+full subcategory on"; "the $P$-morphisms form a subcategory of
+$\mathcal C$ with the same objects", where "wide subcategory" is the
+term and "form a subcategory" is read as a statement about objects
+(`PR-15`); "a faithful action" for an injective homomorphism
+$G\injects\Orth(L)$, when the action is the homomorphism. The test:
+find the sentence a standard reference uses for the statement, and
+compare it clause by clause (`PR-50`, `PR-76`).
+
+Observed in `dzackgarza/research` (working tree over `57c8eb1cb0`):
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md`,
+definition "Lattices";
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+definitions "Tensor product of forms" and "The determinant", and the
+convention under "Signatures at real places";
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`,
+definition "Primitive embeddings";
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(working tree over `9be9b833a6`), definition "Invariant and
+coinvariant lattices".
+
+**Banned:** "whose underlying $R$-module is finitely generated
+projective"; "cut out by nondegeneracy"; "There is exactly one
+bilinear map"; "the rank adds and the determinant multiplies" (also
+`PR-74`); "and the hyperbolic signature"; "Hence the primitive
+embeddings form a subcategory of $\mathbf{Lat}_R$ with the same
+objects."; "a faithful action".
+
+**Preferred:** "where $L$ is a finitely generated projective
+$R$-module"; "the full subcategory on the nondegenerate lattices";
+"There is a unique bilinear map … such that …"; "The rank is additive
+and the determinant multiplicative over orthogonal sums:
+$\operatorname{rk}(M\perp N)=\operatorname{rk}M+\operatorname{rk}N$,
+$\det(M\perp N)=\det M\cdot\det N$"; "A hyperbolic form of rank $2n$
+has signature $(n,n)$"; "the wide subcategory of $\mathbf{Lat}_R$
+whose morphisms are the primitive embeddings"; "an injective
+homomorphism $\rho\colon G\injects\Orth(L)$".

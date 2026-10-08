@@ -194,6 +194,34 @@ $\times\colon\mathcal{C}\times\mathcal{C}\to\mathcal{C}$, together with a
 terminal object $\mathbf{1}$ and the canonical associator and unitors,
 defines a monoidal structure on $\mathcal{C}$."
 
+The pointwise description also appears as prose for the zeroed
+component and as a sentence that asserts the structure's existence:
+"where the mixed terms vanish" names no map (`MA-17`), and "With zero
+module as unit and the standard associativity, symmetry, and unit
+isomorphisms, this defines a symmetric monoidal structure" lists the
+slots of the tuple by adjective and fills none of them. The structure
+is the tuple $(\mathcal B_{R,W},\perp,0,\alpha,\lambda,\varrho,\tau)$,
+with $b_M\perp b_N$ the composite
+$(M\oplus N)^{\otimes2}\cong M^{\otimes2}\oplus(M\otimes N)\oplus(N\otimes M)\oplus N^{\otimes2}\xrightarrow{(b_M,0,0,b_N)}W$
+and the coherence isomorphisms those of
+$(R\text{-}\mathbf{Mod},\oplus,0)$, with the one-line check that they
+are isometries (`EX-1`).
+
+Observed in `dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+at `57c8eb1cb0`, definition "Orthogonal sum".
+
+**Banned:** "where the mixed terms vanish."; "With zero module as unit
+and the standard associativity, symmetry, and unit isomorphisms, this
+defines a symmetric monoidal structure on $\mathcal B_{R,W}$."
+
+**Preferred:** "$b_M\perp b_N:=(b_M,0,0,b_N)\circ\delta$ for the
+canonical
+$\delta\colon(M\oplus N)^{\otimes2}\isoto M^{\otimes2}\oplus(M\otimes N)\oplus(N\otimes M)\oplus N^{\otimes2}$;
+$(\mathcal B_{R,W},\perp,0,\alpha,\lambda,\varrho,\tau)$ is symmetric
+monoidal, with $\alpha,\lambda,\varrho,\tau$ the coherence
+isomorphisms of $(R\text{-}\mathbf{Mod},\oplus,0)$, each an isometry."
+
 ## `MA-14`: Map out of a product called bilinear versus map out of the tensor product
 
 A bilinear map is presented as a set map $b\colon M\times M\to W$ that
@@ -268,6 +296,37 @@ $b_{|P}>0$ (`PR-69`)"; "$N'\perp N''\hookrightarrow M'$ with
 $N'=N\otimes_RR'$, $M'=M\otimes_RR'$ the restricted decomposition
 (`STR-5`)."
 
+A property of a map obtained after a functor — injectivity of
+$O(L)\to O(L_K)$ after base change, a monomorphism
+$\bR v\injects L\otimes_\bZ\bR$ after extension of scalars — is the
+functor applied to the defining exact sequence, with the kernel that
+vanishes named: $-\otimes_RK$ applied to $0\to Rv\to L$ is exact
+because $K$ is flat over $R$, and that is the whole claim. Prose that
+reports the result — "gives an injective homomorphism", "the two
+monomorphisms represent subobjects in different module categories" —
+replaces the sequence by a sentence about it, and the second sentence
+states what the two categories in the notation already show
+(`PR-76`).
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md` at
+`ab530c1dcc`, proposition "When a reflection is an isometry of $L$";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`57c8eb1cb0`, example "Subobjects under extension of scalars".
+
+**Banned:** "Base change along $R\hookrightarrow K$ gives an injective
+homomorphism $O(L)\to O(L_K)$,"; "Since $\bR$ is flat over $\bZ$,
+extension of scalars from @def:module-base-change gives the
+monomorphism $$\bR v\hookrightarrow L\tensor_{\bZ}\bR.$$ The two
+monomorphisms represent subobjects in different module categories."
+
+**Preferred:** "$-\otimes_RK$ is exact, so $0\to Rv\to L$ gives
+$0\to Kv\to L_K$";
+"$\operatorname{End}_R(L)\to\operatorname{End}_K(L_K)$,
+$g\mapsto g\otimes_RK$, has kernel $\Hom_R(L,\ker(L\to L_K))=0$ for
+$L$ torsion-free, and restricts to $O(L)\injects O(L_K)$" — the
+functor on the sequence, the vanishing kernel named.
+
 ## `MA-17`: "Vanishes" has a typed referent
 
 "Vanishes," "is zero," "kills," "splits off," and similar verbs take a
@@ -336,3 +395,109 @@ property is the content, the construction in the category:
 "$A_L:=\operatorname{coker}(b_L^\sharp)$ in the abelian category of
 $W$-valued bilinear $R$-modules; $U$ creates cokernels, so
 $U(A_L)=\operatorname{coker}(Ub_L^\sharp)$" (`FORM-11`, `STR-1`).
+
+## `MA-19`: Later text uses the structure the document has established
+
+Once the document has defined an object and its notation — the norm
+shell $L[n]$ and its orbit set $L[n]/\Orth(L)$, the embedding object
+$\operatorname{PrimEmb}(U^{\perp2},L)$, the class $[v^*]\in A_L$ of a
+vector's dual, the genus groupoid $\operatorname{Gen}(L)$, the
+primitive isotropic vectors $L^{\mathrm{prim}}[0]$, the category
+$\mathbf{Lat}_\bZ$, the class set $\Cl(\mathrm{II}_{0,24})$ — every
+later statement is written in that structure. A later sentence that
+re-describes the object in prose, re-expands it into the condition it
+abbreviates, or names a representative of it ("admitting a splitting
+$L\cong U^2\oplus M$" for a point of the embedding object; "even,
+negative-definite, unimodular lattices of rank $24$" for the class set
+already named; "the forms on $\bZ^2$ and $\bZ^3$ with Gram matrices"
+for lattices the document names as $\langle-2\rangle$ and $A_2(-1)$)
+has abandoned the structure at the point where it pays. The test: for
+each noun phrase, ask whether the document already has a symbol for
+the object; if it does, the symbol is used, and the phrase is deleted
+or becomes a gloss beside it (`SYM-15`). The rule is distinct from
+`PR-76`, which deletes prose restating notation on the same page, and
+from `NOT-5`, which forbids new symbols for named objects: here the
+symbol exists and is not used. A statement written in the established
+structure is also the one the reader can check against the
+definitions: "$L[n]/\Orth(L)$ is finite" is one claim about one set,
+where "decomposes into finitely many $\Orth(L)$-orbits" must be
+unpacked to become it.
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, theorem "Finitely many orbits in each norm" and the
+proof that names the hyperbolic index;
+`research/coble/compactifications/scattone-cusp-method.md` (working
+tree over `9be9b833a6`), theorem "Eichler's criterion" and remark
+"Niemeier embeddings for d = 1";
+`research/lattice-theory/definite/minima-and-regularity.md` at
+`57c8eb1cb0`, definition "Regular and spinor-regular ternary
+lattices";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` (working
+tree over `ab530c1dcc`), the example of two degenerate forms given by
+Gram matrices;
+`research/lattice-theory/special-lattices-and-transformations.md` at
+`ab530c1dcc`, proof under "The scaled hyperbolic plane $U(2)$";
+`research/lattice-theory/embeddings-and-overlattices.md` at
+`ab530c1dcc`, the statement beginning "Let $S$ be a unimodular
+lattice".
+
+**Banned:** "The norm shell $L[n]$ of @def:lattice-basic-invariants
+decomposes into finitely many $\Orth(L)$-orbits."; "a splitting
+$L\isoto U^{2}\oplus M$" and
+"$\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$" where
+$\operatorname{PrimEmb}(U^{\perp2},L)$ and $[v^*]$ are defined; "If
+$\operatorname{PrimEmb}(U^{\oplus2},L)$ contains an embedding whose
+image is an orthogonal direct summand" — the object named and then
+described; "It is **regular** when every positive integer represented
+by some lattice in the genus of $L$ is represented by $L$." where
+$L[n]$ and $\operatorname{Gen}(L)$ exist; "even, negative-definite,
+unimodular lattices of rank $24$" where $\Cl(\mathrm{II}_{0,24})$ is
+defined; "Take the forms on $\bZ^{2}$ and $\bZ^{3}$ with Gram
+matrices"; "the four primitive isotropic vectors $\theset{\pm e, \pm
+f}$" for $U^{\mathrm{prim}}[0]$; "Let $S$ be a unimodular lattice
+admitting a primitive embedding into a nondegenerate lattice $L$" and
+"isometric embedding $U^{\oplus2}\injects L$" for a point of
+$\operatorname{PrimEmb}(S,L)$.
+
+**Preferred:** "$L[n]/\Orth(L)$ is finite for every $n$"; "for
+$\iota\in\operatorname{PrimEmb}(U^{\perp2},L)$"; "$[v^*]=[w^*]\in A_L$";
+"$L$ is **regular** when
+$\operatorname{Rep}(L)=\operatorname{Rep}(\operatorname{Gen}(L))$,
+where $\operatorname{Rep}(L):=\{n\in\bZ_{>0}: L[n]\neq\varnothing\}$";
+"for $M\in\Cl(\mathrm{II}_{0,24})$"; "$U^{\mathrm{prim}}[0]=\{\pm
+e,\pm f\}$"; "for $\iota\in\operatorname{PrimEmb}(S,L)$ with $S$
+unimodular".
+
+## `MA-20`: A functor in a Hom-set is used on both sides
+
+When an object on one side of a Hom-set is the value of a functor —
+$\Hom(M(\lambda),N)$ with $(-)(\lambda)$ the twist, $\Hom(F(X),Y)$ for
+an adjunction, $\Hom(L\otimes_RR',M)$ for base change — the functor's
+action on morphisms is part of the definition and is used: for
+$f\colon M(\lambda)\to N$ and $\mu\in R$, the twist gives
+$f(\mu)\colon M(\lambda\mu)\to N(\mu)$, so similarities compose and the
+multipliers multiply, and lattices with similarities form a category
+because the functor is one (`MA-13`, `PR-14`, `PR-67`). Defining the
+elements of the Hom-set as "morphisms of multiplier $\lambda$" and
+stopping asserts a class of maps and no structure on it: composition,
+identities, and the inverse of a similarity are each a statement about
+the functor on morphisms that the definition did not make. The tell is
+a functor applied to one object of the Hom-set and to nothing else in
+the block.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `57c8eb1cb0`), definition "Similarity morphisms".
+
+**Banned:** "where $M(\lambda)$ is the twist of @def:form-twist. An
+element of this Hom-set is a **similarity morphism of multiplier
+$\lambda$**." with the twist applied to no morphism.
+
+**Preferred:** "a **similarity of multiplier $\lambda$** is a morphism
+$f\in\Hom_{\mathbf{Bil}_R}(M(\lambda),N)$; for
+$g\in\Hom_{\mathbf{Bil}_R}(N(\mu),P)$ the composite
+$g\circ f(\mu)\in\Hom_{\mathbf{Bil}_R}(M(\lambda\mu),P)$ is a
+similarity of multiplier $\lambda\mu$, where
+$f(\mu)\colon M(\lambda\mu)\to N(\mu)$ is the twist of $f$" — the
+functor on morphisms doing the work.

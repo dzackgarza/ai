@@ -871,6 +871,30 @@ does not follow, what is not supplied, what is distinct without $H$, or
 what is required. The positive theorem already says it, without bloat,
 without condescension, and with a checkable claim.
 
+The same device appears between two notions: "$X$ is not $Y$", "$X$ is
+distinct from $Y$", "$X$ should not be confused with $Y$". The positive
+statement is the implication that holds and the counterexample to the
+one that fails — $X\Rightarrow Y$ and $Y\not\Rightarrow X$ with a
+witness — or, when neither holds, the two witnesses. "Distinct" states
+none of these, and leaves open whether the notions are nested,
+disjoint, or incomparable.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/definite/minima-and-regularity.md` at
+`57c8eb1cb0`, observation "Perfect lattice versus perfect bilinear
+form".
+
+**Banned:** "It is distinct from perfectness of a bilinear module,
+which requires the adjoint morphisms of @def:polarization to be
+isomorphisms."
+
+**Preferred:** "Neither notion implies the other: $A_2$ is a perfect
+lattice with $\det A_2=3$, so not a perfect bilinear module; $\bZ^2$ is
+unimodular, so a perfect bilinear module, and not a perfect lattice,
+its minimal vectors $\pm e_1,\pm e_2$ spanning a $2$-dimensional
+subspace of the $3$-dimensional space of symmetric bilinear forms on
+$\bR^2$."
+
 ## `PR-37`: Sign-posting "Fix $R$ and $W$, the value module of the forms below" is not a mathematical unit
 
 A setup sentence that fixes variables for upcoming material — "Fix a
@@ -1981,6 +2005,23 @@ Concrete standards:
 
 **Preferred:** for $R$ commutative and $W,M\in\mathbf{Mod}_R$, put $b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$ as $W$-valued $(0,2)$-tensor $b_{ij}$ with two down indices; for framed $((M,e),b)$, $e\colon R^n\xrightarrow{\sim}M$, put $G_e(b)_{ij}:=b(e_i,e_j)\in W$ and state $\Phi_e$ and its variance $G_{e'}=P^{\!t}G_eP$ (congruence, not similarity), with kernel/cokernel of $\Phi_e$ as the well-definedness content. Never write $G_{ij}$ for a $(1,1)$-tensor and a $(0,2)$-tensor without distinguishing, and never assume $M=R^{(I)}$ or finite $I$.
 
+The same overfit appears in a heading: a section titled "Gram matrices
+and the determinant" names the coordinate shadow as the subject, where
+the subject is the form as a tensor and its determinant as an
+invariant in $R/(R^\times)^2$; the Gram matrix is the content of one
+proposition after a basis is chosen.
+
+Observed in `dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), section "Gram matrices and the
+determinant".
+
+**Banned:** "## Gram matrices and the determinant" as the section
+title.
+
+**Preferred:** "## The determinant", with the Gram matrix $G_e(b)$ in
+the proposition that computes $\det$ for a framed form.
+
 ## `PR-62`: "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$" smuggles a Riesz theorem and the canonical $\langle v,w\rangle_0:=\sum_ia_ic_i$ on $F=R^{(I)}$ — eliding its hypotheses, completions, and the operator form $b(v,w)=\langle v,Aw\rangle$
 
 The double sum as *definition* of how $b$ is evaluated assumes the
@@ -2653,6 +2694,41 @@ $\iota_v\colon\langle v\rangle\to L$ the adjoint is …"; display for
 the derivation, the aligned computation, and the numbered equation the
 later text cites.
 
+A family of parallel identities — the scale, norm, and volume of a
+twist; three invariants under one operation — is one display, aligned
+or on one line, not three identities in a sentence (`PR-77`). The
+converse defect, a declaration displayed alone between sentences that
+continue without it, is the fragment this rule names: "For
+$$\iota_v\colon\dots$$ write $$\kappa_v\colon\dots$$ for" displays two
+declarations, "such that $$\kappa_v\circ\lambda_v=\iota_v.$$" displays
+a one-line identity, and "$$\bigl(v^{\perp_L}\bigr)^{\mathrm{nd}}.$$"
+displays an object.
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, definition "Scale, norm, and volume";
+`research/lattice-theory/embeddings/orthogonal-complements.md`
+(working tree over `57c8eb1cb0`), propositions "Primitive isotropic
+complements" and "Splitting an isotropic orthogonal complement".
+
+**Banned:** "Under the twist of @def:form-twist,
+$\mathfrak{s}(L(m)) = m\,\mathfrak{s}(L)$,
+$\mathfrak{n}(L(m)) = m\,\mathfrak{n}(L)$ and
+$\mathfrak{v}(L(m)) = m^{r}\,\mathfrak{v}(L)$ for $r = \rank(L)$." as
+three inline identities; "For
+$$\iota_v\colon\generators{v}_{\bZ}\injects L,$$ write
+$$\kappa_v\colon v^{\perp_L}\injects L$$ for the right
+orthogonal-complement kernel itself."; "such that
+$$\kappa_v\circ\lambda_v=\iota_v.$$";
+"$$\bigl(v^{\perp_L}\bigr)^{\mathrm{nd}}.$$"
+
+**Preferred:** "for $r=\rank(L)$,
+$$\mathfrak s(L(m))=m\,\mathfrak s(L),\qquad\mathfrak n(L(m))=m\,\mathfrak n(L),\qquad\mathfrak v(L(m))=m^r\,\mathfrak v(L);$$";
+"for $\iota_v\colon\langle v\rangle_\bZ\injects L$ and the kernel
+$\kappa_v\colon v^{\perp_L}\injects L$ of the right complement,
+$\kappa_v\circ\lambda_v=\iota_v$" inline;
+"$(v^{\perp_L})^{\mathrm{nd}}$" in the sentence that uses it.
+
 ## `PR-76`: Do not verbalize what the notation already states
 
 A decorated arrow is a statement. $\iota\colon S\hookrightarrow M$
@@ -2690,6 +2766,41 @@ with no sentence about it; "every morphism of
 $\mathbf{Lat}_R^{\mathrm{nd}}$ is a monomorphism", with the reason
 $\ker(f)\hookrightarrow\radic(L)=0$ in the proof (`MA-18`); the arrow
 $\varphi\colon A\xrightarrow{\sim}B$ with its formula and nothing more.
+
+Type nouns and "underlying" are the same restatement in a suffix: "the
+kernel objects", "the radical subobject", "the orthogonal-complement
+subobject", "the underlying morphism", "Their common underlying
+$\bZ$-module is $A_L^\sharp$" each repeat the type the notation
+states, or assert a forgetful functor the document has not named
+(`FORM-12`). The noun is deleted and the arrow kept:
+"$\radic(M)\injects M$" is a subobject by its decoration, and "$U(f)$"
+is the underlying morphism by its symbol.
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+at `57c8eb1cb0`, definition "Form categories", and (working tree over
+`57c8eb1cb0`) definition "Left and right orthogonal complements";
+`research/lattice-theory/embeddings/orthogonal-complements.md`
+(working tree over `57c8eb1cb0`), the propositions on isotropic
+complements;
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(working tree over `9be9b833a6`), definition "Invariant and
+coinvariant lattices";
+`research/lattice-theory/discriminant-forms-and-genus.md` (working
+tree over `57c8eb1cb0`), definition "Discriminant bilinear and
+quadratic forms";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` (working
+tree over `57c8eb1cb0`), definition "Lattices".
+
+**Banned:** "the two kernel objects agree canonically" (also
+`EV-11`); "Equivalently, the kernel objects vanish in"; "radical
+subobject"; "orthogonal-complement subobject"; "underlying morphism";
+"Their common underlying $\bZ$-module is $A_L^\sharp$."
+
+**Preferred:** "$\radic(M)=0$"; "${}^{\perp_b}T=T^{\perp_b}$ for
+symmetric $b$"; "$\radic(M)\injects M$"; "$U(f)$"; the sentence on the
+common underlying module deleted, the two forms defined on
+$A_L^\sharp$ by their displays.
 
 ## `PR-77`: A map and its defining condition are one unit
 
@@ -2729,3 +2840,63 @@ q_L\colon A_L^\sharp&\longrightarrow\tfrac2{N_q(L)}\mathbb Z/J_L,\\
 \end{aligned}
 ```
 the signature and its assignment read as one statement.
+
+Two parallel displays joined by "and" — two functors defined by the
+same pattern, a map and its diagonal — are one `aligned` display, one
+line per member: the parallel is the structure the display shows, and
+"and" between two displays hides it (`PR-75`, `DEF-42`).
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`57c8eb1cb0`, definition "Discriminant quadratic forms";
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), the definition of the diagonal of a
+bilinear map.
+
+**Banned:** "The discriminant constructions define functors
+$$\mathbf{Lat}_{\bZ}^{\simeq}\too\mathbf{DiscBil}_{\bZ}^{\simeq},\qquad L\longmapsto A_L,$$
+and
+$$\mathbf{EvenLat}_{\bZ}^{\simeq}\too\mathbf{DiscQuad}_{\bZ}^{\simeq},\qquad L\longmapsto A_{L,q}.$$";
+"Let $$b\colon M\tensor_RM\too W$$ be bilinear and let
+$$q_b\colon M\too W,\qquad q_b(x)=b(x,x)$$ be its diagonal."
+
+**Preferred:** one display (with the categories named as in `NOT-4`),
+```latex
+\begin{aligned}
+\mathbf{Lat}_{\mathbb Z}^{\simeq}&\longrightarrow\mathbf{TorBil}_{\mathbb Z}^{\simeq},& L&\longmapsto A_L,\\
+\mathbf{EvenLat}_{\mathbb Z}^{\simeq}&\longrightarrow\mathbf{TorQuad}_{\mathbb Z}^{\simeq},& L&\longmapsto A_{L,q};
+\end{aligned}
+```
+"for bilinear $b\colon M\otimes_RM\to W$, its **diagonal** is the
+quadratic map $q_b\colon U(M)\to U(W)$, $x\mapsto b(x,x)$" — the two
+signatures in one sentence.
+
+## `PR-78`: Logical relations in logical vocabulary; objects are not agents
+
+Propositions relate by implication, equivalence, and instantiation,
+and the document says so with the words of logic: "implies", "follows
+from", "is equivalent to", "by (2)", "for", "let". A metaphor of
+causation or agency — one property "is the source of" another, a
+condition "is asked of" a morphism, a form "remembers", "wants",
+"knows", or "sees" — states no checkable relation: the reader cannot
+tell whether (2) implies (3), (3) implies (2), or (2) is used in one
+proof of (3), and cannot tell whether the morphism is required to be
+invertible or is proved to be. The test: rewrite the sentence with
+$\Rightarrow$, $\Leftrightarrow$, "for", or "let". If the rewrite is
+one of several candidates, the original asserted none of them. The
+mechanism is the one behind `PR-15` and `PR-74` at the level of the
+connective: the mathematics is a relation between statements, and the
+prose has replaced the relation with a story about it.
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, the proof under "Properties of the dual lattice";
+`research/category-theory/framework/Categorical-Foundations.md`
+(working tree over `ab530c1dcc`), definition "Concrete categories".
+
+**Banned:** "Property (2) is the source of (3)"; "Invertibility is
+asked of the morphism".
+
+**Preferred:** "(2) implies (3)" or "(3) follows from (2) by …",
+whichever the proof shows; "the morphism is invertible" as a
+hypothesis, or "the morphism is an isomorphism" as the conclusion.

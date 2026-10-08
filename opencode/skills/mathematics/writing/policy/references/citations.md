@@ -139,3 +139,49 @@ sequence $1\to K_L\Sigma^\#(L)\to\Sigma(L)\to\operatorname{MM}(L)\to1$
 exhibits and $g(L)$ defined as the genus group of the genus chapter
 (`SEC-12`); then the theorem, with [@MM09, Thm. V.5.1] cited at the
 exactness claim.
+
+## `CITE-8`: Every assertion has an argument, a referent, or a citation
+
+A sentence that asserts a mathematical fact carries one of three
+things: an argument on the page, a reference to a block of the
+document that proves it, or a citation with a locator. "Consequently",
+"hence", "classical", and "well known" are not a fourth kind of
+support; a consequence with no antecedent on the page, and a theorem
+named by description — "the classical finiteness theorem for
+representations by an indefinite integral quadratic form" — are
+appeals to authority with no statement, no hypotheses, and no locator
+the reader can open. A display asserts in the same way as a sentence:
+writing a group as a semidirect product asserts that a specific
+extension splits, which is a theorem with a proof or a citation, and
+writing it without either is the appeal to authority in notation
+(`EV-11`, `DEF-40`). The boundary with `CITE-4`: that rule governs the
+word "standard" at a definition; this one governs assertions. The
+boundary with `PR-9`: that rule governs "clearly" before an argument
+that exists; this one the assertion whose argument does not exist on
+the page. `EV-9` governs the sequence stated below the strength the
+source proves.
+
+Observed in `dzackgarza/research` at `57c8eb1cb0`:
+`research/lattice-theory/definite/minima-and-regularity.md`,
+proposition "Finiteness in the definite and indefinite cases";
+`research/lattice-theory/discriminant-forms-and-genus.md`, the proof
+that names "the classical finiteness theorem";
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`,
+proposition "The orthogonal group of a degenerate form".
+
+**Banned:** "Consequently $\Orth(L)$ is finite." with no antecedent
+that bounds $\Orth(L)$; "the classical finiteness theorem for
+representations by an indefinite integral quadratic form." as the
+whole citation; "Hence
+$$\Orth(M)\isoto\Hom_{R\text{-}\mathbf{Mod}}\qty{M^{\mathrm{nd}},\radic(M)}\rtimes\qty{\Aut_{R\text{-}\mathbf{Mod}}(\radic(M))\times\Orth(M^{\mathrm{nd}})}.$$"
+as the end of a proof that exhibited no splitting.
+
+**Preferred:** "For a basis $e_1,\dots,e_n$ of $L$, evaluation
+$\Orth(L)\to\prod_iL[e_i^2]$, $g\mapsto(ge_i)_i$, is injective; for $L$
+definite each shell $L[m]$ is finite, so $\Orth(L)$ is finite."; the
+theorem in its own block, with hypotheses, and the citation with a
+locator at the block; the exact sequence
+$$1\to\Hom_R(M^{\mathrm{nd}},\radic(M))\to\Orth(M)\to\Aut_R(\radic(M))\times\Orth(M^{\mathrm{nd}})\to1$$
+with the section induced by a splitting
+$M\cong\radic(M)\oplus M^{\mathrm{nd}}$ written out, and only then the
+semidirect product.

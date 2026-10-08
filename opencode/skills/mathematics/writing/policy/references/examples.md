@@ -30,6 +30,26 @@ terminal object $e$. Then $(\mathcal{C}, \times, e)$ is a monoidal category,
 with associator and unitors the canonical isomorphisms supplied by the
 universal property of the product."
 
+A definition or theorem that partitions a constructed finite set — the
+class set $\Cl(L)$ into spinor genera, a genus into classes, the
+isotropic vectors into orbits — is followed by an example that
+enumerates the set and its partition for one $L$: the reader sees the
+blocks of the partition as objects, and a partition with no computed
+instance is an unexercised definition [@CS99, Ch. 15].
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/discriminant-forms-and-genus.md` (working
+tree over `57c8eb1cb0`), definition "Spinor genera".
+
+**Banned:** "resulting equivalence classes partition $\Cl(L)$; their
+set is denoted $\operatorname{SpinGen}(L)$." with no example in which
+$\Cl(L)$ and $\operatorname{SpinGen}(L)$ are listed.
+
+**Preferred:** the definition followed by "**Example.** For $L=\dots$,
+$\Cl(L)=\{[L_1],\dots,[L_h]\}$ and
+$\operatorname{SpinGen}(L)=\{\{[L_1],\dots\},\dots\}$ [@CS99, Ch.
+15]" with a genus whose spinor genera are not all singletons.
+
 ## `EX-2`: An example is an example, not a proposition
 
 If there is nothing to prove, do not present the passage as a proposition

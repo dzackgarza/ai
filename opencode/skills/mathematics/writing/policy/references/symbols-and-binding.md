@@ -313,6 +313,18 @@ bare reference to its definition.
 **Preferred:** "where $N_b(L)=\exp(A_L^\sharp)$ is the bilinear
 denominator of $L$ (@def:discriminant)."
 
+Observed in `dzackgarza/research`,
+`research/lattice-theory/embeddings/orthogonal-complements.md`
+(working tree over `57c8eb1cb0`), proposition "Discriminants of
+orthogonal sums".
+
+**Banned:** "$N\definedas\operatorname{lcm}_{1\leq i\leq n}N_b(L_i)$"
+in a proposition far from the definition of $N_b$, with no gloss.
+
+**Preferred:** "$N:=\operatorname{lcm}_iN_b(L_i)$, where
+$N_b(L_i)=\exp(A_{L_i}^\sharp)$ is the bilinear denominator of $L_i$
+(@def:discriminant)".
+
 ## `SYM-16`: A map's codomain is the value object its construction determines
 
 The codomain of a map is part of its type. When a construction
@@ -349,3 +361,19 @@ with the monomorphism
 $\tfrac1{N_b(L)}\mathbb Z/\mathbb Z\hookrightarrow\mathbb Q/\mathbb Z$
 written at the point where a $\mathbb Q/\mathbb Z$-valued source is
 compared.
+
+The same rule applies to a value computed in a proof: "vanishes in
+$\QQ/2\ZZ$" for the quadratic discriminant form of a twisted
+unimodular lattice reads the value in the coarse codomain, when the
+definition of $q_L$ gives $\tfrac2{N_q(L)}\bZ/J_L$ and the vanishing
+is a statement there.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/special-lattices-and-transformations.md` at
+`ab530c1dcc`, proof under "The discriminant form of a twisted
+unimodular lattice".
+
+**Banned:** "vanishes in $\QQ/2\ZZ$ precisely".
+
+**Preferred:** "$q_L(x)=0$ in $\tfrac2{N_q(L)}\bZ/J_L$", the codomain
+the definition of $q_L$ gives.
