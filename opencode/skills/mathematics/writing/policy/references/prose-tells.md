@@ -2599,7 +2599,14 @@ multiplies pairings by $4$" (exhibit the isometry $L\to L(4)$).
 whose source, target, and category are unstated; "the remaining
 summands give the result" with no decomposition named; "multiplication
 by $4$ gives a bijection on pairings" where the mathematics is an
-isometry $L\to L(4)$; "the dual form" with no defining occurrence.
+isometry $L\to L(4)$; "the dual form" with no defining occurrence;
+"Under orthogonal sum the rank adds and the determinant multiplies
+[@MH73, I §3]" for two equations (`dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+working tree over `2b758e124b`, definition "The determinant") — the
+preferred form is
+"$\operatorname{rk}(M\perp N)=\operatorname{rk}(M)+\operatorname{rk}(N)$
+and $\det(M\perp N)=\det(M)\det(N)$ in $R/(R^\bullet)^2$ [@MH73, I §3]".
 
 **Preferred:** write the mathematics: "the isometry
 $\varphi\colon(L,q)\isoto(L(4),q')$ with
@@ -2696,7 +2703,11 @@ pieces carries (`PR-75`). The reader reassembles a definition
 the writer had in one piece. The same applies to a construction given as
 several displays joined by minimal prose: a single construction is one
 display, aligned if it needs more than one line, or one diagram when its
-relation is diagrammatic (`DIA-7`).
+relation is diagrammatic (`DIA-7`). A displayed map that has both a
+signature and an assignment is one `aligned` display, the signature on
+the first line and the assignment on the second, aligned at the arrows;
+compressing both onto one line with a `\qquad` is the same fragment
+with the seam hidden.
 
 Observed in `dzackgarza/research` (working tree over `26d4e303bc`):
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
@@ -2710,7 +2721,11 @@ morphism $$q_L\colon A_L^\sharp\too\tfrac2{N_q(L)}\bZ/J_L$$ satisfying
 $$q_L\circ\pi_L(x)=\beta_{L_\bQ}(x,x)+J_L.$$"
 
 **Preferred:** "morphisms $f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$ with
-$b_M=b_N\circ(f\otimes_Rf)$"; one display,
-"$q_L\colon A_L^\sharp\to\tfrac2{N_q(L)}\mathbb Z/J_L,\qquad
-q_L(\pi_L(x))=\beta_{L_{\mathbb Q}}(x,x)+J_L$", the signature and its
-condition read as one statement.
+$b_M=b_N\circ(f\otimes_Rf)$"; one aligned display,
+```latex
+\begin{aligned}
+q_L\colon A_L^\sharp&\longrightarrow\tfrac2{N_q(L)}\mathbb Z/J_L,\\
+\pi_L(x)&\longmapsto\beta_{L_{\mathbb Q}}(x,x)+J_L,
+\end{aligned}
+```
+the signature and its assignment read as one statement.

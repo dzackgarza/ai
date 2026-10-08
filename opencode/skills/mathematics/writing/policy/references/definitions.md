@@ -914,17 +914,24 @@ When a canonical module, map, functor, fiber, or adjoint exists, define the
 notion through that object. An elementwise condition is a theorem to be
 proved equivalent — not the defining occurrence (DEF-22). The structural
 definition names the object the theory reuses; the elementwise formula is
-its evaluation in the concrete case (PR-47).
+its evaluation in the concrete case (PR-47). A property of a map —
+injective, surjective, an isomorphism — is stated as the vanishing of
+the term of its exact sequence that measures the failure: the kernel,
+the cokernel, the obstruction class (`DEF-40`, `MA-17`, `NOT-1`). The
+sequence exhibits the adjoint, the radical, and the coradical at once,
+and every later property is a statement about one of its terms.
 
 **Banned:** "$b$ is *nondegenerate* if $b(x,y)=0$ for all $y$ implies
 $x=0$" as the definition of nondegeneracy, never naming the adjoint
-$b^{\sharp}\colon M\to\operatorname{Hom}_R(M,W)$.
+$b^{\sharp}\colon M\to\operatorname{Hom}_R(M,W)$; "$b^\sharp$ is
+injective" as the whole account of nondegeneracy, with no radical named.
 
-**Preferred:** "$b$ is *nondegenerate* if its adjoint
-$b^{\sharp}\colon M\to M_W^\vee$ is injective (with kernel
-$\ker(b^{\sharp})$ the radical), and *unimodular* if $b^{\sharp}$ is an
-isomorphism" — then the elementwise characterization as a proposition.
-Likewise: reframe a notion in terms of the value group
+**Preferred:** the exact sequence
+$0\to\radic(M)\to M\xrightarrow{b^\sharp}\operatorname{Hom}_R(M,W)\to\operatorname{corad}(M)\to0$
+defining the radical and the coradical; "$b$ is *nondegenerate* when
+$\radic(M)=0$ and *perfect* when
+$\radic(M)=0=\operatorname{corad}(M)$" — then the elementwise
+characterization as a proposition. Likewise: reframe a notion in terms of the value group
 $\operatorname{Val}(b)\subseteq W$ instead of carrying $b(x,x)\in 2W$
 through every use (PR-45).
 
@@ -1056,3 +1063,44 @@ $W$; "$\rho_{L,q}$ is the factorization of $\rho_L$ through the
 monomorphism $j_q\colon\Orth(A_{L,q})\hookrightarrow\Orth(A_L)$, and its
 exact sequence is the pullback of the sequence for $\rho_L$ along $j_q$"
 — one construction, the variant as an operation on it.
+
+## `DEF-43`: A counting invariant is defined from the structure it counts
+
+A class set, class number, mass, or orbit count is a shadow of a
+classifying structure: the set of isomorphism classes is $\pi_0$ of a
+groupoid, the class number is the cardinality of that set, the mass is
+the groupoid cardinality $\sum_{[x]}1/\cardinality{\operatorname{Aut}(x)}$.
+Define the structure first — the groupoid, with its objects and
+morphisms, in the framework the document uses for the equivalence
+relation (`DEF-41`) — and derive each count from it by the standard
+operation (`NOT-1`, `DEF-9`). A count defined directly as "the number
+of classes" has no object to be an invariant of, cannot be compared
+with the stabilizers it secretly weights, and leads to a "weighted
+count" being introduced as a new construction when it is the groupoid
+cardinality of a structure already on the page (`NOT-4`). A set called
+a group is the same defect in a word (`TERM-7`).
+
+Observed in `dzackgarza/research`,
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/300-classification.md`
+at `2b758e124b`, definition "Genus of a Lattice"; the preferred form is
+the same repository's `research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`
+(working tree over `2b758e124b`), definition "Genus and class set", and
+`research/lattice-theory/discriminant-forms-and-genus.md`, definition
+"Mass of a lattice genus".
+
+**Banned:** "We define the **class group** $\cl(L)$ to be the set of
+isometry classes within a genus, and the **class number** as the size
+of $\cl(L)$" — a set named a group, a count with no structure under it,
+and a genus that is an equivalence relation on lattices rather than a
+groupoid of them.
+
+**Preferred:** "the **genus groupoid** $\operatorname{Gen}(L)$ is the
+full subgroupoid of $\mathbf{Lat}_R^{\mathrm{nd},\simeq}$ on the
+lattices in the genus of $L$; its **class set** and **class number**
+are $\Cl(L):=\pi_0\operatorname{Gen}(L)$ and
+$\cl(L):=\cardinality{\Cl(L)}$"; "when $\operatorname{Gen}(L)$ is
+essentially finite, its **mass** is the groupoid cardinality
+$\cardinality{\operatorname{Gen}(L)}=\sum_{[M]\in\Cl(L)}1/\cardinality{\Orth(M)}$"
+[Baez–Dolan, *From finite sets to Feynman diagrams*, 2001; Conway–Sloane,
+*Sphere Packings, Lattices and Groups*, Ch. 16] — each count an
+operation on the groupoid, with the genus itself defined as in `DEF-41`.

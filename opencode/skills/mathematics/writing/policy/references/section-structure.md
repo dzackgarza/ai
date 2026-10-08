@@ -357,7 +357,14 @@ chapter is two chapters.
 treats hyperbolic lattices, an automorphism-lifting theorem, and a
 list of concrete examples, with no single owner for the dependency
 graph; a "miscellaneous lattice theory" chapter used as the default
-destination for new results.
+destination for new results; a chapter "Isometries and arithmetic
+invariants" whose sections run from the discriminant representation
+through reflections, matrix realizations, and the index of a subgroup
+to the Miranda–Morrison exact sequence and the definition of the genus
+(`dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`,
+working tree over `2b758e124b`) — Miranda–Morrison theory and the genus
+are subjects with their own chapters, not facts about isometries.
 
 **Preferred:** split at the seams the mathematics already has — each
 chapter's subject is one node of the abstraction lattice

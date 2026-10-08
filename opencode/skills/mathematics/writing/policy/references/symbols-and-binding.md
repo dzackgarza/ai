@@ -310,5 +310,42 @@ statement locally readable (`XREF-6`). Standard notation needs no gloss.
 **Banned:** a theorem that uses $N_b(L)$ after many sections with only a
 bare reference to its definition.
 
-**Preferred:** "where $N_b(L)$ denotes the radical of the bilinear lattice
-$L$ (@def:bilinear-radical)."
+**Preferred:** "where $N_b(L)=\exp(A_L^\sharp)$ is the bilinear
+denominator of $L$ (@def:discriminant)."
+
+## `SYM-16`: A map's codomain is the value object its construction determines
+
+The codomain of a map is part of its type. When a construction
+determines a value object — a finite-exponent quotient
+$\tfrac1N\mathbb Z/\mathbb Z$, a submodule $\operatorname{Val}(b)$,
+an ideal $J$ — the map is written into that object, and a coarser
+ambient object such as $\mathbb Q/\mathbb Z$ is reached through the
+monomorphism that the construction supplies, named where the comparison
+with a source that uses the coarse codomain is made (`NOT-1`,
+`TERM-3`). Writing the map into the coarse object discards the type
+information the construction produced: the exponent, the level, the
+parity data that the later theory reads off the codomain. The same
+holds for the domain: a bilinear form is a map out of
+$M\otimes_RM$, not out of $M\times M$ (`MA-14`).
+
+Observed in `dzackgarza/research`,
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/100-foundations.md`
+(working tree over `2b758e124b`), definition "Discriminant Forms"; the
+preferred form is the same repository's
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md`, definition
+"Bilinear and quadratic discriminant forms".
+
+**Banned:** "the **discriminant bilinear form** is
+$\beta_{A_L}\colon A_L\times A_L\to\QQ/\ZZ$, given by
+$\beta_{A_L}(\bar x,\bar y)=\beta(x,y)\bmod\ZZ$ for any lifts" — the
+exponent $N_b(L)$ that the construction determines is dropped from the
+type, and the domain is a product.
+
+**Preferred:** "the pairing of $A_L$ is the unique morphism
+$\bar\beta_L\colon A_L^\sharp\otimes_{\mathbb Z}A_L^\sharp\to\tfrac1{N_b(L)}\mathbb Z/\mathbb Z$
+with
+$\bar\beta_L\circ(\pi_L\otimes\pi_L)=(\tfrac1{N_b(L)}\mathbb Z\twoheadrightarrow\tfrac1{N_b(L)}\mathbb Z/\mathbb Z)\circ\beta_{L^\#}$",
+with the monomorphism
+$\tfrac1{N_b(L)}\mathbb Z/\mathbb Z\hookrightarrow\mathbb Q/\mathbb Z$
+written at the point where a $\mathbb Q/\mathbb Z$-valued source is
+compared.

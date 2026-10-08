@@ -468,14 +468,22 @@ or $\Orth^+(L)$ with local symbols when the standard notation —
 discriminant kernel $\widetilde\Orth(L)=\ker\rho_L$, spinor-norm kernel
 $\Orth^+(L)$, and their intersection $\widetilde\Orth^+(L)$ — already
 distinguishes the three groups; $n$-torsion written out per-instance
-instead of the standard $L[n]$ and $L^{\mathrm{prim}}[n]$.
+instead of the standard $L[n]$ and $L^{\mathrm{prim}}[n]$; "let
+$\gamma\colon A_T\xrightarrow{\sim}A_S$ be the gluing anti-isometry" in
+a document whose twist functor $(-)(-1)$ already makes the object an
+isometry (`dzackgarza/research`,
+`research/coble/surfaces-and-moduli/k3-automorphisms.md` at
+`2b758e124b`).
 
 **Preferred:** the standard term and symbol at the defining occurrence —
 *reducible*, *completely reducible*, *simple*, *indecomposable*,
 *semisimple*; $L[n]:=q^{-1}(n)$ and $L^{\mathrm{prim}}[n]$ defined once
 at their natural owner (SEC-12); $\widetilde\Orth$, $\Orth^+$,
-$\widetilde\Orth^+$ with their definitions as kernels. A local name is
-recorded only as a pointer to the standard one.
+$\widetilde\Orth^+$ with their definitions as kernels; "the gluing
+isometry $\gamma\colon A_{T,q}\xrightarrow{\sim}A_{S,q}(-1)$", a
+morphism of the document's category of torsion quadratic modules
+(`FORM-12`). A local name is recorded only as a pointer to the standard
+one.
 
 ## `TERM-17`: Set-theoretic adjectives do not replace algebraic properties
 
@@ -493,10 +501,16 @@ algebraic property actually used (`STR-3`).
 torsion; "finite group" where the proof uses finite exponent or finite
 length; "a finite object" as the hypothesis of a theorem whose proof
 invokes structure theory (classification of finite abelian groups,
-Jordan–Hölder, structure of f.g. modules over a PID).
+Jordan–Hölder, structure of f.g. modules over a PID); "have finite free
+underlying $R$-modules" and "for finite free $M,N$" where the argument
+chooses a finite basis (`dzackgarza/research`,
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`,
+working tree over `2b758e124b`, proposition "The adjoint in
+coordinates" and definition "Similarity morphisms").
 
 **Preferred:** "let $M$ be a finitely generated torsion
-$R$-module"; "$M$ has finite length, so
+$R$-module"; "let $M$ and $N$ be finitely generated free
+$R$-modules"; "$M$ has finite length, so
 $\operatorname{length}_R(M)<\infty$ and $M$ has a Jordan–Hölder
 filtration"; "the discriminant group $D_L$ is finite of exponent $N$"
 — each property named at the place the proof uses it, with the

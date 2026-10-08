@@ -161,10 +161,12 @@ verification of the exhibited structure.
 ## `EV-11`: A relationship phrase asserts nothing until the map is written
 
 "Identifies with", "agree canonically", "is canonically isomorphic to",
-"the symmetry isomorphism", "the canonical map", and "there is a
-decomposition $G\cong N\rtimes H$" sound like mathematics and assert
-nothing checkable: the reader cannot tell which map is meant, cannot
-verify it, and cannot cite it. Each is owed a specific object — the map
+"the symmetry isomorphism", "the canonical map", "differs from", and
+"there is a decomposition $G\cong N\rtimes H$" sound like mathematics
+and assert nothing checkable: the reader cannot tell which map is
+meant, cannot verify it, and cannot cite it. The negative phrase is the
+same defect: "this differs from $Y$" owes the statement of what $X$ is
+in terms of $Y$, or the invariant that separates them. Each is owed a specific object — the map
 with source, target, and formula; the equation between two named maps;
 or the exact sequence with its section. A definite article on a map is
 the tell: "the symmetry isomorphism" of a fourfold tensor product names
@@ -187,13 +189,17 @@ Observed in `dzackgarza/research`:
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
 (working tree over `26d4e303bc`), the tensor product of forms;
 `research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/700-folding.md`
-at `26d4e303bc`, "Examples of Classical Foldings".
+at `26d4e303bc`, "Examples of Classical Foldings";
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/200-examples.md`
+(working tree over `2b758e124b`), "Type $D$".
 
 **Banned:** "after the symmetry isomorphism carrying
 $(M\tensor_RN)^{\tensor2}$ to $M\tensor_RM\tensor_RN\tensor_RN$"; "there
 is a decomposition $\Orth(L)\cong W(L)\semidirect P$ where
 $P\leq\Sym(G_{\Phi(L)})$ is some subgroup of diagram symmetries"; "the
-two constructions agree canonically"; "$A$ identifies with $B$".
+two constructions agree canonically"; "$A$ identifies with $B$"; "the
+lattice $dL:=\{d\cdot v\mid v\in L\}$, noting that this differs from
+the twist $L(d)$".
 
 **Preferred:**
 "$\sigma\colon(M\otimes_RN)^{\otimes2}\xrightarrow{\sim}M^{\otimes2}\otimes_RN^{\otimes2}$,
@@ -205,5 +211,8 @@ onto the automorphism group of the Dynkin diagram of $\Delta$ and splits
 $1\to W(L)\to\Orth(L)\to\Orth(L)/W(L)\to1$, so
 $\Orth(L)=W(L)\rtimes\operatorname{Stab}_{\Orth(L)}(\Delta)$
 [Humphreys, *Introduction to Lie Algebras and Representation Theory*,
-§12.2]"; the comparison morphism $\theta\colon A\to B$ with its formula
-and the statement that it is an isomorphism (`DIA-7`, `PR-74`).
+§12.2]"; "$dL=\operatorname{im}(d\cdot\colon L\to L)$, and
+$x\mapsto dx$ is an isometry $L(d^2)\xrightarrow{\sim}dL$" — the
+relation to the twist stated as the map that realizes it; the
+comparison morphism $\theta\colon A\to B$ with its formula and the
+statement that it is an isomorphism (`DIA-7`, `PR-74`).

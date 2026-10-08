@@ -169,14 +169,22 @@ information.
 
 ## `MA-13`: A structure described pointwise instead of as a structure
 
-A functor is a functor: source, target, name. A natural transformation is a
-natural transformation: its components and the naturality square. A monoidal
-structure is a tuple $(\mathcal{C}, \otimes, \mathbf{1}, \alpha, \lambda,
-\varrho)$ with axioms. Each of these is a mathematical object with a type and
-constituent data. A pointwise description — "a choice of $a \otimes b$ for
-every $a$, $b$" — replaces the structure with a recipe for its output on
-inputs, the way a programmer describes a function by what it returns. State
-the structure; its pointwise behavior may follow.
+A category is a category: objects, morphisms, composition, identities;
+"the category of $X$" with $X$ a class of objects owes its morphisms. A
+functor is a functor: source, target, name, and its action on morphisms,
+given at the defining occurrence and not discovered afterwards — the
+twist $(-)(\lambda)$ is defined on $(M,b)$ and on
+$f\colon(M,b_M)\to(N,b_N)$ together (`PR-14`, `PR-67`). A natural
+transformation is a natural transformation: its components and the
+naturality square. A monoidal structure is a tuple
+$(\mathcal{C}, \otimes, \mathbf{1}, \alpha, \lambda, \varrho)$ with
+axioms, and $\oplus$ or $\perp$ used as a monoidal product owes the
+unit and the coherence morphisms. Each of these is a mathematical
+object with a type and constituent data. A pointwise description — "a
+choice of $a \otimes b$ for every $a$, $b$", "multiply the form by
+$\lambda$" — replaces the structure with a recipe for its output on
+inputs, the way a programmer describes a function by what it returns.
+State the structure; its pointwise behavior may follow.
 
 **Banned:** "choose a product $a \times b$ for each pair of objects and set
 $\otimes = \times$."

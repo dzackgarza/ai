@@ -675,3 +675,25 @@ declaration (DIA-7). MA-18 and DEF-41 are rewritten so that neither
 reads as a preference for the elementwise or textbook formulation: the
 test is whether the argument uses a categorical property, and whether
 the notion is an instance of the framework it is defined in.
+
+**42. The standards behind the gradients.** A corrected addendum to
+pattern 41 restated the axes as the structural commitments their target
+positions share, with the general construction and its specializations
+first: general pairings before bilinear modules before lattices; the
+genus as a groupoid before its class set and class number, and the mass
+as its groupoid cardinality (DEF-43); the discriminant pairing into the
+value object its construction determines, not into $\mathbb Q/\mathbb Z$
+(SYM-16); nondegeneracy and perfectness as vanishing terms of the
+radical–coradical sequence (DEF-39); a category with its morphisms and a
+functor with its action on morphisms at the defining occurrence
+(MA-13); "finitely generated free" for "finite free" (TERM-17) and the
+isometry to a twist for "anti-isometry" (TERM-16); the genus and
+Miranda–Morrison theory out of the isometries chapter (SEC-14); two
+equations for "the rank adds and the determinant multiplies" (PR-74);
+the map that realizes $dL$ for "differs from the twist" (EV-11); and the
+aligned two-line display for a map with a signature and an assignment
+(PR-77). The gradients table gains the axes of generality, families,
+categories, obstructions, counting, ontology, coordinates, fluency,
+architecture, blocks, and commentary, and the principle records that
+the style presupposes a writer who knows the theory at the generality
+where its constructions are native.

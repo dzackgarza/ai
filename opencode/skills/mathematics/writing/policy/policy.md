@@ -66,15 +66,19 @@ Categorical vocabulary is not categorical reasoning: naming a forgetful
 functor, calling a map a morphism, or writing "underlying" does not
 place the argument in the category; computing the kernel, cokernel, or
 splitting there does (`MA-18`).
+The style presupposes a writer who knows the theory at the generality
+where its constructions are native. A rewrite of sentences toward its
+surface — the vocabulary without the construction, its category, and its
+standard source — reproduces the appearance and not the mathematics.
 
 Six judgments apply the test. Each is answered by a cited rule, never by
 the writer's recollection of what rigorous writing looks like.
 
 | Judgment | Rule |
 | --- | --- |
-| Which formulation states the mathematics | `TERM-16`, `DEF-39`, `DEF-41`, `DEF-42`, `PR-15` |
+| Which formulation states the mathematics | `TERM-16`, `DEF-39`, `DEF-41`, `DEF-42`, `DEF-43`, `PR-15` |
 | Which hypotheses are intrinsic and which are proof artifacts | `STR-3`, `STR-8`, `CITE-6` |
-| Which notation is standard, which is necessary, which is redundant | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `SYM-14` |
+| Which notation is standard, which is necessary, which is redundant | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `SYM-14`, `SYM-16` |
 | Which relation earns a diagram or sequence, which an equation | `DIA-7`, `DEF-40`, `PR-75`, `PR-77` |
 | Which construction is foundational, which an immediate consequence | `DEF-16`, `DEF-22`, `SEC-16`, `SEC-18`, `STR-6` |
 | Which fact is obvious, which needs a proof or a citation | `PR-9`, `EV-1`, `CITE-1`, `CITE-7`, `SEC-6` |
@@ -104,6 +108,17 @@ that decide the position.
 | Provenance | an unsupported claim | a citation in place of the statement or construction | the complete statement with its provenance | `CITE-1`, `CITE-6`, `CITE-7`, `EV-9` |
 | Density | pedagogical overexplanation | technical density with no reader | economy calibrated to the reader | `PR-18`, `PR-9`, `PR-76` |
 | Register | "objects satisfying $P$ form a subcategory" | formal register with no formal content | "the $P$-objects form a full subcategory", when that is the claim | `PR-15`, `TERM-16` |
+| Generality | the lattice defined before the pairing; nondegeneracy inside the definition of a lattice; unimodularity before $I$-modularity; the signature as a pair of integers | general hypotheses over the special case's proof: "for a ring $R$" where the argument uses $\mathbb Z$ | general pairings, then bilinear modules, then lattices; nondegenerate lattices as a full subcategory; $I$-modular with $I=R$ the unimodular case; the signature indexed by the real places; an invariant defined on the structured object and restricted | `TERM-18`, `DEF-42`, `SEC-12`, `SEC-9`, `STR-8` |
+| Families | a form defined pointwise; the quadratic module by inline relations; one $f^*$ as "functoriality" | a representing object named and never used; the fibers still defined one by one | $\mathbf{Bil}_{R,W}(M)=\operatorname{Hom}(T_R(M)_2,W)$ and $\mathbf{Quad}_{R,W}(M)=\operatorname{Hom}(\Gamma^2_R(M),W)$; the category over all $W$ with the fixed-value categories as its fibers; pullback as the contravariant functor; $\Gamma^2_R(M)$ at its owner | `PR-41`, `PR-55`, `DEF-42`, `SEC-12`, `TERM-10` |
+| Categories | "the category of lattices" with no morphisms; a functor as a "function"; $\perp$ as an operation | the names with the data absent: "monoidal" with no unit, "natural" with no square, "functor" with no action on morphisms | objects, morphisms, composition, identities; the functor with its action on morphisms at the defining occurrence; the monoidal tuple with its coherence; the naturality square | `MA-13`, `PR-14`, `PR-67`, `FORM-12`, `MA-18` |
+| Obstructions | "$b^\sharp$ is injective"; "$\rho_L$ is surjective" | a sequence truncated to the fragment a computation needs; "exact" with an undefined term | the four-term sequence with its radical and coradical; the arithmetic sequence with $\operatorname{MM}(L)$ and $g(L)$; the extension class and its splitting | `DEF-39`, `EV-9`, `EV-11`, `CITE-7` |
+| Counting | a representative per class; "the number of classes"; "class group" for a set | a groupoid named and then counted by hand; "groupoid cardinality" for a plain count | the groupoid as a construction; embeddings, comparison morphisms, and classes distinguished; $\Cl(L)=\pi_0\operatorname{Gen}(L)$, $\cl(L)$ its cardinality, the mass its groupoid cardinality | `DEF-43`, `DEF-40`, `NOT-4`, `TERM-7` |
+| Ontology | the set-level statement with no derived object | "homotopy pullback" or "derived" with the projections and coherence absent | the derived or higher-categorical object with its projections and coherence; the classical statement as its truncation | `DEF-9`, `DEF-36`, `DEF-32`, `STR-4` |
+| Coordinates | the form as a matrix; nondegeneracy by $\det\neq0$; perfectness by $\det\in R^\bullet$; $\mathbb Q/\mathbb Z$ for a codomain the construction determines | "intrinsic" asserted over an argument that computes in a basis | the form as a morphism; the Gram matrix after a basis is chosen; nondegeneracy and perfectness through the adjoint's sequence; the codomain the construction determines, with the monomorphism into the coarse object named | `DEF-39`, `PR-58`, `PR-61`, `SYM-16`, `EV-10` |
+| Fluency | "finite free"; $b(\lambda)$; "anti-isometry"; a zero-argument macro | a local name recorded beside the standard one | "finitely generated free"; $M(\lambda)$; the isometry to $L(-1)$; $L[n]$; semantic macros with their operands | `TERM-16`, `TERM-17`, `NOT-4`, `NOT-6`, `NOT-7` |
+| Architecture | a catch-all chapter; a fact filed where it was first needed | chapters named after theories whose bodies are lists of facts | general pairings, bilinear modules, lattices, discriminant forms, then the definite, indefinite, hyperbolic, embedding, and arithmetic theories; Eichler and Miranda–Morrison theory as developments of their own | `SEC-9`, `SEC-12`, `SEC-13`, `SEC-14`, `SEC-15` |
+| Blocks | a Proposition as a container for a definition, a computation, and a remark | typed blocks with the wrong types: a Theorem for a computation, a Lemma for a definition's consequence | claim and hypotheses in the block, the construction in the proof; a definition's consequences as a proposition after it; a computation as an example; a failed implication as a counterexample; a characterization as a proposition, not the definition | `SEC-16`, `SEC-18`, `DEF-16`, `DEF-22`, `EX-2`, `PR-64` |
+| Commentary | "contains additional information"; "is different from the previous one"; "the rank adds and the determinant multiplies"; "the classical theorem guarantees" | the commentary kept with a formula appended | the statement with its hypotheses and citation; the equations; the map that separates the two notions | `PR-51`, `PR-52`, `PR-74`, `EV-11`, `CITE-4` |
 
 ## Oscillation gate
 

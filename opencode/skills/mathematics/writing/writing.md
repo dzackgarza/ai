@@ -312,9 +312,22 @@ Load these patterns into context as one-shot demonstrations of the exact style e
   notation, not by citation (`CITE-7`); relationship phrases are replaced by
   the map, the split sequence, or the independence statement (`EV-11`)
 
-- [ ] A map and its defining condition are one unit, inline or in one
-  display; a diagram is drawn when the relation is diagrammatic and not for
+- [ ] A map and its defining condition are one unit, inline or in one display,
+  `aligned` when the signature and the assignment take two lines; a diagram
+  is drawn when the relation is diagrammatic and not for
   a declaration (`PR-77`, `DIA-7`, `PR-75`)
+
+- [ ] A counting invariant is derived from the structure it counts: the
+  groupoid, then $\pi_0$, then the cardinality or groupoid cardinality
+  (`DEF-43`); a map's codomain is the value object its construction
+  determines (`SYM-16`); nondegeneracy and perfectness are the vanishing of
+  terms of the adjoint's exact sequence (`DEF-39`)
+
+- [ ] A category is given with its morphisms and a functor with its action
+  on morphisms at the defining occurrence (`MA-13`); standard terms replace
+  local ones — "finitely generated free", the isometry to a twist
+  (`TERM-17`, `TERM-16`); commentary on a construction is replaced by the
+  statement, the equations, or the map (`PR-74`, `EV-11`)
 
 - [ ] Limits, kernels, cokernels, and exact sequences taken in the
   structured category the objects live in; the forgetful functor named
@@ -381,6 +394,14 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | Complete exact or fiber sequence inline | Its objects, maps, and structural relation cannot be read as one unit | Display every complete exact/coexact/fiber/cofiber sequence; align a multi-line sequence (`PR-75`) |
 | Internal result nickname or positional display reference | A second unstable identifier replaces the resolver label | Cite the result or displayed object by its stable reference (`XREF-7`, `XREF-8`) |
 | Distant bespoke symbol reused without a gloss | A self-contained statement depends on remote notation | Recall what the symbol denotes at its first substantive reuse (`SYM-15`) |
+| "Class group" for the set of classes; "the class number is the number of classes" | A count with no structure under it; a set named a group | The genus groupoid, $\Cl(L)=\pi_0\operatorname{Gen}(L)$, $\cl(L)$ its cardinality; the mass as groupoid cardinality (`DEF-43`) |
+| $\beta_{A_L}\colon A_L\times A_L\to\mathbb Q/\mathbb Z$ | The exponent the construction determines is dropped from the type; the domain is a product | $\bar\beta_L\colon A_L^\sharp\otimes A_L^\sharp\to\tfrac1{N_b(L)}\mathbb Z/\mathbb Z$, with the monomorphism into $\mathbb Q/\mathbb Z$ named where a coarse source is compared (`SYM-16`, `MA-14`) |
+| "$b^\sharp$ is injective" as the whole account of nondegeneracy | No radical or coradical named; perfectness later falls back on a determinant | The four-term exact sequence; nondegenerate when the radical vanishes, perfect when the coradical vanishes too (`DEF-39`) |
+| "The category of lattices" with no morphisms; the twist defined on objects only | A category without its morphisms is a class; a functor without its action on morphisms is a formula | Objects, morphisms, composition, identities; the functor's action on morphisms at the defining occurrence (`MA-13`, `PR-14`) |
+| "Finite free module"; "the gluing anti-isometry" | A set adjective for an algebraic hypothesis; a local name for a morphism the twist already provides | "Finitely generated free"; the isometry $\gamma\colon A_{T,q}\xrightarrow{\sim}A_{S,q}(-1)$ (`TERM-17`, `TERM-16`) |
+| "The rank adds and the determinant multiplies"; "this differs from the twist" | Mathematics compressed into English; a comparison with no map | The two equations; $x\mapsto dx$ as an isometry $L(d^2)\xrightarrow{\sim}dL$ (`PR-74`, `EV-11`) |
+| Signature and assignment compressed onto one display line with `\qquad` | One statement with a hidden seam | An `aligned` display, signature on the first line and assignment on the second (`PR-77`) |
+| The genus and the Miranda–Morrison sequence filed in an isometries chapter | A theory stored as facts about another subject | Each theory as its own development in dependency order (`SEC-14`, `SEC-9`) |
 | Witness arithmetic inside a statement block | The proposition is the claim; citing it cites the paragraph | Statement states hypotheses and conclusion; the proof builds the witness (`SEC-16`) |
 | Using informal set builder notation in formalization | Lean/mathlib mismatch | Use explicit class/instance definitions |
 | Missing sociological markers | Unparseable structure; indistinguishable prose | Wrap every claim and proof in italic markers |
