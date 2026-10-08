@@ -759,3 +759,26 @@ $\isoto$ on an inclusion (NOT-2); $L^I$ for an involution (NOT-1);
 $\Emb(S,L)$ for its orbit set (DEF-43); invariants built at the
 lattice chapter (SEC-12); commentary sentences whose deletion loses
 nothing (SEC-7); a heading naming the coordinate shadow (PR-61).
+
+**44. The class the annotation round shares.** A second pass over
+the annotations on the lattice and foundations chapters. One mechanism
+under the terminology comments: a standard name with its citation is a
+handle into the literature, and a coinage, a nickname for an internal
+result, a first-principles re-derivation, or a place-by-place unpacking
+severs it (TERM-20; XREF-7, SEC-19, DEF-45, DEF-46). One mechanism
+under the relation comments: every relationship word names a map —
+"canonical" owes the universal property, "coincide" and "the same" the
+isomorphism the monoidal swap induces, "factors through" the drawn
+lift, "underlying" the named forgetful functor, a complement its
+ambient (EV-11, FORM-13, PR-57, DIA-7). Definitions on the structure,
+with the derived invariant and the auxiliary lift as propositions —
+"degenerate if $r>0$", evenness through a refinement (DEF-47). The
+general construction, its composite with nondegenerate reduction, and
+the isotropic complement as an example (DEF-48). The block type as
+logical status (SEC-11). The literal rules: never a raw quotient or an
+isolated kernel (DEF-40); never a signature with its assignment on one
+line or inline (PR-77); never an exact sequence inline (PR-75); never
+"injective" for a vanishing kernel (MA-17, DEF-39); never $\bZ v$ or
+$Rx$, never $b(\lambda)$, one spelling of a category name (NOT-6);
+never a subset for a monomorphism (STR-5); never a sign symbol for an
+absolute value (NOT-5).

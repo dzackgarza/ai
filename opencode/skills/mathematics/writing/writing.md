@@ -371,6 +371,24 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 - [ ] A functor in a Hom-set acts on both sides; a graded functor is used
   as the functor, not by extracted components (`MA-20`, `NOT-11`)
 
+- [ ] Every standard notion is used by its name with a citation, and the
+  document's own definition is an instance of it (`TERM-20`, `SEC-19`)
+
+- [ ] "Underlying" names a forgetful functor defined once; a component of a
+  pair is named by its symbol (`FORM-13`)
+
+- [ ] Every property is defined on the structure; the invariant or witness
+  that detects it is a proposition (`DEF-47`)
+
+- [ ] A general construction is defined once; the subcategory's version is
+  its composite with the reduction functor; the special cases are examples
+  (`DEF-48`)
+
+- [ ] Every block's type is the logical status of its content (`SEC-11`)
+
+- [ ] "Canonical", "coincide", "the same", and "factors through" are replaced
+  by the universal property, the isomorphism, or the drawn lift (`EV-11`)
+
 - [ ] Standard names match target formal library conventions
 
 - [ ] Sociological markers (`*Theorem.*`, `*Lemma.*`, `*Proof.*`) used consistently
@@ -433,6 +451,13 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | "Consequently", "classical", "well known", or a semidirect product displayed, with no argument, referent, or citation | Appeal to authority | The argument, the block, or the located citation; the exact sequence before the splitting (`CITE-8`) |
 | A twist or other functor applied to one object of a Hom-set and to no morphism | The class of maps has no composition, identities, or inverses | The functor on morphisms, used: $f(\mu)\colon M(\lambda\mu)\to N(\mu)$ (`MA-20`) |
 | $\pi_0$ and $\pi_1$ extracted from a fiber sequence and a "need not equal" about them | A truncation followed by a negative | The long exact sequence of $\pi_*$, with the fiber of $\pi_0(E)\to\pi_0(B)$ as its exactness statement (`NOT-11`) |
+
+| A from-first-principles definition, coinage, or prose description of a notion the literature names | The handle into the literature is severed; every reader parses, no reader can look it up | The standard name with its citation; the document's definition as an instance (`TERM-20`) |
+| "Underlying module", "underlying morphism", "underlying set" for a component of a pair | Two forgetful functors; the word has no referent | The component's symbol, or $U(X)$ with $U$ defined once (`FORM-13`) |
+| A property defined through a derived invariant or the existence of a lift | The dependency is inverted; the detection theorem becomes vacuous | The condition on the structure; the invariant characterization as a proposition (`DEF-47`) |
+| The special case of a construction defined elementwise for lattices alone, or re-defined beside the general case | Nothing is inherited; the relation between the cases is prose | The general construction, its composite with the reduction functor, the special case as an example (`DEF-48`) |
+| A claim inside a definition; a definition inside an example; a result inside a remark | The proof obligation and the citability are misfiled | The block whose type is the content's logical status (`SEC-11`) |
+| "Canonical" with no universal property; "coincide" or "the same" for two constructions; "factors through" | The map is hidden, or the claimed equality is false | The (co)limit proof; the isomorphism the swap induces; the lift and its drawn triangle (`EV-11`) |
 
 | Using informal set builder notation in formalization | Lean/mathlib mismatch | Use explicit class/instance definitions |
 | Missing sociological markers | Unparseable structure; indistinguishable prose | Wrap every claim and proof in italic markers |

@@ -96,6 +96,22 @@ internal proposition.
 
 **Preferred:** "By @prp:primitive-embedding, the embedding is primitive."
 
+A reference label resolves to one block in one step, for every reader
+and every writer; a prose name resolves by memory and search, differs
+between writers, and places the document's own results among the
+named theorems of the literature. The mechanism is that of `TERM-20`
+run backwards: a standard name is a handle into a literature the
+reader can enter, and a name for an internal result is a handle into
+nothing but the document, where the label already is one.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/invariant-and-coinvariant-lattices.md` at
+`9be9b833a6`, a proof.
+
+**Banned:** "the primitivity proposition" in a proof.
+
+**Preferred:** the label of the block, with no name beside it.
+
 ## `XREF-8`: Displayed mathematical objects use stable references
 
 An equation, diagram, exact sequence, coexact sequence, fiber sequence, or

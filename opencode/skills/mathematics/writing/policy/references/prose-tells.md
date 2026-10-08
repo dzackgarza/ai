@@ -1876,6 +1876,24 @@ N\hookrightarrow(M,b))^{\perp}\subseteq M$ as $R$-submodule" and, when
 quoting the lattice, "the abstract lattice $N\cong\langle2\rangle$ embeds
 via $i_1,i_2$ with $N^{\perp_{i_1}}\not\cong N^{\perp_{i_2}}$."
 
+The ambient is part of the notation at every occurrence, including
+inside a block whose only lattice is $L$: $S^{\perp}$ written for
+$S^{\perp_L}$ makes the complement a function of $S$, and the next
+sublattice the reader meets with the same $S$ in another $L$ has a
+different complement under the same symbol. An elementwise gloss
+$\theset{v\in L\st\beta(v,S)=0}$ names $L$ once and then drops it from
+the symbol that the rest of the document uses.
+
+Observed in `dzackgarza/research`,
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/100-foundations.md`
+at `ab530c1dcc`, proposition "Primitive Isotropic Vectors,
+Divisibility, and Hyperbolic Splittings".
+
+**Banned:** "$$T\definedas S^{\perp}=\theset{v\in L\st\beta(v,S)=0}$$".
+
+**Preferred:** "$T\definedas S^{\perp_L}$ for $\iota\colon S\injects L$"
+(`DEF-48`).
+
 ## `PR-58`: $\operatorname{Gram}(b)$ is ill-defined on $(M,b)\in\mathbf{Bil}_{R,W}$, well-defined on $((M,e),b)$ in $\mathbf{Bil}_{R,W}^{\mathrm{fr}}$ — it is $e^*b$, not a property of $(M,b)$
 
 "$\operatorname{Gram}(b)$" as a matrix $(b(e_i,e_j))$ presupposes a finite
@@ -2729,6 +2747,21 @@ $\kappa_v\colon v^{\perp_L}\injects L$ of the right complement,
 $\kappa_v\circ\lambda_v=\iota_v$" inline;
 "$(v^{\perp_L})^{\mathrm{nd}}$" in the sentence that uses it.
 
+An exact sequence inline is the fragment this rule names at its most
+compressed: the objects, the maps, and the exactness are one unit, and
+a sentence that runs through them cannot be read as a sequence.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md` at
+`57c8eb1cb0`, definition "The gluing datum of a pair of primitive
+inclusions".
+
+**Banned:** "$0\too M\perp N\xrightarrow{j}L\xrightarrow{c}H\too0$"
+inline in a sentence.
+
+**Preferred:** the sequence displayed, and the sentence referring to
+it by its label.
+
 ## `PR-76`: Do not verbalize what the notation already states
 
 A decorated arrow is a statement. $\iota\colon S\hookrightarrow M$
@@ -2867,9 +2900,50 @@ $$q_b\colon M\too W,\qquad q_b(x)=b(x,x)$$ be its diagonal."
 \mathbf{EvenLat}_{\mathbb Z}^{\simeq}&\longrightarrow\mathbf{TorQuad}_{\mathbb Z}^{\simeq},& L&\longmapsto A_{L,q};
 \end{aligned}
 ```
-"for bilinear $b\colon M\otimes_RM\to W$, its **diagonal** is the
-quadratic map $q_b\colon U(M)\to U(W)$, $x\mapsto b(x,x)$" — the two
-signatures in one sentence.
+for the diagonal, the map the monoidal structure supplies, displayed,
+```latex
+\begin{aligned}
+\Delta_M\colon U(M)&\longrightarrow U(M\otimes_RM),\\
+x&\longmapsto x\otimes x,
+\end{aligned}
+```
+and "$q_b\definedas U(b)\circ\Delta_M$", drawn as its triangle where
+the argument uses it (`DIA-7`).
+
+Inline, a map carries its signature, or its signature with a defining
+condition (`NOT-10`). A map given by an assignment — the image of each
+generator, or the formula for a general element — is displayed, as an
+`aligned` environment with the signature on the first line and the
+assignment below it, aligned at the arrows. Writing the signature and
+the assignment inline, writing the assignment with no source or
+target, or placing both on one display line joined by `\qquad`
+compresses one statement into fragments; a cokernel computed from an
+assignment is written in its sequence (`DEF-40`).
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definitions "Bilinear and quadratic
+form presheaves" and "Symmetry, alternation, and evenness";
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md` at
+`ab530c1dcc` and at `57c8eb1cb0`, example "Primitive and nonprimitive
+embeddings".
+
+**Banned:** "map $\gamma_M\colon M\to\Gamma_R^2(M)$, $x\mapsto[x]$,
+is"; "The morphism $e\mapsto e$, $f\mapsto f$ has cokernel $\bZ w$,
+which is torsion-free"; "Define
+$$\iota\colon U\too M,\qquad\iota(e)=e,\qquad\iota(f)=f.$$";
+"$$\Delta_M\colon U(M)\too U(M\tensor_RM),\qquad x\longmapsto x\tensor x$$".
+
+**Preferred:**
+```latex
+\begin{aligned}
+\iota\colon U&\longrightarrow M,\\
+e&\longmapsto e,\\
+f&\longmapsto f,
+\end{aligned}
+```
+"and $0\to U\xrightarrow{\iota}M\to\langle w\rangle_\bZ\to0$ is
+exact"; the same two-line form for $\gamma_M$ and for $\Delta_M$.
 
 ## `PR-78`: Logical relations in logical vocabulary; objects are not agents
 

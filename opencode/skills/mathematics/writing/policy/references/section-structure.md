@@ -329,6 +329,54 @@ fenced `{#exm-...}` unit collected in the examples section of its chapter;
 the classification theorems form one subtree whose $\S$ order is the
 dependency order.
 
+The block type is the logical status of its content. A definition
+introduces a term and imposes no proof obligation; a proposition,
+lemma, theorem, or corollary asserts a claim, carries a proof
+obligation, and is citable by its label; an example instantiates; a
+remark is unproved commentary the skeleton does not depend on. Content
+in the wrong block changes what the reader must verify and may cite: a
+claim inside a definition is asserted with no proof and no label, a
+definition inside an example or in unfenced prose cannot be cited, a
+result inside a remark is cited as if proved, and a sentence of
+commentary inside a definition is read as part of the definiens. The
+test is the proof obligation: a sentence with one is a proposition, or
+an example with its computation; a sentence with none that defines a
+term is a definition; a sentence with none that defines nothing is a
+remark, or is deleted (`SEC-7`, `DEF-44`, `EX-2`).
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/discriminant-forms-and-genus.md` (working
+tree over `57c8eb1cb0`), the definition of the spinor genus;
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/100-foundations.md`
+at `ab530c1dcc`, definition "Scaled Lattices";
+`research/category-theory/framework/Categorical-Foundations.md` at
+`ab530c1dcc`, definition "Schemes as locally ringed spaces";
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definition "Rank one forms, the
+hyperbolic plane, and split forms";
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/200-examples.md`
+at `ab530c1dcc`, the unfenced prose under "The Hyperbolic Plane $U$".
+
+**Banned:** inside a definition, "This condition is independent of
+the choice of $\alpha$ because $\Orth(\widehat L)$ is the stabilizer
+of $\widehat L$."; inside a definition, "If $L$ is unimodular and
+$m>1$, $L(m)$ is not unimodular."; inside a definition, "The smooth
+manifold definition of @def:smooth-manifold transfers to algebraic
+geometry by substituting the ambient category and local models.";
+inside one definition, "A perfect symmetric form $b$ on $M$ is *split*
+if $M$ has a direct summand $N$ with $N=N^{\perp_b}$ [@MH73, I §6.1].
+Over a ring whose finitely generated projective modules are free and
+in which $2$ is a unit, a split form is an orthogonal sum of
+hyperbolic planes [@MH73, I §6.3]"; as unfenced prose in an examples
+section, "A vector $v \in U$ is called **isotropic** if $v^2 = 0$."
+
+**Preferred:** the independence of $\alpha$ as a remark after the
+definition, or as the lemma it is; "$L(m)$ is unimodular exactly when
+$m$ is a unit" as a proposition after the definition of $L(m)$; the
+transfer sentence as a remark; the definition of "split" alone, and
+the classification over such rings as a theorem with its citation;
+"isotropic" defined at its owner and the example citing it.
+
 ## `SEC-12`: A construction is introduced at its natural owner
 
 Every concept has one owner: the section at its level of generality in the

@@ -61,6 +61,25 @@ mathematics has a definite shape:
   its meaning, so prose that re-explains it is deleted (`PR-76`), and
   standard terminology and notation record that the writer recognizes
   the established theory (`NOT-4`, `NOT-5`).
+- The document is a node in the literature. A standard name with its
+  citation is a handle the reader follows into the theory; a coinage,
+  a nickname for an internal result, a first-principles re-derivation,
+  and an unpacked compact notation each sever it (`TERM-20`, `XREF-7`,
+  `SEC-19`, `DEF-45`, `DEF-46`).
+- Every relationship word names a map. "Canonical" owes its universal
+  property, "coincide" and "the same" the isomorphism, "factors
+  through" the drawn lift, "underlying" the named forgetful functor,
+  and a complement its ambient (`EV-11`, `FORM-13`, `PR-57`, `DIA-7`).
+- A property is defined on the structure; the invariant that detects it
+  and the data that witness it are propositions (`DEF-47`, `DEF-39`,
+  `PR-45`).
+- The general construction is defined once in its native category, the
+  subcategory's version is its composite with the reduction functor,
+  and the named special cases are examples (`DEF-48`, `DEF-42`,
+  `SEC-12`).
+- The block type is the logical status of its content: what the reader
+  must verify and what the reader may cite (`SEC-11`, `SEC-7`,
+  `DEF-44`).
 
 Categorical vocabulary is not categorical reasoning: naming a forgetful
 functor, calling a map a morphism, or writing "underlying" does not
@@ -71,7 +90,7 @@ where its constructions are native. A rewrite of sentences toward its
 surface — the vocabulary without the construction, its category, and its
 standard source — reproduces the appearance and not the mathematics.
 
-Six judgments apply the test. Each is answered by a cited rule, never by
+Eight judgments apply the test. Each is answered by a cited rule, never by
 the writer's recollection of what rigorous writing looks like.
 
 | Judgment | Rule |
@@ -82,6 +101,8 @@ the writer's recollection of what rigorous writing looks like.
 | Which relation earns a diagram or sequence, which an equation | `DIA-7`, `DEF-40`, `PR-75`, `PR-77` |
 | Which construction is foundational, which an immediate consequence | `DEF-16`, `DEF-22`, `DEF-44`, `DEF-45`, `SEC-16`, `SEC-18`, `SEC-19`, `STR-6` |
 | Which fact is obvious, which needs a proof or a citation | `PR-9`, `EV-1`, `CITE-1`, `CITE-7`, `CITE-8`, `SEC-6` |
+| Which name is a handle into the literature, which a coinage | `TERM-20`, `TERM-16`, `NOT-4`, `XREF-7`, `SEC-19`, `DEF-45` |
+| Which relationship word names a map, which stands where one belongs | `EV-11`, `FORM-13`, `PR-57`, `DIA-7`, `DEF-40` |
 
 ## Gradients
 
@@ -94,16 +115,16 @@ that decide the position.
 | Axis | Underspecified | Overshoot | Target | Rules |
 | --- | --- | --- | --- | --- |
 | Maps | "the map factors through the kernel" | the lift, its triangle, and a sentence restating each, at every occurrence | the lift and its triangle where the argument uses them; the kernel's notation thereafter | `EV-11`, `EV-8`, `DIA-7`, `PR-76` |
-| Ambient category | a morphism by its "underlying function"; a Hom-object as a set | arrows and "forgetful" around an argument that runs on elements | the construction in the category where it has its universal property; Hom-objects with their structure | `FORM-11`, `FORM-12`, `MA-18` |
+| Ambient category | a morphism by its "underlying function"; a Hom-object as a set; "underlying" for a component of a pair | arrows and "forgetful" around an argument that runs on elements | the construction in the category where it has its universal property; Hom-objects with their structure; a component by its symbol or by the named functor | `FORM-11`, `FORM-12`, `FORM-13`, `MA-18` |
 | Precision | "the image subobject determined by $f$" | "injective monomorphism"; a paragraph of category terminology | $\operatorname{im}(f)$; the signature with its defining equation | `PR-76`, `PR-77`, `NOT-10` |
 | Set theory | "the underlying set of the cokernel consists of classes" | categorical vocabulary as a reformulation after the fact | the adjoint and its kernel; the structure organizes the argument | `MA-18`, `DEF-39`, `STR-1` |
 | Diagrams | prose for a pullback | a display for every declaration; one construction over several displays | the square when the relation is diagrammatic; one display per construction | `DIA-7`, `PR-75`, `PR-77` |
-| Constructions | variants by near-identical formulas | named variants with no relation between them | one general construction; variants as fibers and pullbacks; the standard construction at its owner | `DEF-42`, `SEC-12`, `DEF-41` |
-| Definitions | a formula-dependent definition; consequences inside the block; a general notion redefined at its special case | a characterization through machinery the notion is not an instance of | the definition in the framework where the notion is an instance; consequences as propositions; the general notion recalled at its owner and the special case defined through it | `DEF-41`, `DEF-16`, `DEF-22`, `DEF-45` |
+| Constructions | variants by near-identical formulas; the special case defined first, elementwise and for lattices alone | named variants with no relation between them; the general case stated and the special case re-defined beside it | one general construction; variants as fibers and pullbacks; the subcategory's version as the composite with the reduction functor; the named special case as an example; the standard construction at its owner | `DEF-42`, `DEF-48`, `SEC-12`, `DEF-41` |
+| Definitions | a formula-dependent definition; a property defined through a derived invariant or the existence of a witness; consequences inside the block; a general notion redefined at its special case | a characterization through machinery the notion is not an instance of | the definition in the framework where the notion is an instance; the condition on the structure, with the invariant and the witness as propositions; consequences as propositions; the general notion recalled at its owner and the special case defined through it | `DEF-41`, `DEF-47`, `DEF-16`, `DEF-22`, `DEF-45` |
 | Theorems | a recipe as the statement; the claim after a paragraph of constructions | notation setup as the statement | the assertion, first after its hypotheses; the construction in the proof | `SEC-16`, `SEC-18`, `DEF-44` |
 | Hypotheses | an unjustified restriction | the hypotheses one proof used | the claim's hypotheses, in the block | `STR-8`, `STR-3`, `CITE-6` |
-| Notation | an alias for a standard construction; two symbols for one object; a nickname for a result; components extracted from a graded functor | a name for every map | standard, minimal, stable; the functor as the functor | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `NOT-11`, `XREF-7` |
-| Sameness | a relation asserted with no map: "the same", "agrees canonically", "differs from" | "canonical" asserted after a choice | the specified isomorphism; naturality; independence of the choice | `EV-11`, `MA-1` |
+| Notation | an alias for a standard construction; two symbols or two spellings for one object; a nickname for a result; a relative notion with no ambient; components extracted from a graded functor | a name for every map | standard, minimal, stable; one spelling per construction; the ambient in the symbol; the functor as the functor | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `NOT-11`, `XREF-7`, `PR-57` |
+| Sameness | a relation asserted with no map: "the same", "coincide", "agrees canonically", "factors through", "differs from" | "canonical" asserted after a choice, or with no universal property proved | the specified isomorphism; the drawn lift; naturality; independence of the choice | `EV-11`, `MA-1`, `DIA-7` |
 | Classification | elementary conditions | a local classification with no global object | the global structural formulation, with the local description as its consequence | `DEF-41`, `TERM-16` |
 | Provenance | an unsupported claim; "consequently" and "classical" with no antecedent or locator | a citation in place of the statement or construction | the complete statement with its provenance | `CITE-1`, `CITE-6`, `CITE-7`, `CITE-8`, `EV-9` |
 | Density | pedagogical overexplanation; classical background re-exposed | technical density with no reader | economy calibrated to the reader | `PR-18`, `PR-9`, `PR-76`, `SEC-19` |
@@ -115,9 +136,9 @@ that decide the position.
 | Counting | a count, or a set of representatives, with no classifying structure under it | a groupoid named and then counted by hand; "groupoid cardinality" for a plain count | the groupoid as a construction; embeddings, comparison morphisms, and classes distinguished; the class set as $\pi_0$, the class number as its cardinality, the mass as the groupoid cardinality | `DEF-43`, `DEF-40`, `NOT-4`, `TERM-7` |
 | Ontology | the set-level statement with no derived object | "homotopy pullback" or "derived" with the projections and coherence absent | the derived or higher-categorical object with its projections and coherence; the classical statement as its truncation | `DEF-9`, `DEF-36`, `DEF-32`, `STR-4` |
 | Coordinates | the form as a matrix; properties of the form as determinant conditions; a codomain coarser than the construction determines | "intrinsic" asserted over an argument that computes in a basis | the form as a morphism; the Gram matrix after a basis is chosen; properties through the adjoint and its sequence; the codomain the construction determines, with the monomorphism into the coarse object named | `DEF-39`, `PR-58`, `PR-61`, `SYM-16`, `EV-10` |
-| Fluency | a local term, symbol, or adjective where the document or the literature already has one; a hypothesis named by an undefined term; an established object re-described in prose | a local name recorded beside the standard one | the established term and symbol; the document's own symbol at every occurrence, including every later statement; the hypothesis written as its condition; semantic macros with their operands | `TERM-16`, `TERM-17`, `TERM-19`, `TERM-7`, `MA-19`, `NOT-4`, `NOT-6`, `NOT-7` |
+| Fluency | a local term, symbol, or adjective where the document or the literature already has one; a first-principles definition of a notion the literature names; a hypothesis named by an undefined term; an established object re-described in prose | a local name recorded beside the standard one | the established term and symbol, with its citation, and the document's definition as its instance; the document's own symbol at every occurrence, including every later statement; the hypothesis written as its condition; semantic macros with their operands | `TERM-16`, `TERM-17`, `TERM-19`, `TERM-20`, `TERM-7`, `MA-19`, `NOT-4`, `NOT-6`, `NOT-7` |
 | Architecture | a catch-all chapter; a fact filed where it was first needed; classical background exposed at the document's own level | chapters named after theories whose bodies are lists of facts | general pairings, bilinear modules, lattices, discriminant forms, then the definite, indefinite, hyperbolic, embedding, and arithmetic theories; Eichler and Miranda–Morrison theory as developments of their own; classical notions cited at first use | `SEC-9`, `SEC-12`, `SEC-13`, `SEC-14`, `SEC-15`, `SEC-19` |
-| Blocks | a Proposition as a container for a definition, a computation, and a remark; the claim or the defined term after a paragraph of constructions | typed blocks with the wrong types: a Theorem for a computation, a Lemma for a definition's consequence | one lede per block, first after its hypotheses; claim and hypotheses in the block, the construction in the proof; a definition's consequences as a proposition after it; a computation as an example; a failed implication as a counterexample; a characterization as a proposition, not the definition | `DEF-44`, `SEC-16`, `SEC-18`, `DEF-16`, `DEF-22`, `EX-2`, `PR-64` |
+| Blocks | a Proposition as a container for a definition, a computation, and a remark; a claim inside a definition; a definition inside an example; a result inside a remark; the claim or the defined term after a paragraph of constructions | typed blocks with the wrong types: a Theorem for a computation, a Lemma for a definition's consequence | one lede per block, first after its hypotheses; the block type as the logical status of its content; claim and hypotheses in the block, the construction in the proof; a definition's consequences as a proposition after it; a computation as an example; a failed implication as a counterexample; a characterization as a proposition, not the definition | `DEF-44`, `SEC-11`, `SEC-7`, `SEC-16`, `SEC-18`, `DEF-16`, `DEF-22`, `EX-2`, `PR-64` |
 | Commentary | a sentence about the mathematics in place of the mathematics: that a notion is standard, carries more information, differs from another, or behaves additively; a causal metaphor for an implication | the commentary kept with a formula appended | the statement with its hypotheses and citation; the equations; the map that separates the two notions; the implication in logical vocabulary | `PR-51`, `PR-52`, `PR-74`, `PR-78`, `EV-11`, `CITE-4`, `SEC-17` |
 
 ## Oscillation gate

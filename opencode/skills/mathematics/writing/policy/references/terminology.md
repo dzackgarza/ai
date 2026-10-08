@@ -590,6 +590,22 @@ $L^G=\Hom_{\bZ[G]}(\bZ,L)$"; "the form $b_K|_{L^\vee}$ on $L^\vee$";
 "a finite-length torsion module"; "an anisotropic vector $v$"; "a
 maximal lattice $L'$ of signature $(2,n)$ with $L'\cong U^{\perp2}\perp M$".
 
+A standard invariant stated as a congruence it satisfies is the same
+defect at the level of the object: "determines $n_+-n_-$ modulo $8$"
+describes the signature of the finite quadratic form,
+$\sign(A_{L,q})\in\bZ/8$ [@Nik80], also the Brown invariant, without
+naming it (`TERM-20`).
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, theorem "Milgram's formula".
+
+**Banned:** "In particular $A_{L,q}$ determines $n_+-n_-$ modulo $8$."
+
+**Preferred:** "$\sign(A_{L,q})\equiv n_+-n_-\pmod8$, where
+$\sign(A_{L,q})\in\bZ/8$ is the signature of the finite quadratic
+form [@Nik80]".
+
 ## `TERM-17`: Set-theoretic adjectives do not replace algebraic properties
 
 "Finite", "countable", "infinite" describe the underlying set. When the
@@ -703,3 +719,68 @@ $\det(M\perp N)=\det M\cdot\det N$"; "A hyperbolic form of rank $2n$
 has signature $(n,n)$"; "the wide subcategory of $\mathbf{Lat}_R$
 whose morphisms are the primitive embeddings"; "an injective
 homomorphism $\rho\colon G\injects\Orth(L)$".
+
+The same test applies to a construction the field writes as a symbol
+and to the document's own notation: "the submodule $2W\subseteq W$" is
+the field's phrase for the image of multiplication by $2$, and
+notation the document has established is used without a sentence
+announcing that it is being used.
+
+Observed in `dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definitions "Symmetry, alternation,
+and evenness" and "Nondegenerate reduction".
+
+**Banned:** "Let multiplication by $2$ have image factorization
+$$W\xrightarrow{2}W=W\twoheadrightarrow2W\injects W.$$"; "then in
+lattice-theoretic notation".
+
+**Preferred:** "the submodule $2W\injects W$"; the established
+notation used, with no announcement.
+
+## `TERM-20`: A standard name with its citation is a handle into the literature
+
+A standard term used with its citation — groupoid cardinality, the
+length of a module, the Brown invariant, the adele ring, the Yoneda
+embedding — costs the reader who knows it one act of recall and gives
+the reader who does not a pointer to the theory, its theorems, and its
+examples. A from-first-principles definition of the same object, a
+coinage, a nickname, or a prose description costs every reader a full
+parse, leaves the reader who knows the theory to verify that the local
+definition agrees with the standard one, and leaves the reader who does
+not with nothing to look up. These two costs are the one mechanism
+behind `NOT-4`, `TERM-16`, `SEC-19`, `DEF-45`, `XREF-7`, and `DEF-46`:
+a coinage severs the handle; a re-derivation duplicates it; a nickname
+for an internal result replaces the one-step label with a search; a
+place-by-place family in place of the adelic object replaces the
+compact standard notation with its unpacking. The test for any noun,
+symbol, or sentence is whether the literature already has one, and
+whether the reader can follow the citation from it into that
+literature. When it does, the standard form is used with its citation
+at first occurrence and the document's own definition is written as an
+instance of it; when it does not, the coinage is defined once
+(`DEF-26`) and the definition says that the term is the document's
+own.
+
+Observed in `dzackgarza/research` (working tree over `57c8eb1cb0`):
+`research/lattice-theory/discriminant-forms-and-genus.md`, the
+definition of the mass of a genus;
+`research/lattice-theory/lattice-theory.md`, convention "Integral
+lattice specialization";
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`,
+definition "Form categories". The discriminant length defined beside
+its own gloss is the same defect (`DEF-45`).
+
+**Banned:** "For a finite groupoid $\mathcal G$ whose automorphism
+groups are finite, define" followed by the weighted sum over
+isomorphism classes; "Thus an unqualified lattice is an object of
+$$\mathbf{Lat}_{\bZ},$$"; "Define the variable-value category
+$\mathbf{BilMod}_R$ to have triples $(M,W,b)$".
+
+**Preferred:** "the groupoid cardinality
+$\cardinality{\mathcal G}=\sum_{[x]\in\pi_0\mathcal G}1/\cardinality{\Aut(x)}$
+[Baez–Dolan, *From Finite Sets to Feynman Diagrams*, 2001]" and the
+mass as its instance; "Throughout, *lattice* means an object of
+$\mathbf{Lat}_{\bZ}$"; "the category $\mathbf{BilMod}_R$ of bilinear
+modules over $R$, fibered over $R\text{-}\mathbf{Mod}$ by the value
+module" (`DEF-42`).

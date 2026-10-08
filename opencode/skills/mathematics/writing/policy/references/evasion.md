@@ -228,8 +228,8 @@ isomorphism (`DIA-7`, `PR-74`).
 
 "Agree canonically" for two constructions defined on different sides
 — the left and right orthogonal complements of a symmetric form — owes
-the inducing map and the proof: for $b\circ\tau=b$ the two adjoints
-coincide, so the two kernels are equal subobjects, and that equation
+the inducing map and the proof: for $b\circ\tau=b$ the swap $\tau$
+induces an isomorphism between the two kernels over $M$, and that map
 is the content. "Identifies $A$ with $B$" and "the geometric
 identification of" are the same phrase with the map in a different
 grammatical slot.
@@ -249,8 +249,61 @@ ring $R$, the two kernel objects agree canonically."; "The morphism
 $\lambda_v$ identifies $\generators{v}_{\bZ}$ with"; "geometric
 identification of".
 
-**Preferred:** "for $b\circ\tau=b$,
-$b^\sharp_{\mathrm L}=b^\sharp_{\mathrm R}$, so
-${}^{\perp_b}T=T^{\perp_b}$ as subobjects of $M$";
+**Preferred:** "for $b\circ\tau=b$, the swap $\tau$ induces the
+isomorphism ${}^{\perp_b}T\isoto T^{\perp_b}$ over $M$", with its
+square drawn (`DIA-7`);
 "$\lambda_v\colon\langle v\rangle_\bZ\injects v^{\perp_L}$ is the
 unique morphism with $\kappa_v\circ\lambda_v=\iota_v$"; the map named.
+
+"Canonical" asserts a universal property — a (co)limit, a unique
+isomorphism, an adjunction — and written without that proof it asserts
+nothing while hiding the map that does the work: for the two kernels
+of a form over a noncommutative ring, the map induced by
+$R\to R^{\opop}$. "Coincide", "are the same", and "are isomorphic" for
+two constructions are the same defect with the map hidden: two maps
+that differ by the monoidal swap $\tau$ are not equal, and the content
+is the isomorphism $\tau$ induces between the two kernels. "Factors
+through" is deleted at every occurrence: it gestures at a lift in a
+diagram the text has not drawn, and the lift with its commuting
+triangle is written instead (`DIA-7`). A block whose only content is
+such a phrase — "the canonical map to the dual lattice" as a
+definition — is a diagram, not a definition, and "injective, so an
+isomorphism exactly when $A_L=0$" is its exact sequence with the
+vanishing term named (`DEF-40`, `DEF-39`).
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definitions "Adjoints, radicals, and
+nondegeneracy" and "Left and right orthogonal complements";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`ab530c1dcc`, definition "The canonical map to the dual lattice", at
+`57c8eb1cb0`, definition "The canonical bilinear-module map to the
+dual lattice", and (working tree over `57c8eb1cb0`), the definition
+of $I$-integrality;
+`research/category-theory/framework/Categorical-Foundations.md` at
+`ab530c1dcc`, definition "Concrete categories".
+
+**Banned:** "If $b$ is symmetric, $b^\sharp={}^\sharp b$, so the two
+exact sequences are the same"; "Equivalently, $\iota$ factors through
+both orthogonal-complement kernel morphisms."; "The lattice is
+**$I$-integral** when $$L\too L_K$$ factors through
+$L^{\# I}\too L_K$."; "the least positive integer for which
+multiplication by $N_b(L)$ on $L^\#$ factors through
+$$\iota_L\colon L\injects L^\#.$$"; "the *canonical map to the dual
+lattice* is the morphism $$\iota_L\colon L\too L^{\#}$$" … "The
+morphism $\iota_L$ is injective, so it is an isomorphism exactly when
+$A_L=0$"; "Any further underlying-set construction is stated as a
+factorization through this functor."
+
+**Preferred:** "for $b\circ\tau=b$, the swap $\tau$ induces an
+isomorphism between the kernel sequences of $b^\sharp$ and
+${}^\sharp b$", with its square drawn; the lift
+$\bar\iota\colon N\to T^{\perp}$ with $\kappa\circ\bar\iota=\iota$ as
+a triangle; "$L$ is **$I$-integral** when there is
+$\bar\jmath\colon L\to L^{\#I}$ with $\kappa_I\circ\bar\jmath=\jmath$",
+the triangle drawn for $\jmath\colon L\injects L_K$ and
+$\kappa_I\colon L^{\#I}\injects L_K$; "$N_b(L)\definedas\exp(A_L)$"
+(`DEF-40`); the sequence
+$0\to L\xrightarrow{\iota_L}L^\#\to A_L\to0$ displayed where the block
+stood, with "$\iota_L$ is an isomorphism exactly when $A_L=0$" as the
+sentence after it.

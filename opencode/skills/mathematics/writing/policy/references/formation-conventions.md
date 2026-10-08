@@ -183,3 +183,49 @@ is the subobject on which $\operatorname{coker}(Uf)$ is torsion-free"
 forgetful functor and $\Delta_M\colon U(M)\to U(M\otimes_RM)$,
 $x\mapsto x\otimes x$, the natural diagonal of underlying sets", with
 $q_b:=U(b)\circ\Delta_M$ — the map in the category where it is a map.
+
+## `FORM-13`: "Underlying" names a forgetful functor, and only a named one
+
+"Underlying" presupposes one forgetful functor to one base. An object
+of a category of bilinear modules is a pair $(M,b)$ whose form
+$b\colon M\otimes_RM\to W$ has a value module $W$; both $M$ and $W$
+are $R$-modules, and a morphism between objects with different value
+modules is a pair of module maps. Two forgetful functors leave the
+pair, so "the underlying module", "the underlying morphism", and "the
+underlying set" have no referent: the reader cannot tell which
+component is meant, and the sentence cannot be checked. The object is
+the pair, the morphism is the pair of maps, and a component is named
+by its symbol — $M$, $W$, $f$ — or by the functor that extracts it,
+$U(M)$ with $U$ defined once at its owner (`NOT-7`, `MA-18`).
+"Underlying" beside an arrow that already shows its category is
+restatement (`PR-76`); "underlying" in place of a component's symbol
+is an unresolved reference; a sentence that defines "the underlying
+set of $X$" as $U(X)$ defines a word the document then uses as if it
+were primitive, when the functor is the primitive and the word is
+deleted.
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+at `57c8eb1cb0`, definition "Form categories";
+`research/lattice-theory/discriminant-forms-and-genus.md` (working
+tree over `57c8eb1cb0`), definition "Discriminant bilinear and
+quadratic forms";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`ab530c1dcc`, example "Subobjects under extension of scalars";
+`research/category-theory/framework/Categorical-Foundations.md` at
+`ab530c1dcc`, definition "Concrete categories".
+
+**Banned:** "A morphism $(M,b_M)\to(N,b_N)$ has underlying morphism
+$f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$ and satisfies $f^*b_N=b_M$.";
+"Their common underlying $\bZ$-module is $A_L^\sharp$."; "The
+inclusion $\bZ v\hookrightarrow L$ represents a subobject of the
+underlying $\bZ$-module."; "The set $U(X)$ is the underlying set of
+$X$."
+
+**Preferred:** "a morphism $(M,b_M)\to(N,b_N)$ is
+$f\in\Hom_{R\text{-}\mathbf{Mod}}(M,N)$ with $f^*b_N=b_M$"; "$A_L$ and
+$A_{L,q}$ are forms on the one module $A_L^\sharp$";
+"$\iota_v\colon\langle v\rangle_\bZ\injects L$ in
+$\bZ\text{-}\mathbf{Mod}$"; "a concrete category is a pair
+$(\category{C},U)$ with $U\colon\category{C}\to\mathbf{Set}$
+faithful", and $U(X)$ thereafter.

@@ -1047,6 +1047,43 @@ $0\to\radic(B)\xrightarrow{\rho_B}B\to B^{\mathrm{nd}}\to0$ in
 $\mathbf{BilMod}_R$"; "$\iota\colon S\to L$ is **primitive** when
 $\operatorname{coker}(\iota)$ is torsion-free".
 
+A quotient written as $X/Y$, or an isolated kernel written as
+$\ker(f)$ — $\exp(L^\#/L)$, $\Orth(A_{L,q})/I_{L,q}$,
+$\ker\qty{\det\colon\Orth(L)\too\theset{\pm1}}$ — names the object
+without the sequence that defines it, so the reader cannot see which
+map it is the cokernel or kernel of, whether the quotient is a group,
+or that the object already has a name. The named object is used —
+$A_L$ for $L^\#/L$ — and a new one is defined by its place in a
+(co)fiber sequence, never as an isolated kernel, cokernel, or
+quotient.
+
+Observed in `dzackgarza/research`:
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`57c8eb1cb0`, definition "The canonical bilinear-module map to the
+dual lattice";
+`research/lattice-theory/discriminant-forms-and-genus.md` at
+`57c8eb1cb0`, definition "Image and coset space of the quadratic
+discriminant representation";
+`research/lattice-theory/lattice-theory.md` at `ab530c1dcc`,
+definition "The spinor norm and the special orthogonal group".
+
+**Banned:** "Define the **bilinear denominator**
+$$N_b(L)\definedas\exp(L^\#/L).$$"; "Define the pointed left-coset set
+$$\mathcal C_{L,q}\definedas\Orth(A_{L,q})/I_{L,q},$$ pointed by
+$I_{L,q}$. It is a quotient group exactly when
+$I_{L,q}\trianglelefteq\Orth(A_{L,q})$."; "The **special orthogonal
+group** is
+$$\SO(L)\definedas\ker\qty{\det\colon\Orth(L)\too\theset{\pm1}}.$$"
+
+**Preferred:** "$N_b(L)\definedas\exp(A_L)$", with $A_L$ the cokernel
+in $0\to L\to L^\#\to A_L\to0$; the sequence
+$1\to I_{L,q}\to\Orth(A_{L,q})\to\mathcal C_{L,q}$ with
+$\mathcal C_{L,q}$ its cofiber, and the normality of $I_{L,q}$ as the
+proposition under which the cofiber is a group; the sequence
+$1\to\SO(L)\to\Orth(L)\xrightarrow{\det}\theset{\pm1}$ as the
+definition of $\SO(L)$, with the surjectivity of $\det$ stated where
+it holds.
+
 ## `DEF-41`: An established notion is defined by its established formulation
 
 A notion the literature defines is defined here by a formulation the
@@ -1150,6 +1187,42 @@ $W$; "$\rho_{L,q}$ is the factorization of $\rho_L$ through the
 monomorphism $j_q\colon\Orth(A_{L,q})\hookrightarrow\Orth(A_L)$, and its
 exact sequence is the pullback of the sequence for $\rho_L$ along $j_q$"
 — one construction, the variant as an operation on it.
+
+Two functors defined by one pattern are written by one pattern. The
+bilinear and the quadratic forms on $M$ with values in $W$ are both
+$\Hom$ out of a representing object — $M\otimes_RM$ and the second
+divided power $\Gamma^2_R(M)$ [Roby, *Lois polynômes et lois formelles
+en théorie des modules*, 1963] — and both are presheaves on
+$R\text{-}\mathbf{Mod}$ by pullback. Defining one as a $\Hom$ and the
+other pointwise, or declaring one a presheaf and not the other, hides
+that the two theories are parallel, and makes the polarization
+$\operatorname{Quad}_{R,W}\to\Bil_{R,W}$ — precomposition with one map
+$M\otimes_RM\to\Gamma^2_R(M)$ — a comparison of two unrelated
+definitions (`PR-77`).
+
+Observed in `dzackgarza/research`,
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definition "Bilinear and quadratic
+form presheaves".
+
+**Banned:** "define
+$$\Bil_{R,W}(M)\definedas\Hom_{R\text{-}\mathbf{Mod}}(M\tensor_RM,W).$$"
+beside "Let $\operatorname{Quad}_{R,W}(M)$ be the $R$-module, under
+pointwise operations, of maps $q\colon M\to W$ for which
+$q(rx)=r^2q(x)$ and" … "Pullback defines the presheaf
+$\operatorname{Quad}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\opop} \to R\text{-}\mathbf{Mod}$."
+with no presheaf declared for $\Bil_{R,W}$.
+
+**Preferred:** one display,
+```latex
+\begin{aligned}
+\Bil_{R,W}(M)&\definedas\Hom_{R\text{-}\mathbf{Mod}}(M\otimes_RM,W),\\
+\operatorname{Quad}_{R,W}(M)&\definedas\Hom_{R\text{-}\mathbf{Mod}}(\Gamma^2_R(M),W),
+\end{aligned}
+```
+"both presheaves $(R\text{-}\mathbf{Mod})^{\opop}\to R\text{-}\mathbf{Mod}$
+by pullback", with the citation for $\Gamma^2_R$ at its first
+occurrence.
 
 ## `DEF-43`: A counting invariant is defined from the structure it counts
 
@@ -1371,3 +1444,106 @@ $O(V)\backslash O(V_{\mathbb A})/O(L_{\mathbb A})$ [O'Meara,
 the spinor norm on $O^+(V_{\mathbb A})$, an element of the restricted
 product $\prod'_{\mathfrak p}\Theta(V_{\mathfrak p})$ being one object;
 "for an isometry $\varphi\colon L\otimes_RK\isoto M\otimes_RK$".
+
+## `DEF-47`: A property is defined on the structure, never through a derived invariant or a witness
+
+A derived invariant — the rank of the radical, the signature, the
+determinant, the order of a group — is computed from the structure by
+a construction that is itself a theorem of the subject. Defining a
+property through the invariant inverts the dependency: the property
+exists only where the invariant does (a rank needs a free module, a
+signature needs $\bR$, a determinant needs a basis), the proposition
+that the invariant detects the property becomes vacuous, and the
+definition does not transfer to the category where the construction is
+native (`DEF-41`, `DEF-39`, `TERM-18`). The same inversion defines a
+property by the existence of auxiliary data — a lift, a refinement, a
+chosen map — when the property is a condition on the structure already
+present. The definition is the condition on the structure's own
+components: the kernel in its sequence, the submodule of the value
+module, the morphism. The invariant characterization and the existence
+of the witness follow as propositions with the hypotheses under which
+they hold. Evenness is a property of the value module,
+$\operatorname{Val}(b)\subseteq2W$ (`PR-45`): the pointwise condition
+with $2\bZ$ unwraps $W$ at the lattice chapter (`DEF-45`), and the
+quadratic refinement $q$ with $b=b_q$ is the proposition that follows
+when $2$ is a nonzerodivisor on $W$.
+
+Observed in `dzackgarza/research`:
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+at `57c8eb1cb0`, definition "Definiteness", and (working tree over
+`57c8eb1cb0`) definition "Symmetry, alternation, and evenness";
+`research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
+`ab530c1dcc`, and (working tree over `57c8eb1cb0`), definition "Even
+lattices".
+
+**Banned:** "- *degenerate* if $r>0$;" with $r$ read off the
+signature; "Let multiplication by $2$ have image factorization
+$$W\xrightarrow{2}W=W\twoheadrightarrow2W\injects W.$$ The form $b$
+is **even** when there is a quadratic map
+$\widetilde q_b\in\operatorname{Quad}_{R,2W}(M)$ for which"; "A
+$\bZ$-lattice is *even* if $b(x,x)\in2\bZ$ for every $x\in L$."; "An
+integral lattice $L$ is **even** when $$q_{\beta_L}\colon L\too\bZ$$
+factors through $$2\bZ\injects\bZ$$".
+
+**Preferred:** "$b$ is **degenerate** when $\radic(b)\neq0$" with the
+radical in its sequence (`DEF-39`), and "over a field,
+$\operatorname{rank}\radic(b)$ is the third entry $r$ of the
+signature" as the proposition; at the owner of bilinear modules, "$b$
+is **even** when $\operatorname{Val}(b)\subseteq2W$", and "when $2$ is
+a nonzerodivisor on $W$, $b$ is even exactly when $b=b_q$ for a unique
+$q\in\operatorname{Quad}_{R,W}(M)$" as the proposition; at the lattice
+chapter, "an **even lattice** is a lattice whose form is even
+(@def:form-axioms)", with $W=\bZ$ instantiated and nothing restated.
+
+## `DEF-48`: The general construction, the functor it induces on the subcategory, then the special case as an example
+
+A construction native to a general category is defined there once,
+with its universal property and its sequence; the version on a
+subcategory is the composite of that construction with the reduction
+functor into the subcategory; and the special cases the literature
+names are examples of the composite. The orthogonal complement is the
+kernel of $\iota^*\circ b^\sharp\colon M\to\Hom_R(N,W)$ for a
+monomorphism $\iota\colon N\injects M$ in $\mathbf{BilMod}_R$, with its
+natural codomain and its cokernel (`DEF-40`); the radical is the
+orthogonal complement of $\id_M$; the composite with the nondegenerate
+reduction $(-)^{\mathrm{nd}}$ is the orthogonal complement in
+$\mathbf{Lat}_R$, defined for every monomorphism and not only for the
+isotropic ones; and for a primitive isotropic $J\injects L$ the
+lattice $J^{\perp_L}/J$ of the cusp and gluing literature is
+$(J^{\perp_{\mathbf{BilMod}_R}})^{\mathrm{nd}}$, an example. Each
+later statement — exactness, functoriality, the double complement of a
+primitive sublattice — is then proved once for the composite and
+inherited by every case. The two defects on this gradient are the
+special case defined first, elementwise and for lattices alone, from
+which the general case is never recovered (`DEF-41`, `TERM-18`); and
+the general case stated and the special case then re-defined beside
+it, by a formula and a sentence saying what the formula "is", so that
+the relation between them is prose (`SEC-12`, `DEF-42`, `PR-76`).
+
+Observed in `dzackgarza/research`:
+`research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/100-foundations.md`
+at `ab530c1dcc`, proposition "Primitive Isotropic Vectors,
+Divisibility, and Hyperbolic Splittings";
+`research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
+(working tree over `57c8eb1cb0`), definition "Nondegenerate
+reduction".
+
+**Banned:** "$$T\definedas S^{\perp}=\theset{v\in L\st\beta(v,S)=0}$$"
+as the definition of the orthogonal complement; "If $L$ is
+nondegenerate and $$\iota\colon T\injects L$$ is an isotropic
+sublattice over the commutative ring $R$, then in lattice-theoretic
+notation
+$$T^\perp\definedas\bigl(T^\perp_{\mathbf{BilMod}_R}\bigr)^{\mathrm{nd}}.$$
+Thus the orthogonal complement in the lattice category is the
+nondegenerate reduction of the right orthogonal-complement kernel in
+$\mathbf{BilMod}_R$."
+
+**Preferred:** the kernel sequence of $\iota^*\circ b^\sharp$ as the
+definition of $N^{\perp_M}$ in $\mathbf{BilMod}_R$; the display
+$$(-)^{\perp}\definedas(-)^{\mathrm{nd}}\circ(-)^{\perp_{\mathbf{BilMod}_R}}$$
+as the definition of the orthogonal complement on monomorphisms of
+$\mathbf{Lat}_R$, for every sublattice; the example "for
+$\iota\colon J\injects L$ primitive and isotropic,
+$J^{\perp_L}=(J^{\perp_{\mathbf{BilMod}_R}})^{\mathrm{nd}}$, and
+$J\injects\radic(J^{\perp_{\mathbf{BilMod}_R}})$ is an isomorphism"
+with its proof.

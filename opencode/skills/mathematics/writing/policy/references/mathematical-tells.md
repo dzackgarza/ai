@@ -341,13 +341,13 @@ zero.
 
 **Banned:** "the mixed terms vanish" for
 $\beta(L_i,L_j)=0$ for $i\neq j$; "the radical vanishes" for
-$\operatorname{rad}(b)=0$ or $b^\sharp$ injective (`DEF-39`);
+$\operatorname{rad}(b)=0$, the kernel term of the adjoint's sequence (`DEF-39`);
 "the obstruction vanishes" for a named class in a named group being
 zero (`NOT-1`).
 
 **Preferred:** "$\beta(L_i,L_j)=0$ for $i\neq j$, so
-$L=L_1\perp\cdots\perp L_n$"; "$\operatorname{rad}(b)=0$, i.e.
-$b^\sharp\colon M\to\operatorname{Hom}_R(M,W)$ is injective
+$L=L_1\perp\cdots\perp L_n$"; "$\operatorname{rad}(b)=0$, the kernel term of
+$0\to\operatorname{rad}(b)\to M\xrightarrow{b^\sharp}\operatorname{Hom}_R(M,W)$
 (`DEF-39`)"; "$\partial(q)=0$ in $\operatorname{Val}(b)$" — the
 zeroed map named at each use, its type recoverable from the notation
 (`PR-74`, `NOT-1`).
