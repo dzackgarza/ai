@@ -111,7 +111,7 @@ preferences. A passage no rule names is judged by them.
   spelling; the field's sentence is used for the field's statement
   (`SEC-11`, `PR-75`, `PR-77`, `NOT-6`, `TERM-19`, `SEC-7`).
 
-Eight judgments apply the test. Each is answered by a cited rule, never by
+Ten judgments apply the test. Each is answered by a cited rule, never by
 the writer's recollection of what rigorous writing looks like.
 
 | Judgment | Rule |
@@ -124,6 +124,8 @@ the writer's recollection of what rigorous writing looks like.
 | Which fact is obvious, which needs a proof or a citation | `PR-9`, `EV-1`, `CITE-1`, `CITE-7`, `CITE-8`, `SEC-6` |
 | Which name is a handle into the literature, which a coinage | `TERM-20`, `TERM-16`, `NOT-4`, `XREF-7`, `SEC-19`, `DEF-45` |
 | Which relationship word names a map, which stands where one belongs | `EV-11`, `FORM-13`, `PR-57`, `DIA-7`, `DEF-40` |
+| Which annotation is a sentence defect, which owes a construction, a theorem, a placement, or a level | `DEF-49`, `SEC-20`, `SEC-21`, `CITE-9`, `TERM-20`, `DEF-41` |
+| Which direction a map runs | `SYM-17`, `NOT-2`, `EV-11` |
 
 ## Gradients
 
@@ -146,7 +148,7 @@ that decide the position.
 | Hypotheses | an unjustified restriction | the hypotheses one proof used | the claim's hypotheses, in the block | `STR-8`, `STR-3`, `CITE-6` |
 | Notation | an alias for a standard construction; two symbols or two spellings for one object; a nickname for a result; a relative notion with no ambient; components extracted from a graded functor | a name for every map | standard, minimal, stable; one spelling per construction; the ambient in the symbol; the functor as the functor | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `NOT-11`, `XREF-7`, `PR-57` |
 | Sameness | a relation asserted with no map: "the same", "coincide", "agrees canonically", "factors through", "differs from" | "canonical" asserted after a choice, or with no universal property proved | the specified isomorphism; the drawn lift; naturality; independence of the choice | `EV-11`, `MA-1`, `DIA-7` |
-| Classification | elementary conditions | a local classification with no global object | the global structural formulation, with the local description as its consequence | `DEF-41`, `TERM-16` |
+| Classification | elementary conditions; one case of a trichotomy with the others named in passing; a congruence with no statement of what it classifies | a local classification with no global object | the global structural formulation, with the local description as its consequence; the whole classification — every class, the deciding invariant, the enumeration — as one theorem with its citation | `DEF-41`, `TERM-16`, `SEC-21`, `EX-3` |
 | Provenance | an unsupported claim; "consequently" and "classical" with no antecedent or locator | a citation in place of the statement or construction | the complete statement with its provenance | `CITE-1`, `CITE-6`, `CITE-7`, `CITE-8`, `EV-9` |
 | Density | pedagogical overexplanation; classical background re-exposed | technical density with no reader | economy calibrated to the reader | `PR-18`, `PR-9`, `PR-76`, `SEC-19` |
 | Register | "objects satisfying $P$ form a subcategory"; a standard statement in a paraphrased locution | formal register with no formal content | "the $P$-objects form a full subcategory", when that is the claim; the field's sentence for the field's statement | `PR-15`, `TERM-16`, `TERM-19` |
@@ -161,6 +163,10 @@ that decide the position.
 | Architecture | a catch-all chapter; a fact filed where it was first needed; classical background exposed at the document's own level | chapters named after theories whose bodies are lists of facts | general pairings, bilinear modules, lattices, discriminant forms, then the definite, indefinite, hyperbolic, embedding, and arithmetic theories; Eichler and Miranda–Morrison theory as developments of their own; classical notions cited at first use | `SEC-9`, `SEC-12`, `SEC-13`, `SEC-14`, `SEC-15`, `SEC-19` |
 | Blocks | a Proposition as a container for a definition, a computation, and a remark; a claim inside a definition; a definition inside an example; a result inside a remark; the claim or the defined term after a paragraph of constructions | typed blocks with the wrong types: a Theorem for a computation, a Lemma for a definition's consequence | one lede per block, first after its hypotheses; the block type as the logical status of its content; claim and hypotheses in the block, the construction in the proof; a definition's consequences as a proposition after it; a computation as an example; a failed implication as a counterexample; a characterization as a proposition, not the definition | `DEF-44`, `SEC-11`, `SEC-7`, `SEC-16`, `SEC-18`, `DEF-16`, `DEF-22`, `EX-2`, `PR-64` |
 | Commentary | a sentence about the mathematics in place of the mathematics: that a notion is standard, carries more information, differs from another, or behaves additively; a causal metaphor for an implication | the commentary kept with a formula appended | the statement with its hypotheses and citation; the equations; the map that separates the two notions; the implication in logical vocabulary | `PR-51`, `PR-52`, `PR-74`, `PR-78`, `EV-11`, `CITE-4`, `SEC-17` |
+| Level | a theory organized over the field of fractions $K$ while its objects live over the ring $R$: idempotents of $K[G]$, auxiliary cokernels, scalar extension in the definitions | the ring renamed, the constructions still rational | kernels of $R[G]$-endomorphisms, saturations, and complements as the definitions; base change as a proof step | `DEF-49`, `MA-16`, `NOT-5`, `TERM-18` |
+| Direction | an isomorphism written from the whole to the sum of its parts | an arrow with a formula in neither direction | the map the inclusions induce, from the sum, decorated once proved | `SYM-17`, `NOT-2`, `EV-11` |
+| Sources | the source's convention, sign, and reading instruction inside the statement; a hypothesis named after its source | a result re-derived from memory | the result in the document's conventions with the source cited; the translation once, at the definition | `CITE-9`, `CITE-1`, `TERM-7` |
+| Consumers | a true proposition with no block that uses it; an example or corollary appended to give it a purpose | — | the block before its consumer, or deleted | `SEC-20`, `SEC-6`, `SEC-9` |
 
 ## Oscillation gate
 
@@ -185,6 +191,49 @@ the rewrite.
 
 A writer who cannot name the standard source's formulation has not
 reached the rewrite step (`TERM-16`, `DEF-41`).
+
+## Annotation gate
+
+A proposal answering a review annotation is judged by how the theory
+develops after it, not by whether the annotated sentence now reads
+correctly. A technically elaborate proposal can satisfy the literal
+wording of an annotation and violate its intent: more notation for a
+precision request, a named comparison morphism for a hidden map, an
+appended example for a block with no purpose. The gate is mandatory and
+has no judgment clause.
+
+**Trigger.** A review annotation on a mathematical document, or a
+proposal written in answer to one.
+
+**Consequence.** Record five facts before writing the proposal. A
+proposal written without them is a draft and is not reported as
+remediation.
+
+1. **Class.** Which of these the annotation reports: an established
+   construction written in a local form (`TERM-20`, `DEF-41`, `NOT-4`);
+   a theorem or a classification owed (`SEC-21`, `SEC-20`, `EX-3`); a
+   block in the wrong place (`SEC-20`, `SEC-9`, `SEC-12`); a theory at
+   the wrong level (`DEF-49`, `FORM-11`, `SYM-16`); or a sentence
+   defect (`PR-*`, `EV-*`). Only the last is fixed at the sentence.
+2. **Sweep.** Every instance of the reported mechanism in the
+   manuscript, with its location. One proposal covers all of them.
+3. **Notation ledger.** For each symbol the proposal uses: the label
+   of its defining occurrence, with its source, target, direction, and
+   hypotheses; or the standard source that defines it, with the
+   citation; or the new defining occurrence the proposal adds. A
+   precision annotation on an object the document already has is
+   answered with that object's established notation, never with a new
+   symbol, a new category, a comparison morphism, or a universal
+   construction (`MA-19`, `NOT-5`, `SYM-17`).
+4. **Transformation scope.** The judgment rules the proposal applies,
+   each where its test decides it. The annotated location is one of
+   those places. A proposal that applies a rule at the annotated
+   location alone, or that reports the opposite family from the
+   earlier review, triggers the oscillation gate.
+5. **Level and consumer.** The ring or category the proposal's
+   definitions live in, and the block that uses each statement block
+   the proposal adds (`DEF-49`, `FORM-11`, `SEC-20`). A block with no
+   consumer is moved to one or deleted.
 
 ## Scope
 
@@ -270,6 +319,9 @@ failure that produced them.
 - Apply the sentence test in both directions. A finding of missing structure
   and a finding of verbalized formalism are one defect seen from two sides; a
   fix that trades one for the other triggers the oscillation gate.
+- A proposal answering a review annotation passes the annotation gate
+  before it is written: its class, its sweep, its notation ledger, its
+  transformation scope, and its level and consumer are recorded first.
 - Never write a definition or a citation from memory. Read the source and
   transcribe from it (`DEF-2`, `CITE-1`).
 - The [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] also

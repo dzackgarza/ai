@@ -47,6 +47,24 @@ $A\times A\to A$ is the map corresponding to $\mu$ under the tensor-hom
 adjunction, and the unit element is $\eta(1)$." Name the data, then use the
 symbols.
 
+A symbol bound in the prose preamble of a chapter and used in a theorem
+several blocks later is the same defect at chapter scale: the preamble
+is not a block, and the theorem opens without the binding. The symbol is
+bound inside the definition block that owns it, and the theorem recalls
+it by citing that block (`SEC-6`, `SYM-15`).
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, the chapter
+preamble binding $V$ and theorem "The radical of a parabolic system".
+
+**Banned:** "let $V$ be the real vector space with basis
+$\{\alpha_s\}_{s\in S}$" in the chapter preamble, with "Then $\radic(V)$
+is spanned by a vector" in a theorem that does not bind $V$.
+
+**Preferred:** "$V\definedas\bigoplus_{s\in S}\bR\alpha_s$" inside the
+definition of the form, and "Let $(W,S)$ be irreducible and parabolic
+with form $b$ on $V$ (@def:coxeter-form)." opening the theorem.
+
 ## `SYM-2`: Data referenced by role instead of by declaration
 
 A passage refers to "the multiplication", "the unit", "the associator", or
@@ -377,3 +395,33 @@ unimodular lattice".
 
 **Preferred:** "$q_L(x)=0$ in $\tfrac2{N_q(L)}\bZ/J_L$", the codomain
 the definition of $q_L$ gives.
+
+## `SYM-17`: A map is written in the direction its construction gives
+
+A decomposition of $L$ into sublattices $M_i$ is the map $\perp_iM_i\too
+L$ induced by the inclusions; it is written in that direction and
+decorated $\isoto$ once the proof shows it is an isomorphism (`NOT-2`).
+The reverse arrow, $L\isoto\perp_iM_i$, asserts a projection onto each
+factor, and the statement gives no formula for one. The test: write the
+formula of the map on an element. If the formula exists only for the
+inclusions, the arrow points from the sum. An arrow that has a formula
+in neither direction is a relationship phrase written in symbols
+(`EV-11`).
+
+Observed in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/special-lattices-and-transformations.md`,
+proposition "Standard special lattice relations";
+`research/lattice-theory/classification/two-elementary-lattices.md`,
+theorem "Primitive isotropic vectors in a hyperbolic $2$-elementary
+lattice".
+
+**Banned:** "$L_{2d}\isoto\generators{-2d}\perp U^{\perp2}\perp
+E_8^{\perp2}$"; "If $v$ is odd, $S\isoto
+U\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$".
+
+**Preferred:** "$\generators{-2d}\perp U^{\perp2}\perp
+E_8^{\perp2}\isoto L_{2d}$"; "$U\perp U^{\perp_S}\isoto S$ for the
+hyperbolic plane $\iota\colon U\injects S$ through $v$, by
+@prop:unimodular-splits, and $U^{\perp_S}\injects
+v^{\perp_S}\twoheadrightarrow\qty{v^{\perp_S}}^{\mathrm{nd}}$ is an
+isomorphism".

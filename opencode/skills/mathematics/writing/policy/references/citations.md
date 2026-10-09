@@ -185,3 +185,45 @@ $$1\to\Hom_R(M^{\mathrm{nd}},\radic(M))\to\Orth(M)\to\Aut_R(\radic(M))\times\Ort
 with the section induced by a splitting
 $M\cong\radic(M)\oplus M^{\mathrm{nd}}$ written out, and only then the
 semidirect product.
+
+## `CITE-9`: A cited result is transcribed into the document's conventions; the translation is not narrated
+
+A result taken from a source is stated in the document's own sign,
+notation, and vocabulary, with the source cited for the result. The
+source's convention, the sign that relates it to the document's, and the
+sentence telling the reader how to read the source are not part of the
+statement: a sentence that instructs the reader how to read is `PR-32`,
+and a statement that holds only after the reader applies a translation
+is not a statement of the document. The translation is recorded once, at
+the document's definition of the object, as the equation that relates
+the two forms. A hypothesis labelled by its source — "the condition of
+[@Hum90, §6.8]" — is an undefined term (`TERM-7`): the condition is
+stated, and the source is cited for the theorem that uses it. The
+boundary with `CITE-7`: that rule asks that an object constructed by a
+source be transcribed; this rule asks that the transcription leave no
+trace of the source's convention in the statement.
+
+Observed in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, definition
+"The form of a Coxeter system" and definition "Hyperbolic Coxeter
+systems";
+`research/lattice-theory/Isometries-and-Arithmetic-Invariants.md`,
+theorem "The Miranda–Morrison exact sequence".
+
+**Banned:** "The source [@Hum90, §5.3] uses
+$B(\alpha_s,\alpha_t)=-\cos(\pi/m(s,t))$, so $B(\alpha_s,\alpha_s)=1$
+and $b=-2B$." followed by "Every definiteness statement quoted from that
+source is therefore read here with the sign reversed, in the convention
+of @def:definiteness."; "**The condition of [@Hum90, §6.8].**" as the
+name of a hypothesis; "In the notation of [@MM09, Thm. V.5.1], let
+$\delta_L\colon\Orth(A_{L,q})\too\operatorname{MM}(L)$ be the
+Miranda--Morrison connecting morphism" inside a theorem statement.
+
+**Preferred:** "$b=-2B$ for the form $B$ of the geometric representation
+[@Hum90, §5.3]" once, in the definition of $b$, and every later
+statement in the sign of $b$; "$(W,S)$ is *hyperbolic* when $b$ has
+signature $(1,n-1,0)$ and $b(\lambda,\lambda)>0$ for every $\lambda\in
+C$ [@Hum90, §6.8]"; $\delta_L$ and $\operatorname{MM}(L)$ defined in the
+document's own definition block (`CITE-7`), the theorem stating the
+sequence in that notation, and [@MM09, Thm. V.5.1] cited for its
+exactness.

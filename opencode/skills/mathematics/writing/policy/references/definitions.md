@@ -1082,6 +1082,21 @@ $1\to\SO(L)\to\Orth(L)\xrightarrow{\det}\theset{\pm1}$ as the
 definition of $\SO(L)$, with the surjectivity of $\det$ stated where
 it holds.
 
+A sequence whose middle arrow is unlabelled and whose last term is the
+cokernel of that unlabelled arrow is the same defect: the map is named,
+and the cokernel is the cokernel of the name.
+
+Observed also in `dzackgarza/research`,
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(annotated review proposal over `9cfdecf73d`), the proposition on the
+invariant–coinvariant inclusion.
+
+**Banned:** "$0\too L^G\perp L_G\longrightarrow L
+\twoheadrightarrow\operatorname{coker}\qty{L^G\perp L_G\to L} \too0$".
+
+**Preferred:** "$0\too L^G\perp L_G\xrightarrow{j_G}L\too
+\operatorname{coker}(j_G)\too0$".
+
 ## `DEF-41`: An established notion is defined by its established formulation
 
 A notion the literature defines is defined here by a formulation the
@@ -1145,6 +1160,30 @@ genus of $L$ if $\widehat M=\alpha\widehat L$ for some
 $\alpha\in\Orth(V_{\mathbb A_f})$", with the local condition
 $M\otimes_RR_v\cong L\otimes_RR_v$ at every finite place $v$ as the
 proposition that connects it (`TERM-16`, `DEF-22`).
+
+The generators of the finite $2$-elementary quadratic forms are the same
+defect: four letters introduced as realizations of discriminant forms,
+with the generation statement and the relations stated as prose about
+the letters. The letters are defined as the discriminant forms of named
+lattices, and the generation and the relations are one theorem.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/classification/two-elementary-discriminant-forms.md`,
+the paragraph introducing $p$, $q$, $u$, $v$.
+
+**Banned:** "Here $p$ and $q$ are the two rank-one forms on $\ZZ/2\ZZ$,
+realized as the discriminant forms of $\generators{2}$ and
+$\generators{-2}$, while $u$ and $v$ are the two rank-two forms on
+$(\ZZ/2\ZZ)^2$, realized as the discriminant forms of $U(2)$ and of $V =
+V_1$ respectively.".
+
+**Preferred:** a definition block "$p\definedas A_{\generators{2},q}$,
+$q\definedas A_{\generators{-2},q}$, $u\definedas A_{U(2),q}$,
+$v\definedas A_{V,q}$ for the lattice $V$ of [@Nik80, Prop. 1.8.1]" with
+the Gram matrix of $V$ displayed and the names $q^{(2)}_{\pm1}(2)$,
+$u^{(2)}_+(2)$, $v^{(2)}_+(2)$ of the source given once; then the
+theorem that these generate the finite $2$-elementary quadratic forms
+under $\perp$, with the relations displayed [@Nik80, §1.8].
 
 ## `DEF-42`: Variants of one construction are its fibers and parameter values
 
@@ -1220,6 +1259,25 @@ $\Gamma^2_R$ [Roby, *Lois polynômes et lois formelles en théorie des
 modules*, 1963] at its first occurrence, and the polarization
 $\operatorname{Quad}_{R,W}\to\Bil_{R,W}$ as precomposition with the one
 map $M\otimes_RM\to\Gamma^2_R(M)$.
+
+The norm shell and its primitive part are the same pair: the shell is a
+hom-set in $\mathbf{BilMod}_\bZ$ and the primitive shell is its
+subobject of primitive morphisms, and defining the shell as a fiber of
+$q_L$ and the primitive shell as a set of embeddings makes two unrelated
+objects of one inclusion (`DEF-48`).
+
+Observed also in `dzackgarza/research`,
+`research/lattice-theory/basic-invariants.md` (review working text over
+`9cfdecf73d`), the definition of the norm shells.
+
+**Banned:** "$L[n]\definedas q_L^{-1}(n), \qquad
+L^{\mathrm{prim}}[n]\definedas\operatorname{PrimEmb}(\generators{n},L)$".
+
+**Preferred:**
+"$L[n]\definedas\Hom_{\mathbf{BilMod}_\bZ}(\generators{n},L)$, with
+$L[n]\isoto q_L^{-1}(n)$, $f\mapsto f(1)$, and
+$L^{\mathrm{prim}}[n]\definedas\operatorname{PrimEmb}(\generators{n},L)\subseteq
+L[n]$ the subobject of primitive morphisms".
 
 ## `DEF-43`: A counting invariant is defined from the structure it counts
 
@@ -1488,6 +1546,27 @@ $q\in\operatorname{Quad}_{R,W}(M)$" as the proposition; at the lattice
 chapter, "an **even lattice** is a lattice whose form is even
 (@def:form-axioms)", with $W=\bZ$ instantiated and nothing restated.
 
+The parity invariant $\delta$ of a $2$-elementary lattice is the same
+defect with a quadratic morphism as the witness: the definition
+quantifies over morphisms $q_L^{(2)}$ into $\bZ/2\bZ$ whose existence a
+proposition decides, and the witness reads $q_L$ in a codomain it does
+not have (`SYM-16`). The invariant is defined by the values of $q_L$,
+and the factorization through $i_{2,L}$ is the proposition.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/classification/two-elementary-lattices.md`,
+theorem "Nikulin's classification of indefinite even $2$-elementary
+lattices".
+
+**Banned:** "Define $\delta(L)=0$ when there exists a quadratic morphism
+$q_L^{(2)}\colon A_L^\sharp\too\bZ/2\bZ$ for which" the triangle
+"commutes, and set $\delta(L)=1$ otherwise.".
+
+**Preferred:** "$\delta(L)=0$ when $\operatorname{Val}(q_L)\subseteq
+i_{2,L}(\bZ/2\bZ)$, and $\delta(L)=1$ otherwise [@Nik80, §3.6]" in a
+definition block, and "$\delta(L)=0$ if and only if $q_L$ factors
+through $i_{2,L}$" as the proposition.
+
 ## `DEF-48`: The general construction, its composite with the reduction functor, then the special cases as examples
 
 A construction native to a general category is defined there once,
@@ -1536,3 +1615,54 @@ $\iota\colon J\injects L$ primitive and isotropic,
 $J^{\perp_L}=(J^{\perp_{\mathbf{BilMod}_R}})^{\mathrm{nd}}$, and
 $J\injects\radic(J^{\perp_{\mathbf{BilMod}_R}})$ is an isomorphism"
 with its proof.
+
+## `DEF-49`: A theory is developed at the base ring of its objects
+
+A theory of $R[G]$-modules is developed by constructions available over
+$R$: kernels and images of $R[G]$-endomorphisms, saturations, orthogonal
+complements, and the sublattices they cut out. Scalar extension to
+$K=\operatorname{Frac}(R)$, the primitive central idempotents of $K[G]$,
+auxiliary cokernels, their torsion, and pullbacks along them are steps
+of a proof or the content of a base-change proposition (`MA-16`); they
+are not the objects a definition displays. The test: the first object a
+definition block displays lives in the category the chapter's theorems
+are stated in. Renaming the ring, $A_G\definedas\bZ[G]$, while every
+construction still passes through $\bQ\otimes_\bZ A_G$ is the overshoot:
+the notation changed and the level did not. The vocabulary follows the
+level: the objects are $\bZ[G]$-modules, not "rational
+$G$-representations"; the algebra whose idempotents a proof uses is
+named, "the group algebra $\bQ[G]$", with the isotypic decomposition
+cited [@Ser77, §2.6]; the involution's idempotents $\tfrac12(1\pm g)$
+are the case $G=\bZ/2$ of that decomposition (`TERM-18`). The boundary
+with `DEF-41`: that rule asks for the global object in place of its
+local description; this rule asks for the object over the ring the
+theorem names in place of the object over its field of fractions.
+
+Observed in `dzackgarza/research`,
+`research/lattice-theory/invariant-and-coinvariant-lattices.md` (review
+working text over `9cfdecf73d`), definition "Integral isotypic
+sublattices" and the proof following it; (annotated review proposal over
+`9cfdecf73d`) the proposition on the complementary idempotents and the
+definition opening with $V\definedas L_\bQ$.
+
+**Banned:** "let $A_G\definedas\bZ[G]$ be its group ring regarded as a
+$\bZ$-algebra" followed by "For each simple $\bQ\tensor_\bZ A_G$-module
+class $\chi$, let $e_\chi$ be the corresponding primitive central
+idempotent of $\bQ\tensor_\bZ A_G$. Choose $d_\chi\in\bZ_{>0}$ such that
+$a_\chi\definedas d_\chi e_\chi$ belongs to $A_G$, and let $f_\chi\colon
+L\to L$ be the induced $A_G$-module endomorphism. Put
+$Q_\chi\definedas\operatorname{coker}(f_\chi)$ and let
+$t_\chi\colon\operatorname{tor}(Q_\chi)\hookrightarrow Q_\chi$ be its
+torsion submodule" as the definition of the isotypic sublattice; "the
+simple rational $G$-representations" for the simple $\bQ[G]$-modules;
+"Then $(L^G)_\bQ$ and $(L_G)_\bQ$ are the images of the complementary
+idempotents" as a proposition about $L^G$ and $L_G$; "$e_\chi\in
+Z(\bQ[G])$" with the algebra $\bQ[G]$ unnamed; "Put $V\definedas L_\bQ$,
+and" opening a definition of integral objects.
+
+**Preferred:** "$L^G=\Hom_{\bZ[G]}(\bZ,L)$ and $L_G=(L^G)^{\perp_L}$" as
+the definitions (`SEC-12`); for the isotypic sublattices,
+"$L_\chi\definedas\ker\qty{d_\chi-a_\chi\colon L\to L}$" for the element
+$a_\chi=d_\chi e_\chi\in\bZ[G]$, with "$(L_\chi)_\bQ=e_\chi L_\bQ$" as
+the proposition that follows it; Maschke's theorem cited [@Ser77, §1.3]
+at the step of the proof that uses the complement.

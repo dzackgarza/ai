@@ -895,6 +895,31 @@ its minimal vectors $\pm e_1,\pm e_2$ spanning a $2$-dimensional
 subspace of the $3$-dimensional space of symmetric bilinear forms on
 $\bR^2$."
 
+The same mechanism states what a construction does not assume and what a
+test does not detect. The reader is told that a splitting fails in
+general and that a determinant misses primitivity, and is given no
+instance of either. The example that separates the two conditions is the
+content; the sentence about the gap is deleted.
+
+Observed also in `dzackgarza/research`:
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(annotated review proposal over `9cfdecf73d`), the definition of the
+isotypic sublattices;
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md` at
+`9cfdecf73d`, the paragraph before the section "The unimodular case".
+
+**Banned:** "This construction does not assume that the rational
+isotypic decomposition splits integrally."; "A morphism $\iota\colon
+S\injects M$ is primitive when its cokernel is torsion-free
+(@prop:primitive-characterization), and saturation and index are
+properties of $\iota$; a determinant or a greatest common divisor of
+matrix entries recognizes primitivity only under hypotheses that the
+definition itself does not state.".
+
+**Preferred:** "For $L=\bZ^2$ with $G=\bZ/2$ acting by the swap,
+$L^G=\generators{(1,1)}$, $L_G=\generators{(1,-1)}$, and $[L:L^G\perp
+L_G]=2$."; the second sentence deleted.
+
 ## `PR-37`: Sign-posting "Fix $R$ and $W$, the value module of the forms below" is not a mathematical unit
 
 A setup sentence that fixes variables for upcoming material — "Fix a
@@ -1894,6 +1919,21 @@ Divisibility, and Hyperbolic Splittings".
 **Preferred:** "$T\definedas S^{\perp_L}$ for $\iota\colon S\injects L$"
 (`DEF-48`).
 
+A stabilizer written as a bare monomorphism into the group it lives in
+is the same defect with a subgroup in place of a map: the subgroup has a
+name that carries its ambient group, and the name is used at every
+occurrence, in the pullback square included.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md`,
+corollary "The liftable subgroup".
+
+**Banned:** "Let $\Stab(h)\injects\Orth(A_M)$ be the stabilizer of the
+bilinear gluing subobject".
+
+**Preferred:** "$\operatorname{Stab}_{\Orth(A_M)}(h)$" at every
+occurrence and as the lower right corner of the pullback square.
+
 ## `PR-58`: $\operatorname{Gram}(b)$ is ill-defined on $(M,b)\in\mathbf{Bil}_{R,W}$, well-defined on $((M,e),b)$ in $\mathbf{Bil}_{R,W}^{\mathrm{fr}}$ — it is $e^*b$, not a property of $(M,b)$
 
 "$\operatorname{Gram}(b)$" as a matrix $(b(e_i,e_j))$ presupposes a finite
@@ -2039,6 +2079,23 @@ title.
 
 **Preferred:** "## The determinant", with the Gram matrix $G_e(b)$ in
 the proposition that computes $\det$ for a framed form.
+
+The determinant of a bilinear form is the same proxy: $\det$ is a
+function of a Gram matrix, and a form has one only after a basis is
+chosen. The invariant is $\det(L)$ for the lattice, the determinant of a
+Gram matrix in any basis, well defined because $(\bZ^\times)^2=1$.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, proposition
+"The index of the root embedding".
+
+**Banned:**
+"$\det\qty{b_{\langle\Phi\rangle}}=[L:\iota(\langle\Phi\rangle)]^{2}\det(b_L)$".
+
+**Preferred:**
+"$\det(\langle\Phi\rangle)=[L:\iota(\langle\Phi\rangle)]^{2}\det(L)$ in
+$\bZ$", with $\det(L)\definedas\det G_e(b_L)$ for any basis $e$,
+independent of $e$ because $(\bZ^\times)^2=1$.
 
 ## `PR-62`: "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$" smuggles a Riesz theorem and the canonical $\langle v,w\rangle_0:=\sum_ia_ic_i$ on $F=R^{(I)}$ — eliding its hypotheses, completions, and the operator form $b(v,w)=\langle v,Aw\rangle$
 
@@ -2676,6 +2733,27 @@ $M/N\cong N'$ as the remaining summand"; "the map on pairings is
 $\varphi_*$ for the twist $\varphi\colon W\to W'$, $\varphi:=4\cdot_W$"
 (PR-67). Name the map, the ambient Hom-set, the formula, and the
 diagram it lives in (`SYM-14`).
+
+The same mechanism describes a matrix identity as a connection and
+describes two definitions as cutting out different classes. The
+connection is the equation; the difference between two conditions is a
+pair of definition blocks, the implication between them stated as a
+proposition, and the separation shown by an example (`PR-36`).
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, proposition
+"The canonical form and the Cartan matrix" and definition "Hyperbolic
+Coxeter systems".
+
+**Banned:** "What connects the two matrices in general is the
+symmetrization $G_{ij}=d_jA_{ij}$ of @def:cartan-matrix."; "Two
+conditions on $(W,S)$ are used below, and they cut out different
+classes."
+
+**Preferred:** "$G=AD$ for $D=\operatorname{diag}(d_j)$
+(@def:cartan-matrix)"; a definition block for each condition, the
+proposition that the second implies the first, and the Coxeter system
+that satisfies the first and not the second.
 
 ## `PR-75`: Display mathematics earns display status
 

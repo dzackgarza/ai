@@ -38,6 +38,10 @@ Use precise terminology:**
 - “Bilinear pairing” for anti-symmetric/skew forms
 
 - “Quadratic form” specifically for norm-like quantities B(x, x)
+- Every bilinear form B has the quadratic form q_B(x) = B(x, x); no
+  hypothesis is needed. Evenness (B(x, x) ∈ 2W) is the hypothesis for
+  the reverse direction only: the ℚ/2ℤ-valued quadratic refinement of a
+  discriminant form exists for an even lattice and for no other
 
 **Examples of forms that are NOT inner products:**
 

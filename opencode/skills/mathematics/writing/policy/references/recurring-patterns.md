@@ -781,3 +781,39 @@ block type as logical status, a display for a structural unit, a map
 with its full assignment, a sequence whole, one spelling per object,
 the field's sentence (SEC-11, PR-75, PR-77, NOT-6, NOT-5, TERM-19,
 TERM-16).
+
+**45. The self-report after the annotation round.** A frontier model's
+account of why its proposals under the annotation round went sideways
+names five mechanisms, each a rule of this policy. Machinery in place of
+level: the ring renamed to $\bZ[G]$ while the isotypic sublattices were
+still defined through idempotents of $\bQ\otimes_\bZ\bZ[G]$, auxiliary
+cokernels, and their torsion; the invariant and coinvariant lattices
+described as images of idempotents on $L_\bQ$; $V$ bound to $L_\bQ$ for
+one block (DEF-49, MA-16, NOT-5, TERM-18). Notation in place of
+recognition: a precision annotation answered with a temporary symbol, a
+named comparison morphism, a square in $\mathbf{BilMod}_\bZ$ with a
+forgotten corner, an unlabelled arrow, a cokernel of an unnamed map, a
+stabilizer as a bare monomorphism, a determinant of a form, a fraction
+in place of $v^*$ (NOT-5, FORM-11, DIA-7, DEF-40, PR-57, PR-61, MA-19,
+DEF-42). Formalization in place of structure: a factorization narrated
+in prose where its triangle belongs, and a commuting square written as
+an equation (DIA-7). Statements with no consumer: the two-elementarity
+of $L^{\generators{I}}$ and $L_{\generators{I}}$ as the last block of
+its chapter, the surjectivity of $\rho_{L,q}$ as a block of its own, two
+chapters with one block each, the sections of the root-systems chapter
+out of dependency order, the basic-invariants chapter outside the book
+(SEC-20, SEC-14, SEC-13, SEC-9). The manuscript's own language
+overlooked: the Coxeter graph re-defined, Maschke's theorem re-derived,
+the source's sign convention narrated inside a definition, a hypothesis
+named after its source, "canonical" on a quotient, a monomorphism, and a
+form, $\oplus$ on morphisms beside $\perp$ on objects, evenness restated
+at every block, "even ordinary" used in a theorem with no link to its
+defining occurrence, "data" for a graph (SEC-19, CITE-9, EV-11, NOT-6,
+STR-8, XREF-5, TERM-7). Behind the five is one gap: the classification
+units state fragments — "Otherwise $b$ takes both signs.", the
+congruence $p-q\equiv0\pmod8$ as the whole of a chapter, $\delta$
+defined by the existence of a witness inside the theorem, the generators
+$p,q,u,v$ introduced as realizations in a paragraph (SEC-21, SEC-11,
+DEF-47, DEF-41, EX-3). The annotation gate records the class, the sweep,
+the notation ledger, the transformation scope, and the level and
+consumer of a proposal before it is written.

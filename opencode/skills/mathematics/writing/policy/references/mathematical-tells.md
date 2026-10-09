@@ -469,6 +469,31 @@ where $\operatorname{Rep}(L):=\{n\in\bZ_{>0}: L[n]\neq\varnothing\}$";
 e,\pm f\}$"; "for $\iota\in\operatorname{PrimEmb}(S,L)$ with $S$
 unimodular".
 
+The same mechanism writes a standard object as a description where the
+object has a symbol: hyperbolic space, a definite quotient, a euclidean
+space, and the signature of a lattice each have one, and the description
+in words withholds it (`NOT-4`). A vector in the dual lattice has a
+name, $v^*$, in place of a fraction.
+
+Observed also in `dzackgarza/research`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md` at
+`9cfdecf73d`, proposition "Covolume" and theorem "The radical of a
+parabolic system";
+`research/lattice-theory/classification/unimodular-lattices.md` at
+`9cfdecf73d`, theorem "Classification of indefinite unimodular
+lattices"; `research/lattice-theory/basic-invariants.md` (annotated
+review proposal over `9cfdecf73d`), the definition of the divisibility.
+
+**Banned:** "is a model of hyperbolic space of dimension $n-1$ [@Hum90,
+§6.8]"; "the quotient $V/\radic(V)$ is a negative definite space of
+dimension $n-1$"; "affine reflections of a euclidean space of dimension
+$n-1$"; "If $L$ is even, then $p-q\equiv0\pmod8$"; "and $v/d\in L^\#$".
+
+**Preferred:** "$\mathbb H^{n-1}$"; "$V/\radic(V)$ is isometric to
+$\generators{-1}^{\perp(n-1)}\otimes_\bZ\bR$"; "$\mathbb E^{n-1}$";
+"$\operatorname{sig}(L)=(p,q,0)$ and, for $L$ even, $p-q\equiv0\pmod8$";
+"$v^*\in L^\#$".
+
 ## `MA-20`: A functor in a Hom-set is used on both sides
 
 When an object on one side of a Hom-set is the value of a functor —

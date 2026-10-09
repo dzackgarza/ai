@@ -377,6 +377,27 @@ transfer sentence as a remark; the definition of "split" alone, and
 the classification over such rings as a theorem with its citation;
 "isotropic" defined at its owner and the example citing it.
 
+A term introduced by "Call such a system" inside a theorem, or an
+invariant introduced by "Define $\delta(L)=0$ when" inside a
+classification theorem, is a definition inside a statement block. The
+classes a classification theorem sorts into are defined in definition
+blocks before it (`SEC-21`), and an invariant is defined by its value,
+not by the existence of a witness (`DEF-47`).
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, theorem
+"Signature type of a connected diagram";
+`research/lattice-theory/classification/two-elementary-lattices.md`,
+theorem "Nikulin's classification of indefinite even $2$-elementary
+lattices".
+
+**Banned:** "Call such a system *elliptic*." inside a theorem; "Define
+$\delta(L)=0$ when there exists a quadratic morphism" inside a theorem.
+
+**Preferred:** definition blocks for *elliptic*, *parabolic*, and
+*hyperbolic* before the theorem, and a definition block for $\delta(L)$
+before the classification, each cited by the theorem.
+
 ## `SEC-12`: A construction is introduced at its natural owner
 
 Every concept has one owner: the section at its level of generality in the
@@ -466,6 +487,25 @@ are subjects with their own chapters, not facts about isometries.
 chapter's subject is one node of the abstraction lattice
 (`SEC-12`), titled by that subject (`SEC-10`), placed by its
 dependencies (`SEC-9`).
+
+A chapter whose body is one convention block or one proposition is the
+same defect at chapter scale. The convention belongs at the definition
+it specializes; the proposition belongs in the chapter whose subject its
+lattices are.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/lattice-theory.md`, the chapter "Lattice
+Theory" whose body is the convention "Integral lattice specialization";
+`research/lattice-theory/special-lattices-and-transformations.md`, the
+chapter "Special lattices and arithmetic transformations" whose body is
+the proposition "Standard special lattice relations".
+
+**Banned:** a chapter whose only block is a convention; a chapter whose
+only block is a proposition.
+
+**Preferred:** the convention $R=\bZ$, $K=\bQ$ stated at the definition
+of $\mathbf{Lat}_\bZ$; the proposition on $L_{2d}$ in the chapter on the
+K3 lattice, whose objects it relates.
 
 ## `SEC-15`: Classification and examples live in dedicated places
 
@@ -601,3 +641,114 @@ use, with the universal element named where the argument uses it; the
 Yoneda lemma cited at the step that applies it; the Grothendieck
 topology the document uses named with its covering families and a
 citation, and no survey of the others.
+
+The same mechanism re-defines a classical object the source already
+defines and re-derives a classical theorem inside a proof. The Coxeter
+graph of $(W,S)$ is cited, not rebuilt from its labelling rule;
+Maschke's theorem is cited at the step that uses it, not proved by
+averaging a projection.
+
+Observed also in `dzackgarza/research`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md` at
+`9cfdecf73d`, definition "The form of a Coxeter system";
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(annotated review proposal over `9cfdecf73d`), the proof of the isotypic
+decomposition.
+
+**Banned:** "The data are those of a *Coxeter graph*: a finite
+undirected graph on $S$ whose edges are labelled by integers at least
+$3$ or by $\infty$, with $m(s,t)=2$ for distinct vertices joined by no
+edge and $m(s,s)=1$ [@Hum90, §2.3]."; "Maschke's theorem follows by
+averaging a projection onto a $G$-subrepresentation, giving a
+$G$-equivariant complement. Thus $V$ is semisimple and the central
+idempotents give the stated decomposition of rational representations."
+inside a proof.
+
+**Preferred:** "the Coxeter graph of $(W,S)$ [@Hum90, §2.3]"; "by
+Maschke's theorem [@Ser77, §1.3]" at the step.
+
+## `SEC-20`: A statement block is placed at the block that uses it
+
+Every proposition has a consumer: a later block of the document, a
+classification theorem whose invariants it computes, a theorem of the
+literature whose hypothesis it verifies, or an application. The block is
+placed immediately before its consumer, or in the consumer's chapter
+when the consumer is a chapter (`SEC-9`, `SEC-12`). A block with no
+consumer is a true sentence with no edge in the dependency graph
+(`SEC-6`). The reader's question "what is this for" is answered by
+moving the block to its consumer or by deleting it, never by appending
+an example, a corollary, or a remark after it: the appendage adds a
+second block with no consumer. A property of a map is stated as the
+vanishing term of the exact sequence it belongs to, in the block that
+owns that sequence (`DEF-39`, `DEF-40`).
+
+Observed in `dzackgarza/research` (review working text over
+`9cfdecf73d`):
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`,
+proposition "Two-elementarity of invariant and coinvariant lattices",
+the last block of its chapter;
+`research/lattice-theory/classification/two-elementary-lattices.md`, the
+proposition on the surjectivity of $\rho_{L,q}$.
+
+**Banned:** "Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be
+$2$-elementary, and let $I\in\widetilde\Orth(L)$ be an involution in the
+bilinear discriminant kernel of @def:discriminant-rep. Then
+$L^{\generators{I}}$ and $L_{\generators{I}}$ are $2$-elementary." as an
+isolated final block; "Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be
+even, indefinite, and $2$-elementary. Its quadratic discriminant
+representation $\rho_{L,q}$ from @def:discriminant-rep is surjective.
+Equivalently, the following sequence is exact in $\mathbf{Grp}$:" as a
+block of its own; an example or a corollary appended after either block
+in answer to the question of its purpose.
+
+**Preferred:** the two-elementarity of $L^{\generators{I}}$ and
+$L_{\generators{I}}$ stated immediately before the theorem that
+classifies even indefinite $2$-elementary lattices by
+$(\delta;t_+,t_-,a)$ [@Nik80, Thm. 3.6.2], so that the theorem applies
+to both; its application to a K3 surface with an involution in the
+chapter on the K3 lattice; the surjectivity stated as "$\delta_L=0$ in
+the sequence of @thm:miranda-morrison [@Nik80, Thm. 3.6.3], so
+$\operatorname{MM}(L)\isoto g(L)$" inside the block that owns the
+sequence.
+
+## `SEC-21`: A classification unit states the whole classification
+
+A chapter, section, or theorem whose title announces a classification
+states the whole of it: every class, the invariant that decides
+membership, and the enumeration or existence statement with its
+citation. A fragment under a classification heading — one class of a
+trichotomy with the others named in passing, a congruence with no
+statement of what it classifies, a sign condition with the definite case
+alone — is a one-block unit (`SEC-14`) seen from the other side, and
+`EX-3` is the same defect seen from the examples. The test is read off
+the title: a reader who knows only the title can list the classes the
+unit must contain, and each is present with its deciding invariant. The
+classification is stated in the document's own conventions (`MA-19`,
+`CITE-9`), as one theorem, with the classes defined in definition blocks
+that precede it (`SEC-11`).
+
+Observed in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, theorem
+"Signature type of a connected diagram" and definition "Hyperbolic
+Coxeter systems";
+`research/lattice-theory/classification/unimodular-lattices.md`, the
+chapter "Classification of unimodular lattices" with one theorem.
+
+**Banned:** "Otherwise $b$ takes both signs." as the whole of the
+hyperbolic case, with "Two conditions on $(W,S)$ are used below, and
+they cut out different classes." as its definition; a chapter headed
+"Classification of unimodular lattices" whose content is "If $L$ is
+even, then $p-q\equiv0\pmod8$ and $L\isoto\latII_{p,q}$".
+
+**Preferred:** one theorem for an irreducible $(W,S)$: $W$ is finite if
+and only if $b$ is negative definite; $W$ is an affine Weyl group if and
+only if $b$ is negative semidefinite and degenerate; $(W,S)$ is
+hyperbolic if and only if $b$ has signature $(1,n-1,0)$ and
+$b(\lambda,\lambda)>0$ for every $\lambda\in C$ [@Hum90, §§6.4, 6.5,
+6.8], with *elliptic*, *parabolic*, and *hyperbolic* defined in
+definition blocks before it; for unimodular lattices, the odd and even
+types $\latI_{p,q}$ and $\latII_{p,q}$ by parity and signature, the
+congruence $p-q\equiv0\pmod8$ for the even type [@Ser73, Ch. V; @MH73,
+Ch. II], the counts of definite unimodular lattices by rank [@CS10, Ch.
+2, Table 2.2], $E_8$ alone in rank $8$, and the $24$ Niemeier lattices
+in rank $24$ [@CS10, Ch. 16, Table 16.1].

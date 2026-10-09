@@ -139,6 +139,19 @@ $$\varepsilon_L\definedas\begin{cases}1,&L\text{ positive definite},\\ \dots\end
 
 **Preferred:** $\abs{b(x,x)}$ at each use.
 
+A temporary symbol for a scalar extension is the same defect: $L_\bQ$ is
+its own name, and a letter bound to it for one block adds a symbol to
+the ledger that no later block uses.
+
+Observed also in `dzackgarza/research`,
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(annotated review proposal over `9cfdecf73d`), the definition opening
+with $V\definedas L_\bQ$.
+
+**Banned:** "Put $V\definedas L_\bQ$, and".
+
+**Preferred:** $L_\bQ$ at each occurrence.
+
 ## `NOT-6`: Macros encode mathematical normalization, not just typography
 
 A repeated canonical object or construction — discriminant, hyperbolic
@@ -199,6 +212,23 @@ $\bZ v\hookrightarrow L$" and "$\bR v\hookrightarrow L\tensor_{\bZ}\bR$".
 presheaf."; "For $\lambda\in R$ the **twist** $M(\lambda)$ of $(M,b)$
 is $(M,\lambda b)$."; "$\langle v\rangle_\bZ\injects L$" and
 "$\langle v\rangle_\bR\injects L\otimes_\bZ\bR$".
+
+The same mechanism writes $\oplus$ on a morphism between orthogonal sums
+whose objects are written with $\perp$. The symbol of the monoidal
+structure is one, on objects and on morphisms alike.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md`,
+definition "The gluing datum of a pair of primitive inclusions" and
+theorem "When a pair of isometries lifts".
+
+**Banned:** "Set $j\definedas\iota_M\oplus\iota_N\colon M\oplus
+N\injects L$" beside "$0\too M\perp N\xrightarrow{j}L$"; "Put
+$\bar{\varphi}\definedas\bar{\varphi}_M\oplus\bar{\varphi}_N$." beside
+"$A_M\perp A_N$".
+
+**Preferred:** "$j\definedas\iota_M\perp\iota_N\colon M\perp N\injects
+L$"; "$\bar\varphi\definedas\bar\varphi_M\perp\bar\varphi_N$".
 
 ## `NOT-7`: A semantic macro is an atomic object-valued API
 

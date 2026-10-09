@@ -306,3 +306,27 @@ $\kappa_I\colon L^{\#I}\injects L_K$; "$N_b(L)\definedas\exp(A_L)$"
 $0\to L\xrightarrow{\iota_L}L^\#\to A_L\to0$ displayed where the block
 stood, with "$\iota_L$ is an isomorphism exactly when $A_L=0$" as the
 sentence after it.
+
+The adjective "canonical" attached to a quotient map, a monomorphism, or
+a form is the same hidden map: the quotient is the quotient map, written
+with its source and target; the monomorphism is the map $1\mapsto1$,
+written with its formula; the form of a Coxeter system is the form, with
+the source cited for its matrix.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/classification/two-elementary-lattices.md`, the
+definition of the types of a $2$-elementary lattice and theorem
+"Nikulin's classification of indefinite even $2$-elementary lattices";
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, definition
+"The form of a Coxeter system".
+
+**Banned:** "the restriction of the canonical quotient
+$\bQ/2\bZ\to\bQ/\bZ$"; "Let
+$i_{2,L}\colon\bZ/2\bZ\injects\tfrac2{N_q(L)}\bZ/2\bZ$ be the canonical
+monomorphism."; "The *canonical form* of $(W,S)$ is the symmetric
+bilinear form on $V$ with".
+
+**Preferred:** "the quotient map $\bQ/2\bZ\twoheadrightarrow\bQ/\bZ$";
+"$i_{2,L}\colon\bZ/2\bZ\injects\tfrac2{N_q(L)}\bZ/2\bZ$, $1\mapsto1$";
+"The *form* of $(W,S)$ is the symmetric bilinear form $b$ on $V$ with
+$b(\alpha_s,\alpha_t)=2\cos(\pi/m(s,t))$ [@Hum90, §5.3]".

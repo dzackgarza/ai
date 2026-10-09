@@ -193,3 +193,24 @@ $V^{+}$ and negative definite on $V^{-}$, and
 $(\dim V^{+},\dim V^{-},\dim\radic(V))$ depends only on the isomorphism
 class of $(V,b)$"; the nondegenerate case is the case $\radic(V)=0$,
 and the reduction to it is the first step of the proof.
+
+The evenness hypothesis repeated at every block that mentions a
+quadratic discriminant form is the same defect in the other direction: a
+hypothesis owned by one definition restated at each use. Every bilinear
+form has the quadratic form $q_b(x)=b(x,x)$; evenness is the hypothesis
+of the $\bQ/2\bZ$-valued refinement alone, stated once at the definition
+of $A_{L,q}$ (`DEF-42`). A block states the bilinear and the quadratic
+case in one display, under that definition's hypothesis.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md`,
+observation "Discriminant action on an orthogonal sum", definition "The
+gluing datum of a pair of primitive inclusions", and corollary "Lifting
+across a unimodular overlattice".
+
+**Banned:** "If $M$ and $N$ are even, likewise"; "If $L,M,N$ are even,
+$h$ refines to"; "If $L,M,N$ are even, $\gamma$ refines to".
+
+**Preferred:** the hypothesis once at the definition of $A_{L,q}$, and
+"$A_{M\perp N}\isoto A_M\perp A_N$, and likewise for $A_{-,q}$" as one
+display.

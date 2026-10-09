@@ -146,7 +146,8 @@ a more structured setting is stated there, and the elementary formulation is
 the proposition recovered from it. Categorical vocabulary carries an argument
 only when the argument uses a categorical property, and the construction is
 then taken in that category. The checkable catalogue,
-the six editorial judgments, and the oscillation gate are in
+the ten editorial judgments, the oscillation gate, and the annotation
+gate are in
 [[mathematics/writing/policy/policy|mathematical-writing-policy]] — load it
 for any reader-facing mathematical prose and cite its codes in review.
 
@@ -333,6 +334,28 @@ Load these patterns into context as one-shot demonstrations of the exact style e
   structured category the objects live in; the forgetful functor named
   before computing downstairs (`FORM-11`)
 
+- [ ] A theory of $R[G]$-modules is defined by kernels, saturations, and
+  complements over $R$; scalar extension and idempotents of $K[G]$ are
+  proof steps (`DEF-49`, `MA-16`)
+
+- [ ] Every statement block sits before the block that uses it; a block
+  with no consumer is moved or deleted, never given an appended example
+  (`SEC-20`)
+
+- [ ] A classification unit states every class, the deciding invariant,
+  and the enumeration with its citation (`SEC-21`, `EX-3`)
+
+- [ ] A cited result is stated in the document's conventions; the
+  source's sign and reading instruction are not in the statement
+  (`CITE-9`)
+
+- [ ] A decomposition is written from the sum of its parts, decorated
+  $\isoto$ once proved (`SYM-17`, `NOT-2`)
+
+- [ ] A proposal answering an annotation records its class, sweep,
+  notation ledger, transformation scope, and level and consumer before
+  it is written (annotation gate)
+
 - [ ] Vanishing verbs carry a typed referent: the zeroed map, component,
   or composite is written out (`MA-17`)
 
@@ -458,6 +481,12 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 | The special case of a construction defined elementwise in the subcategory alone, or re-defined beside the general case | Nothing is inherited; the relation between the cases is prose | The general construction, its composite with the reduction functor, the special case as an example (`DEF-48`) |
 | A claim inside a definition; a definition inside an example; a result inside a remark | The proof obligation and the citability are misfiled | The block whose type is the content's logical status (`SEC-11`) |
 | "Canonical" with no universal property; "coincide" or "the same" for two constructions; "factors through" | The map is hidden, or the claimed equality is false | The (co)limit proof; the isomorphism the swap induces; the lift and its drawn triangle (`EV-11`) |
+| The ring renamed to $\bZ[G]$ while every construction passes through $\bQ[G]$ | The notation changed and the level did not | Kernels of $\bZ[G]$-endomorphisms, saturations, complements; base change as a proof step (`DEF-49`) |
+| A true proposition as the last block of a chapter, with an example appended to give it a purpose | No block uses it; the appendage has no consumer either | The block before its consumer, or deleted (`SEC-20`) |
+| One case of a trichotomy under a classification heading; a congruence with no statement of what it classifies | The title promises a classification the unit does not contain | Every class, the deciding invariant, the enumeration, one theorem with its citation (`SEC-21`) |
+| "The source uses ... so every statement is read here with the sign reversed"; a hypothesis named "the condition of [@Src]" | The statement holds only after the reader translates | The result in the document's conventions, the translation once at the definition (`CITE-9`) |
+| $L\isoto M\perp N$ for a decomposition | The arrow asserts projections with no formula | $M\perp N\isoto L$, the map the inclusions induce (`SYM-17`) |
+| A proposal written straight from an annotation's wording | Literal compliance; the intent, the sweep, and the level unexamined | The five facts of the annotation gate recorded first |
 
 | Using informal set builder notation in formalization | Lean/mathlib mismatch | Use explicit class/instance definitions |
 | Missing sociological markers | Unparseable structure; indistinguishable prose | Wrap every claim and proof in italic markers |

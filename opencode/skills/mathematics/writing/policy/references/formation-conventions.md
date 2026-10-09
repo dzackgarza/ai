@@ -142,6 +142,31 @@ $U(f)$ in $R\text{-}\mathbf{Mod}$ … has torsion-free $Q_f$".
 cokernel taken in $\mathbf{Bil}_R$, torsion-freeness the property of
 its underlying module.
 
+The same mechanism draws a square in $\mathbf{BilMod}_\bZ$ with a
+forgotten object at one corner and states exactness in
+$\bZ\text{-}\mathbf{Mod}$ for a sequence of lattices.
+$\mathbf{BilMod}_\bZ$ is fibered over $\bZ\text{-}\mathbf{Mod}$, not a
+subcategory of it: a square in $\mathbf{BilMod}_\bZ$ has four bilinear
+modules at its corners, and a sequence of lattices is exact after the
+forgetful functor is named and applied (`MA-16`).
+
+Observed also in `dzackgarza/research`:
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md` at
+`9cfdecf73d`, definition "The gluing datum of a pair of primitive
+inclusions";
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(annotated review proposal over `9cfdecf73d`), the proposition on the
+invariant–coinvariant inclusion.
+
+**Banned:** a square "in $\mathbf{BilMod}_{\bZ}$" whose bottom arrow is
+"$U(h)$"; "is exact in $\bZ\text{-}\mathbf{Mod}$ with finite cokernel."
+of a sequence of lattices.
+
+**Preferred:** the square with $h$ at the bottom and the bilinear
+modules at the corners; "$U_{\mathrm{mod}}$ applied to $0\to L^G\perp
+L_G\xrightarrow{j_G}L\to\operatorname{coker}(j_G)\to0$ is exact, and
+$\operatorname{coker}(j_G)$ is finite".
+
 ## `FORM-12`: Hom-objects, functors, and non-linear maps keep their ambient category
 
 A Hom-object carries the structure its category gives it:

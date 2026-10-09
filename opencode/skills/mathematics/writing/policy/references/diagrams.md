@@ -69,6 +69,29 @@ construction is compatible with base change" with no square; a
 M_1 \arrow[rr,"\varphi"'] && M_2
 ```
 
+The same mechanism writes a factorization in prose, writes a commuting
+square as an equation, and draws a square with an unlabelled arrow. The
+factorization is its triangle; the equation is its square; and every
+arrow of a drawn diagram carries the name of its map.
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/basic-invariants.md`, the definition of the
+divisibility;
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md`,
+corollary "Lifting across a unimodular overlattice" and definition "The
+gluing datum of a pair of primitive inclusions".
+
+**Banned:** "Define the **divisibility** $\div_L(v)\geq0$ by the image
+factorization" with no triangle;
+"$\bar{\varphi}_N\circ\gamma=\gamma\circ\bar{\varphi}_M$" as the whole
+statement of a commuting square; the top arrow of the square
+characterizing $h$ drawn as `L \arrow[r]` with no label.
+
+**Preferred:** the triangle $L\twoheadrightarrow\div_L(v)\bZ\injects\bZ$
+whose composite is $b_L(v,-)$; the square with $\gamma$ horizontal and
+$\bar\varphi_M$, $\bar\varphi_N$ vertical; the top arrow labelled
+$j^\#$.
+
 ## `DIA-8`: A diagram is authored in the accepted source form, with its metadata where the renderer reads it
 
 A `tikzcd` diagram is authored in one of the accepted source forms —

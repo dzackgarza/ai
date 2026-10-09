@@ -666,6 +666,25 @@ $\sigma\colon R\to\mathbb R$, with
 $\operatorname{sig}(L):=(p_\sigma,q_\sigma,r_\sigma)_{\sigma}$ the
 family" (`PR-72`).
 
+The same mechanism names the special case of a standard decomposition as
+if it were the construction. The idempotents $\tfrac12(\id\pm I)$ of an
+involution are the primitive central idempotents of $\bQ[G]$ for
+$G=\bZ/2$; a definition that displays only the involution's pair has
+stated the case and withheld the theory it belongs to (`DEF-49`).
+
+Observed also in `dzackgarza/research`,
+`research/lattice-theory/invariant-and-coinvariant-lattices.md`
+(annotated review proposal over `9cfdecf73d`), the proposition on the
+complementary idempotents.
+
+**Banned:** "$e_+\definedas\tfrac12(\id_V+I),\qquad
+e_-\definedas\tfrac12(\id_V-I)$ on $V=L_\bQ$, and" as the only
+decomposition named.
+
+**Preferred:** "the primitive central idempotents $e_\chi$ of the group
+algebra $\bQ[G]$ [@Ser77, §2.6]; for $G=\generators{g}\cong\bZ/2$ they
+are $e_\pm=\tfrac12(1\pm g)$".
+
 ## `TERM-19`: Standard locutions for standard statements
 
 `TERM-16` governs terms and symbols; this rule governs the sentence.
@@ -781,3 +800,28 @@ mass as its instance; "Throughout, *lattice* means an object of
 $\mathbf{Lat}_{\bZ}$"; "the category $\mathbf{BilMod}_R$ of bilinear
 modules over $R$, fibered over $R\text{-}\mathbf{Mod}$ by the value
 module" (`DEF-42`).
+
+The same mechanism produces a bold label for a condition that is a
+displayed inequality, a bold name for a subgroup that is a pullback, and
+an adjective for a matrix that has a standard name. Each has an
+established local form: the condition is the displayed condition, the
+subgroup is its formula, and the matrix is the diagonal matrix $D$ of
+the symmetrization. A name is given only when the document owns the
+object and later blocks cite it by that name (`DEF-26`).
+
+Observed also in `dzackgarza/research` at `9cfdecf73d`:
+`research/lattice-theory/Coxeter-Systems-and-Lattices.md`, definition
+"Hyperbolic Coxeter systems" and proposition "The canonical form and the
+Cartan matrix";
+`research/lattice-theory/automorphism-lifting-through-a-gluing.md`,
+corollary "The liftable subgroup".
+
+**Banned:** "**The signature condition.** The form $b$ is hyperbolic,
+equivalently of Lorentzian signature, when its signature is
+$(1,n-1,0)$"; "Define the **liftable subgroup** $\Gamma_h$ by the
+pullback"; "the diagonal symmetrizer has unequal entries".
+
+**Preferred:** "$b$ has signature $(1,n-1,0)$";
+"$\Gamma_h\definedas(\rho_M|_\Gamma)^{-1}\qty{\operatorname{Stab}_{\Orth(A_M)}(h)}$"
+unnamed, or named with the name marked as the document's own (`DEF-26`);
+"$D=\operatorname{diag}(d_j)$ has unequal entries".
