@@ -7,6 +7,12 @@ description: "Use for any mathematical work: SageMath, Macaulay2, CoxIter, latti
 Start here for mathematical work. Route to exactly one primary subskill; load a second
 only when its distinct trigger is materially present.
 
+Mathematical code is general mathematics. It is accepted by true assertions about pure
+mathematics at each operation's owner: a computed invariant, a construction's universal
+property, a published example. There are no integration tests. No consumer, port,
+migration contract or downstream run is part of its acceptance, and a node or plan that
+names one as a gate is wrong and gets rewritten as mathematical assertions.
+
 ## Computation
 
 - [[mathematics/computation/sagemath/sagemath|sagemath]] — SageMath computations: algebraic geometry, number theory, general CAS work.
