@@ -187,22 +187,21 @@ $q_b:=U(b)\circ\Delta_M$ — the map in the category where it is a map.
 ## `FORM-13`: "Underlying" names a forgetful functor, and only a named one
 
 "Underlying" presupposes one forgetful functor to one base. An object
-of a category of bilinear modules is a pair $(M,b)$ whose form
-$b\colon M\otimes_RM\to W$ has a value module $W$; both $M$ and $W$
-are $R$-modules, and a morphism between objects with different value
-modules is a pair of module maps. Two forgetful functors leave the
-pair, so "the underlying module", "the underlying morphism", and "the
-underlying set" have no referent: the reader cannot tell which
-component is meant, and the sentence cannot be checked. The object is
-the pair, the morphism is the pair of maps, and a component is named
-by its symbol — $M$, $W$, $f$ — or by the functor that extracts it,
-$U(M)$ with $U$ defined once at its owner (`NOT-7`, `MA-18`).
-"Underlying" beside an arrow that already shows its category is
-restatement (`PR-76`); "underlying" in place of a component's symbol
-is an unresolved reference; a sentence that defines "the underlying
-set of $X$" as $U(X)$ defines a word the document then uses as if it
-were primitive, when the functor is the primitive and the word is
-deleted.
+that is a tuple of structured components — a module with a form valued
+in a second module, a space with a sheaf, a set with an action — has
+one forgetful functor per component, and a morphism between such
+objects is a tuple of maps. Where more than one functor applies, "the
+underlying module", "the underlying morphism", and "the underlying set"
+have no referent: the reader cannot tell which component is meant, and
+the sentence cannot be checked. The object is the tuple, the morphism
+is the tuple of maps, and a component is named by its symbol or by the
+functor that extracts it, with that functor defined once at its owner
+(`NOT-7`, `MA-18`). "Underlying" beside an arrow whose category is
+already written is restatement (`PR-76`); "underlying" in place of a
+component's symbol is an unresolved reference; and a sentence that
+defines "the underlying set of $X$" as $U(X)$ makes the word primitive
+when the functor is the primitive, so the word is deleted and $U$ is
+used.
 
 Observed in `dzackgarza/research`:
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`

@@ -81,10 +81,10 @@ $\operatorname{ev}\colon\Emb(L,M)\times M\to W$" or the square that
 defines $\operatorname{PrimEmb}(L,M)$, drawn once
 (`DIA-7`, `PR-56`).
 
-A sublattice is a monomorphism of lattices, and a definition that
-begins "Let $S\iscontainedin L$ be a sublattice" has no map to
-construct with: the saturation, the complement, and the cokernel are
-functions of $\iota\colon S\injects L$.
+A subobject is a monomorphism, and a definition that begins with a
+subset has no map to construct with: every construction on the
+subobject — its saturation, its complement, its cokernel — is a
+function of the monomorphism.
 
 Observed in `dzackgarza/research`,
 `research/lattice-theory/embeddings-and-overlattices.md` at

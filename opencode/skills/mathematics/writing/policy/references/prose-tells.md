@@ -1877,12 +1877,12 @@ quoting the lattice, "the abstract lattice $N\cong\langle2\rangle$ embeds
 via $i_1,i_2$ with $N^{\perp_{i_1}}\not\cong N^{\perp_{i_2}}$."
 
 The ambient is part of the notation at every occurrence, including
-inside a block whose only lattice is $L$: $S^{\perp}$ written for
-$S^{\perp_L}$ makes the complement a function of $S$, and the next
-sublattice the reader meets with the same $S$ in another $L$ has a
-different complement under the same symbol. An elementwise gloss
-$\theset{v\in L\st\beta(v,S)=0}$ names $L$ once and then drops it from
-the symbol that the rest of the document uses.
+inside a block whose only ambient object is the one named: a relative
+construction written without its ambient becomes a function of the
+subobject alone, and the next subobject the reader meets under the same
+symbol in another ambient has a different value under the same name. An
+elementwise gloss that names the ambient once and then drops it from
+the symbol the rest of the document uses is the same omission.
 
 Observed in `dzackgarza/research`,
 `research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/100-foundations.md`

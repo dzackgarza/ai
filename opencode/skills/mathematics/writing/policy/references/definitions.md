@@ -1048,14 +1048,12 @@ $\mathbf{BilMod}_R$"; "$\iota\colon S\to L$ is **primitive** when
 $\operatorname{coker}(\iota)$ is torsion-free".
 
 A quotient written as $X/Y$, or an isolated kernel written as
-$\ker(f)$ — $\exp(L^\#/L)$, $\Orth(A_{L,q})/I_{L,q}$,
-$\ker\qty{\det\colon\Orth(L)\too\theset{\pm1}}$ — names the object
-without the sequence that defines it, so the reader cannot see which
-map it is the cokernel or kernel of, whether the quotient is a group,
-or that the object already has a name. The named object is used —
-$A_L$ for $L^\#/L$ — and a new one is defined by its place in a
-(co)fiber sequence, never as an isolated kernel, cokernel, or
-quotient.
+$\ker(f)$, names the object without the sequence that defines it, so
+the reader cannot see which map it is the cokernel or kernel of,
+whether the quotient carries the structure the sentence then uses, or
+that the object already has a name. The named object is used, and a
+new one is defined by its place in a (co)fiber sequence, never as an
+isolated kernel, cokernel, or quotient.
 
 Observed in `dzackgarza/research`:
 `research/lattice-theory/Lattices-and-Discriminant-Forms.md` at
@@ -1188,17 +1186,13 @@ monomorphism $j_q\colon\Orth(A_{L,q})\hookrightarrow\Orth(A_L)$, and its
 exact sequence is the pullback of the sequence for $\rho_L$ along $j_q$"
 — one construction, the variant as an operation on it.
 
-Two functors defined by one pattern are written by one pattern. The
-bilinear and the quadratic forms on $M$ with values in $W$ are both
-$\Hom$ out of a representing object — $M\otimes_RM$ and the second
-divided power $\Gamma^2_R(M)$ [Roby, *Lois polynômes et lois formelles
-en théorie des modules*, 1963] — and both are presheaves on
-$R\text{-}\mathbf{Mod}$ by pullback. Defining one as a $\Hom$ and the
-other pointwise, or declaring one a presheaf and not the other, hides
-that the two theories are parallel, and makes the polarization
-$\operatorname{Quad}_{R,W}\to\Bil_{R,W}$ — precomposition with one map
-$M\otimes_RM\to\Gamma^2_R(M)$ — a comparison of two unrelated
-definitions (`PR-77`).
+Two notions defined by one pattern are written by one pattern, in one
+display. Defining one as an instance of the pattern and the other by a
+different route — one as a representable functor and the other
+pointwise, one declared functorial and the other not — hides that the
+two theories are parallel, and turns the comparison map between them,
+which is one map between representing objects, into a comparison of two
+unrelated definitions (`PR-77`).
 
 Observed in `dzackgarza/research`,
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
@@ -1221,8 +1215,11 @@ with no presheaf declared for $\Bil_{R,W}$.
 \end{aligned}
 ```
 "both presheaves $(R\text{-}\mathbf{Mod})^{\opop}\to R\text{-}\mathbf{Mod}$
-by pullback", with the citation for $\Gamma^2_R$ at its first
-occurrence.
+by pullback", with the citation for the second divided power
+$\Gamma^2_R$ [Roby, *Lois polynômes et lois formelles en théorie des
+modules*, 1963] at its first occurrence, and the polarization
+$\operatorname{Quad}_{R,W}\to\Bil_{R,W}$ as precomposition with the one
+map $M\otimes_RM\to\Gamma^2_R(M)$.
 
 ## `DEF-43`: A counting invariant is defined from the structure it counts
 
@@ -1447,26 +1444,22 @@ product $\prod'_{\mathfrak p}\Theta(V_{\mathfrak p})$ being one object;
 
 ## `DEF-47`: A property is defined on the structure, never through a derived invariant or a witness
 
-A derived invariant — the rank of the radical, the signature, the
-determinant, the order of a group — is computed from the structure by
-a construction that is itself a theorem of the subject. Defining a
-property through the invariant inverts the dependency: the property
-exists only where the invariant does (a rank needs a free module, a
-signature needs $\bR$, a determinant needs a basis), the proposition
-that the invariant detects the property becomes vacuous, and the
-definition does not transfer to the category where the construction is
-native (`DEF-41`, `DEF-39`, `TERM-18`). The same inversion defines a
-property by the existence of auxiliary data — a lift, a refinement, a
-chosen map — when the property is a condition on the structure already
-present. The definition is the condition on the structure's own
-components: the kernel in its sequence, the submodule of the value
-module, the morphism. The invariant characterization and the existence
-of the witness follow as propositions with the hypotheses under which
-they hold. Evenness is a property of the value module,
-$\operatorname{Val}(b)\subseteq2W$ (`PR-45`): the pointwise condition
-with $2\bZ$ unwraps $W$ at the lattice chapter (`DEF-45`), and the
-quadratic refinement $q$ with $b=b_q$ is the proposition that follows
-when $2$ is a nonzerodivisor on $W$.
+A derived invariant is computed from the structure by a construction
+that is itself a theorem of the subject, under hypotheses of its own.
+Defining a property through the invariant inverts the dependency: the
+property exists only where the invariant does, the proposition that the
+invariant detects the property becomes vacuous, and the definition does
+not transfer to the category where the construction is native
+(`DEF-41`, `DEF-39`, `TERM-18`). The same inversion defines a property
+by the existence of auxiliary data — a lift, a refinement, a chosen map
+— when the property is a condition on the structure already present.
+The definition is the condition on the structure's own components,
+stated as a containment, an equality of maps, or the vanishing of a
+term in a sequence, never as a quantified statement about elements. The
+invariant characterization and the existence of the witness follow as
+propositions, each with the hypotheses under which it holds, and a
+chapter that specializes the structure instantiates the condition and
+restates nothing (`DEF-45`, `PR-45`).
 
 Observed in `dzackgarza/research`:
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
@@ -1495,30 +1488,26 @@ $q\in\operatorname{Quad}_{R,W}(M)$" as the proposition; at the lattice
 chapter, "an **even lattice** is a lattice whose form is even
 (@def:form-axioms)", with $W=\bZ$ instantiated and nothing restated.
 
-## `DEF-48`: The general construction, the functor it induces on the subcategory, then the special case as an example
+## `DEF-48`: The general construction, its composite with the reduction functor, then the special cases as examples
 
 A construction native to a general category is defined there once,
-with its universal property and its sequence; the version on a
-subcategory is the composite of that construction with the reduction
-functor into the subcategory; and the special cases the literature
-names are examples of the composite. The orthogonal complement is the
-kernel of $\iota^*\circ b^\sharp\colon M\to\Hom_R(N,W)$ for a
-monomorphism $\iota\colon N\injects M$ in $\mathbf{BilMod}_R$, with its
-natural codomain and its cokernel (`DEF-40`); the radical is the
-orthogonal complement of $\id_M$; the composite with the nondegenerate
-reduction $(-)^{\mathrm{nd}}$ is the orthogonal complement in
-$\mathbf{Lat}_R$, defined for every monomorphism and not only for the
-isotropic ones; and for a primitive isotropic $J\injects L$ the
-lattice $J^{\perp_L}/J$ of the cusp and gluing literature is
-$(J^{\perp_{\mathbf{BilMod}_R}})^{\mathrm{nd}}$, an example. Each
-later statement — exactness, functoriality, the double complement of a
-primitive sublattice — is then proved once for the composite and
-inherited by every case. The two defects on this gradient are the
-special case defined first, elementwise and for lattices alone, from
-which the general case is never recovered (`DEF-41`, `TERM-18`); and
-the general case stated and the special case then re-defined beside
+with its universal property and its sequence. The version on a
+subcategory is not a second definition: it is the composite of the
+general construction with the reduction functor into the subcategory,
+and it is defined for every object the general version is, not only for
+the objects the special case has in view. The cases the literature
+names are then examples of the composite, and every later statement —
+exactness, functoriality, idempotence, a double-complement identity —
+is proved once for the composite and inherited by every case. Two
+defects lie on this gradient. The special case is defined first,
+elementwise and in the subcategory alone, so that nothing is inherited
+and the general case is never recovered (`DEF-41`, `TERM-18`). Or the
+general case is stated and the special case is then re-defined beside
 it, by a formula and a sentence saying what the formula "is", so that
-the relation between them is prose (`SEC-12`, `DEF-42`, `PR-76`).
+the relation between the two is prose the reader must verify (`SEC-12`,
+`DEF-42`, `PR-76`). The orthogonal complement below is one instance;
+the same gradient governs every construction that a specialization
+restricts.
 
 Observed in `dzackgarza/research`:
 `research/dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/100-foundations.md`

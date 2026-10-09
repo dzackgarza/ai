@@ -257,19 +257,18 @@ unique morphism with $\kappa_v\circ\lambda_v=\iota_v$"; the map named.
 
 "Canonical" asserts a universal property — a (co)limit, a unique
 isomorphism, an adjunction — and written without that proof it asserts
-nothing while hiding the map that does the work: for the two kernels
-of a form over a noncommutative ring, the map induced by
-$R\to R^{\opop}$. "Coincide", "are the same", and "are isomorphic" for
-two constructions are the same defect with the map hidden: two maps
-that differ by the monoidal swap $\tau$ are not equal, and the content
-is the isomorphism $\tau$ induces between the two kernels. "Factors
-through" is deleted at every occurrence: it gestures at a lift in a
-diagram the text has not drawn, and the lift with its commuting
-triangle is written instead (`DIA-7`). A block whose only content is
-such a phrase — "the canonical map to the dual lattice" as a
-definition — is a diagram, not a definition, and "injective, so an
-isomorphism exactly when $A_L=0$" is its exact sequence with the
-vanishing term named (`DEF-40`, `DEF-39`).
+nothing while hiding the map that does the work. "Coincide", "are the
+same", and "are isomorphic" for two constructions are the same defect
+with the map hidden, and as equalities they are usually false: two
+constructions that differ by a symmetry of the ambient structure are
+related by the isomorphism that symmetry induces, and that isomorphism
+is the content. "Factors through" is deleted at every occurrence: it
+gestures at a lift in a diagram the text has not drawn, and the lift
+with its commuting triangle is written instead (`DIA-7`). A block whose
+only content is such a phrase — one named map called canonical — is a
+diagram, not a definition, and a sentence about that map's injectivity
+or surjectivity is its exact sequence with the vanishing term named
+(`DEF-40`, `DEF-39`).
 
 Observed in `dzackgarza/research`:
 `research/category-theory/framework/Bilinear-and-Quadratic-Forms.md`
