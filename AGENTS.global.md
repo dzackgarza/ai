@@ -75,6 +75,10 @@ with nothing about the person, the tone, or the wording.
 - No debris: no temp files, dead code, commented-out blocks, or orphaned experiments.
 - Tests assert intended end-to-end behaviour. Never write a test that guards against a
   past mistake. A test suite over five minutes is a defect.
+- Mathematical code is accepted by true assertions about the mathematics it implements,
+  stated at the owner of each operation. "Integration tests", "engineering integration"
+  and acceptance by a consumer, port or migration contract do not apply to it: a
+  downstream user never gates a mathematical library, and the library never waits on one.
 - Preserve native authored source (LaTeX, TikZ). Never replace it with generated output.
 - Architecture with significant impact starts with alternatives and a recommendation,
   and implementation follows the user's choice, unless the user says the plan was made

@@ -23,15 +23,18 @@ description: Use when creating, editing, reviewing, or evaluating any prose cons
 
 ## Core Principles
 
-### Assume competence
+### Assume reasoning capacity; verify applied understanding
 
-The LLM is already very smart.
-Only add information the LLM doesn’t have.
+The LLM can reason, but a correct explanation does not establish that it will apply
+the distinction while working. Teach a distinction when observed work shows that it
+was lost, even if the agent can repeat the corresponding principle on request.
+Use a worked example, vary its presentation, introduce a nearby wrong case, and ask
+for transfer to another domain. Keep familiar background facts concise.
 Challenge every piece:
 
-- “Does the LLM really need this explanation?”
+- “Which observed reasoning error or missing fact does this explanation address?”
 
-- “Can I assume the LLM knows this?”
+- “What different action should follow when the relevant condition occurs?”
 
 - “Does this justify its token cost?”
 
@@ -111,10 +114,9 @@ producing checklist-theater about not-doing-checklist-theater.
 > signals. One match is total.
 > Do not narrate your evaluation of each signal.
 
-This works because: it describes an observable behavior (stop on first match) without
-requiring self-awareness.
-The agent can follow the instruction mechanically.
-The structural constraint does the work that the meta-warning cannot.
+This specifies an observable action without asking for a judgment about motives.
+It still depends on the agent recognizing the signal and following the instruction.
+It does not make the failure structurally impossible.
 
 **Object-level worker skills:** do not rely on explaining a failure to the affected
 worker; make the failure structurally impossible.
@@ -122,6 +124,17 @@ worker; make the failure structurally impossible.
 **Skill-writing and behavioral-control skills:** teach why the worker cannot safely
 interpret the gate, then remove that faculty's jurisdiction. Read
 [[writing/agent-audiences/references/behavioral-control-design|Behavioral Control Design for Self-Exonerating Agents]] before writing downstream behavioral controls.
+
+**The principle:** teach the missing distinction, then bind it to an observable
+decision in the normal workflow. In a teaching or failure-analysis skill, explain the
+reasoning mechanism through concrete examples. In the operative task instructions,
+state when to compare source and artifact, what evidence can falsify the proposal,
+and which dependent action must wait if that comparison fails.
+
+Neither an explanation nor a required output format proves that the check happened.
+Verify that the evidence actually changes the decision. The
+[coverage and semantic drift lesson](../llm-failure-modes/coverage-and-semantic-drift.md)
+demonstrates this combination of teaching, acceptance rules, and bounded repair.
 
 ### Test across models
 
@@ -422,6 +435,13 @@ Evaluation notes are for the skill author.
 A worker-facing skill should receive the distilled invariant, not the test transcript or
 the evaluator’s diagnosis.
 
+When baseline and guided workers both solve isolated examples, report no demonstrated
+improvement. Such a result can expose a gap between explaining a principle and applying
+it during execution. Include task-shaped cases where the worker must notice the
+condition without a prompt naming the failure. Sustained-use claims require observed
+source selection, implementation, reuse, or closure decisions over time. Passing a
+short exercise or strengthening instruction wording cannot establish those claims.
+
 ### Separate Worker Concerns from Orchestrator Concerns
 
 When writing agent-facing guidance, distinguish clearly:
@@ -467,7 +487,7 @@ contaminating worker guidance with orchestrator concerns.
 
 3. Ask Claude to create docs capturing that pattern
 
-4. Review for conciseness (remove explanations Claude already knows)
+4. Remove unnecessary background; preserve lessons tied to observed execution failures
 
 5. Test docs with a fresh instance on similar tasks
 
@@ -487,6 +507,6 @@ contaminating worker guidance with orchestrator concerns.
 
 ## Key Takeaway
 
-Effective LLM documentation assumes intelligence, uses examples over explanation,
-organizes for progressive discovery, and validates critical workflows.
+Effective LLM documentation assumes reasoning capacity, teaches distinctions through
+examples, places checks at the decisions they govern, and supports progressive discovery.
 Test with target models and iterate based on real usage patterns.
