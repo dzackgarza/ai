@@ -337,6 +337,27 @@ information. A tagline removes none.
 
 ## Maintaining this policy
 
+The **Yes/no examples** in the family files pair an observed manuscript
+defect with a worked mathematical replacement and a deciding test.
+Use the replacement's hypotheses and conventions when applying it.
+An annotation identifies the passage; the calculation or cited source
+supports the mathematics of the replacement.
+
+The current examples draw on a live `GET /v1/annotations` read from
+the local Zettlr API on 2026-10-13. Selection used descending
+`createdAt` across all returned states.
+
+| Selection | Value |
+| --- | --- |
+| Returned annotations | 314 |
+| Latest annotations inspected | 300 |
+| Newest creation timestamp (UTC) | 2026-10-10T11:15:03.002Z |
+| Oldest selected creation timestamp (UTC) | 2026-10-04T19:33:50.390Z |
+
+Each example records its annotation IDs. The quoted passages are the
+API's captured manuscript text; some targets are orphaned, so these
+quotations identify the reviewed text rather than the current file revision.
+
 A change to this policy requires the same work it demands of other writing.
 
 - Start from an observed defect. Quote the passage with its repository, file,

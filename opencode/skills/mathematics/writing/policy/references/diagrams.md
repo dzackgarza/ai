@@ -41,6 +41,69 @@ actual codomain.
 
 ## `DIA-7`: A diagram whenever the relation is diagrammatic
 
+### Yes/no example: scalar extension of an exact sequence
+
+**No:** "Since $\mathbb R$ is flat over $\mathbb Z$, extension of
+scalars gives the monomorphism $\mathbb Rv\hookrightarrow
+L\otimes_{\mathbb Z}\mathbb R$" as the whole base-change argument.
+
+**Yes:** For $L=\langle e,f\rangle_{\mathbb Z}$ and $v=2e$, tensor
+the top row with $\mathbb R$ to obtain the bottom row:
+
+```latex
+\begin{tikzcd}
+0 \arrow[r] & \langle2e\rangle_{\mathbb Z}
+  \arrow[r,hook,"i"] \arrow[d,"\eta"]
+& L \arrow[r,"\pi"] \arrow[d,"\eta_L"]
+& \operatorname{coker}(i) \arrow[r] \arrow[d,"\eta_{\operatorname{coker}(i)}"] & 0 \\
+0 \arrow[r] & \langle2e\rangle_{\mathbb Z}\otimes_{\mathbb Z}\mathbb R
+  \arrow[r,hook,"i\otimes1"]
+& L\otimes_{\mathbb Z}\mathbb R \arrow[r,"\pi\otimes1"]
+& \operatorname{coker}(i)\otimes_{\mathbb Z}\mathbb R \arrow[r] & 0.
+\end{tikzcd}
+```
+
+Here $i$ is inclusion, $\pi$ is its cokernel morphism, and each
+$\eta_M$ sends $m$ to $m\otimes1$. The rows are exact in
+$\mathbb Z\text{-}\mathbf{Mod}$ and $\mathbb R\text{-}\mathbf{Mod}$,
+respectively. Explicitly,
+$\operatorname{coker}(i)\cong\mathbb Z/2\mathbb Z\oplus\mathbb Z$
+and $\operatorname{coker}(i)\otimes_{\mathbb Z}\mathbb R\cong\mathbb R$.
+The top inclusion is nonprimitive; its real extension has a complement.
+
+**Test:** the diagram retains the cokernel and shows what tensoring
+does to its torsion. Source: live Zettlr annotation
+`3ea2f6b0-b5ba-4b66-9ffa-82f39b4d88ac`, quoted manuscript passage;
+exactness uses [Stacks, Definition 10.39.1](https://stacks.math.columbia.edu/tag/00H9).
+
+### Yes/no example: compatibility of gluing automorphisms
+
+**No:** "Then $H$ is the graph of an isometry $\gamma\colon
+A_M\isoto A_N(-1)$ … and $\varphi_M\perp\varphi_N$ extends to $L$
+if and only if" followed only by an equation between composites.
+
+**Yes:** With the graph gluing $H=\Gamma_\gamma$ already defined,
+the induced automorphisms preserve $H$ precisely when this square commutes:
+
+```latex
+\begin{tikzcd}
+A_M \arrow[r,"\gamma","\sim"'] \arrow[d,"\bar\varphi_M"']
+& A_N(-1) \arrow[d,"\bar\varphi_N(-1)"] \\
+A_M \arrow[r,"\gamma","\sim"'] & A_N(-1).
+\end{tikzcd}
+```
+
+For $M=\langle2\rangle$ and $N=\langle-2\rangle$, send
+$[e/2]$ to $[f/2]$ under $\gamma$. Both generators have quadratic
+value $1/2+2\mathbb Z$ after the twist. Adjoining $(e+f)/2$ to
+$M\perp N$ gives an even unimodular overlattice: in the basis
+$e,(e+f)/2$ its Gram matrix is
+$\begin{pmatrix}2&1\\1&0\end{pmatrix}$.
+
+**Test:** all four corners have the same form conventions and each
+vertical map acts on the displayed object. Source: live Zettlr annotation
+`5d7f3751-2408-4e96-a582-44c1115b203a`, quoted manuscript passage.
+
 When the mathematical content is a commutativity, compatibility,
 factorization, comparison of embeddings, or a universal construction,
 represent it by a labeled commuting diagram, not by prose and not by an

@@ -398,6 +398,28 @@ the definition of $q_L$ gives.
 
 ## `SYM-17`: A map is written in the direction its construction gives
 
+### Yes/no example: a decomposition supplied by inclusions
+
+**No:** "$L\isoto E_{10}\perp E_{10}^{\perp L}$" when only an
+embedding of the unimodular lattice $E_{10}$ into $L$ has been given.
+
+**Yes:** Let $i\colon E_{10}\hookrightarrow L$ be the given embedding
+and $k\colon E_{10}^{\perp L}\hookrightarrow L$ the orthogonal complement.
+Then
+$$
+\begin{aligned}
+i\perp k\colon E_{10}\perp E_{10}^{\perp L}&\xrightarrow{\sim}L,\\
+(x,y)&\longmapsto i(x)+k(y).
+\end{aligned}
+$$
+Unimodularity gives, for each $z\in L$, a unique $x\in E_{10}$ with
+$b_{E_{10}}(x,-)=b_L(z,i(-))$; then $z-i(x)\in E_{10}^{\perp L}$.
+This proves surjectivity; nondegeneracy of $E_{10}$ proves injectivity.
+
+**Test:** the displayed arrow is the map just constructed, and its
+isomorphism claim has a reason. Source: live Zettlr annotation
+`1c13aa15-84e0-4104-bb03-09511178c9ae`, quoted manuscript passage.
+
 A decomposition of $L$ into sublattices $M_i$ is the map $\perp_iM_i\too
 L$ induced by the inclusions; it is written in that direction and
 decorated $\isoto$ once the proof shows it is an isomorphism (`NOT-2`).

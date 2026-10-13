@@ -58,6 +58,21 @@ of the map, the isomorphism as a claim with its reason.
 
 ## `NOT-3`: One symbol, one meaning
 
+### Yes/no example: the discriminant class already has a symbol
+
+**No:** "$\bigl(\div_L(v),v/\div_L(v)\bmod L\bigr)$" in a passage
+whose preceding definition introduced $v^*=v/\div_L(v)\in L^\#$ and
+$[v^*]\in A_L^\sharp$.
+
+**Yes:** "$\bigl(\div_L(v),[v^*]\bigr)$". For the rank-one lattice
+$L=\langle2\rangle$ with generator $e$, the pair is
+$(2,[e/2])$ and $A_L^\sharp=\langle[e/2]\rangle\cong\mathbb Z/2\mathbb Z$.
+
+**Test:** reuse the defined class, and keep the divisibility component
+if the statement uses it. Source: live Zettlr annotations
+`748534e7-03c0-47cd-af3c-cd0b88c9e6ec` and
+`9c2018f0-897b-4d51-8a45-deb7d0b0eb89`, quoted manuscript passages.
+
 The same symbol has the same type and meaning throughout the document,
 including every unit the document includes from elsewhere. Within a single
 passage the constraint is tighter (`SYM-4`). Nonstandard notation is
@@ -100,6 +115,23 @@ modulo $8$ that arise are those of [@Nik80, Thm. 1.10.1]"; "the
 adjoint $b^\sharp$ (@def:adjoint)".
 
 ## `NOT-5`: No gratuitous temporary notation
+
+### Yes/no example: name the map and retain its cokernel notation
+
+**No:** "$Q_f$" introduced solely to abbreviate $\operatorname{coker}(f)$.
+
+**Yes:** For $f\colon\mathbb Z\to\mathbb Z$, $f(n)=2n$, write
+$$
+0\longrightarrow\mathbb Z\xrightarrow{f}\mathbb Z
+\xrightarrow{\pi}\operatorname{coker}(f)\longrightarrow0,
+\qquad \operatorname{coker}(f)\cong\mathbb Z/2\mathbb Z,
+$$
+where $\pi$ is the cokernel morphism in $\mathbb Z\text{-}\mathbf{Mod}$.
+
+**Test:** the label $f$ names a map used by the construction; a second
+name for its cokernel adds no operation or invariant. Source: live
+Zettlr annotations `27bffda0-47ab-4045-be90-089bbece0243` and
+`09bd0276-0397-4829-b91e-27e326beb95e`, quoted manuscript passages.
 
 New notation earns its place by exposing structure or supporting repeated
 use — never by saving characters. A proposition about $M(2)$ does not

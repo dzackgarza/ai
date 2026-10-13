@@ -52,6 +52,30 @@ $\operatorname{SpinGen}(L)=\{\{[L_1],\dots\},\dots\}$ [@CS99, Ch.
 
 ## `EX-2`: An example is an example, not a proposition
 
+### Yes/no example: an indefinite lattice with infinitely many isometries
+
+**No:** "Neither conclusion holds for indefinite lattices" as a
+proposition, followed by a specific Pell equation.
+
+**Yes:** **Example.** Let $L=\langle1\rangle\perp\langle-2\rangle$
+with its standard ordered basis $e,f$. Define $g\colon L\to L$ by
+$g(e)=3e+2f$ and $g(f)=4e+3f$. Then
+$$
+[g]_{e,f}^{\mathsf T}
+\begin{pmatrix}1&0\\0&-2\end{pmatrix}
+[g]_{e,f}=\begin{pmatrix}1&0\\0&-2\end{pmatrix},
+\qquad [g]_{e,f}=\begin{pmatrix}3&4\\2&3\end{pmatrix}.
+$$
+Its determinant is $1$, so $g\in\Orth(L)$. The eigenvalue
+$3+2\sqrt2>1$ proves that $g$ has infinite order. Moreover,
+$g^n(e)=x_ne+y_nf$ gives distinct points of $L[1]$, since
+$x_n+y_n\sqrt2=(3+2\sqrt2)^n$ for $n\geq0$.
+
+**Test:** the example names the failed conclusions and gives an
+explicit lattice, isometry, and infinite family. Sources: live Zettlr
+annotations `248133a2-6f7c-4264-9f58-eda15241361a` and
+`b94eea71-2c18-4c2b-b19e-70c0bad4c71e`, quoted manuscript passages.
+
 If there is nothing to prove, do not present the passage as a proposition
 with a proof. A category with finite products is an example of a monoidal
 category, not a theorem. State the definition, then give the example in an

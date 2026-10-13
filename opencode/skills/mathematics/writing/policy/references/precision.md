@@ -15,6 +15,20 @@ Use the standard term and state its definition; the definition is the work.
 
 ## `PRECISION-02`: Replace vague qualifiers with exact scope
 
+### Yes/no example: evenness does not supply unimodularity
+
+**No:** "If $L$ is even, then $p-q\equiv0\pmod8$."
+
+**Yes:** "For $L=\langle2\rangle$, $\operatorname{sign}(L)=1$ and
+$A_L^\sharp\cong\mathbb Z/2\mathbb Z$." This even lattice is a
+counterexample to the stated implication. A signature theorem must
+include its unimodularity hypothesis and use the document's defined
+signature invariant.
+
+**Test:** $b(ne,ne)=2n^2$ proves evenness; the Gram matrix $(2)$ has
+signature $1$. Source: live Zettlr annotation
+`ad9ab9a4-1e9b-4380-82df-bac3c73b2289`, quoted manuscript passage.
+
 **Banned:** “This holds essentially for finite type schemes.”
 
 **Preferred:** “This holds for schemes locally of finite type over a field.”
@@ -87,10 +101,36 @@ $N$ the level, stated nowhere; "there is a homomorphism
 $D_L\to\mathbb Q/2\mathbb Z$" as the whole statement where the
 structure theorem supplies the exponent and the factorization.
 
-**Preferred:** "the discriminant form
-$\bar b\colon D_L\to\tfrac1N\mathbb Z/\mathbb Z$ factors through the
-exponent-$N$ torsion group, with
-$\bar b(x+L,y+L):=b(x,y)\bmod\mathbb Z$ and $N\cdot D_L\subseteq L$
-(`PR-56`); the composite into $\mathbb Q/\mathbb Z$ is the coarser
-presentation." The value object carries the theorem's structure; the
-ambient group is its target, not its type.
+**Preferred:** for an integral nondegenerate lattice $L$, put
+$N=\exp(A_L^\sharp)$. Its discriminant pairing has type
+$\bar b_L\colon A_L^\sharp\otimes_{\mathbb Z}A_L^\sharp
+\to\tfrac1N\mathbb Z/\mathbb Z$ and satisfies
+$\bar b_L([x]\otimes[y])=b_{L_{\mathbb Q}}(x,y)+\mathbb Z$.
+Indeed, $Nx\in L$ for $x\in L^\#$, so $Nb(x,y)\in\mathbb Z$.
+The inclusion $\tfrac1N\mathbb Z/\mathbb Z\hookrightarrow
+\mathbb Q/\mathbb Z$ gives the ambient-valued pairing (`PR-56`).
+
+### Yes/no example: bilinear and quadratic values differ
+
+**No:** "$q_L^{(2)}\colon A_L^\sharp\to\mathbb Z/2\mathbb Z$"
+obtained by replacing the value module of $q_L$ without a map.
+
+**Yes:** For $L=\langle2\rangle$ with generator $e$, set $a=[e/2]$.
+In the convention $q_L([x])=b(x,x)+2\mathbb Z$,
+$$
+\begin{aligned}
+\bar b_L\colon A_L^\sharp\otimes_{\mathbb Z}A_L^\sharp
+&\longrightarrow\tfrac12\mathbb Z/\mathbb Z,\\
+a\otimes a&\longmapsto\tfrac12+\mathbb Z,\\[4pt]
+q_L\colon A_L^\sharp&\longrightarrow\tfrac12\mathbb Z/2\mathbb Z,\\
+a&\longmapsto\tfrac12+2\mathbb Z.
+\end{aligned}
+$$
+The displayed bilinear value module has order $2$; the quadratic one
+has order $4$. An isomorphism of value modules must be supplied before
+postcomposition can change a codomain.
+
+**Test:** calculate the value of the discriminant generator in the
+stated quotient. Source: live Zettlr annotation
+`e1474cc5-872d-4013-bb31-16eebdbd35f7`, quoted manuscript passage;
+the conventions are those of [Hecke, Discriminant groups](https://docs.hecke.thofma.com/v0.28/quad_forms/discriminant_group/).

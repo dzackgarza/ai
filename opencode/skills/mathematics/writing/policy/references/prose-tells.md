@@ -1968,6 +1968,28 @@ Put $G_e(b):=e^*b\in M_n(W)$."
 
 ## `PR-59`: Without an explicit ordered basis / generating set, $\operatorname{Gram}(b)$ is well-defined only up to $\operatorname{GL}_n(R)$-congruence
 
+### Yes/no example: a Gram determinant has a chosen basis
+
+**No:** "$\det(b_S)=[L:S]^2\det(b_L)$" as an equality of numbers,
+with neither form expressed in a basis.
+
+**Yes:** Let $L=\langle e_1,e_2\rangle_{\mathbb Z}$ with
+$b(e_i,e_j)=\delta_{ij}$, and embed
+$S=\langle2e_1,e_2\rangle_{\mathbb Z}$ into $L$. In the displayed
+ordered bases, the inclusion matrix is $A=\operatorname{diag}(2,1)$,
+and
+$$
+G_S=A^{\mathsf T}G_LA=\operatorname{diag}(4,1),
+\qquad \det(G_S)=4=[L:S]^2\det(G_L).
+$$
+Intrinsically, $\bigwedge^2b^\sharp\colon\det(L)\to\det(L^*)$
+is the determinant morphism; a basis gives its scalar coefficient.
+
+**Test:** the scalar equality names the frames; the intrinsic map
+names the determinant lines. Source: live Zettlr annotations
+`c69d87a7-6530-4822-b94f-35d4cbe0e455` and
+`c8e9f7a7-d07c-4b80-9634-66317c8a7b80`, quoted manuscript passages.
+
 Without the ordered frame $e$ the matrix has no size and no value; with
 $e$ it is $G_e(b)=e^*b$ and changes by congruence when $e$ changes.
 For ordered bases $e' = e\circ P$ with
@@ -2757,6 +2779,26 @@ that satisfies the first and not the second.
 
 ## `PR-75`: Display mathematics earns display status
 
+### Yes/no example: a declaration stays in its sentence
+
+**No:** "For $$\iota_v\colon\langle v\rangle_{\mathbb Z}\hookrightarrow L,$$
+write $$\kappa_v\colon v^{\perp L}\hookrightarrow L$$ for …"
+
+**Yes:** For $\iota_v\colon\langle v\rangle_{\mathbb Z}\hookrightarrow L$,
+write $\kappa_v\colon v^{\perp L}\hookrightarrow L$ for the orthogonal
+complement inclusion. For $L=U$ with $b(e,e)=b(f,f)=0$ and $b(e,f)=1$,
+the computation earns a display:
+$$
+\begin{aligned}
+b(ae+cf,e)&=c,\\
+e^{\perp U}&=\langle e\rangle_{\mathbb Z}.
+\end{aligned}
+$$
+
+**Test:** declarations read as one sentence; the aligned display
+exhibits the kernel calculation. Source: live Zettlr annotation
+`69ea530a-10b0-4da8-abcc-10feb34ec9b7`, quoted manuscript passage.
+
 Display math is used when the expression's visual structure matters —
 a multi-step derivation, alignment at operators, a diagram, a complete
 exact, coexact, fiber, or cofiber sequence, or an equation the text refers
@@ -2914,6 +2956,25 @@ common underlying module deleted, the two forms defined on
 $A_L^\sharp$ by their displays.
 
 ## `PR-77`: A map and its defining condition are one unit
+
+### Yes/no example: a signature and its assignment are aligned
+
+**No:** "$\Delta_M\colon U(M)\to U(M\otimes_RM),\quad
+x\mapsto x\otimes x$" compressed onto one line.
+
+**Yes:** For $U\colon R\text{-}\mathbf{Mod}\to\mathbf{Set}$, write
+$$
+\begin{aligned}
+\Delta_M\colon U(M)&\longrightarrow U(M\otimes_RM),\\
+x&\longmapsto x\otimes_Rx.
+\end{aligned}
+$$
+For $R=M=\mathbb Z$, $\Delta_M(2)=4(1\otimes1)$ while
+$2\Delta_M(1)=2(1\otimes1)$; the displayed type is a map of sets.
+
+**Test:** the assignment sits below its signature, and the category
+admits that assignment. Source: live Zettlr annotation
+`17f393cc-41bc-49a4-a4fb-fb2124d996c6`, quoted manuscript passage.
 
 A map is declared with its source, target, and defining condition in one
 place: inline — "a morphism $f\colon M\to N$ with

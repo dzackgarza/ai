@@ -1618,6 +1618,42 @@ with its proof.
 
 ## `DEF-49`: A theory is developed at the base ring of its objects
 
+### Yes/no example: integral eigensublattices
+
+**No:** "Then $(L^G)_{\mathbb Q}$ and $(L_G)_{\mathbb Q}$ are the
+images of the complementary idempotents" as the entire conclusion
+of a proposition about integral invariant and coinvariant lattices.
+
+**Yes:** Let $L=\langle1\rangle\perp\langle1\rangle$, with orthogonal
+basis $e_1,e_2$, and let $I(e_1)=e_2$, $I(e_2)=e_1$.
+For $G=\langle I\rangle$, the integral kernels are
+$$
+\begin{aligned}
+L^G=\ker(I-\mathrm{id}_L)&=\langle e_1+e_2\rangle_{\mathbb Z},\\
+L_G=\ker(I+\mathrm{id}_L)&=\langle e_1-e_2\rangle_{\mathbb Z}.
+\end{aligned}
+$$
+Here $L_G$ denotes $(L^G)^{\perp L}$. For the sum of the inclusions
+$j\colon L^G\perp L_G\hookrightarrow L$, the module sequence is
+$$
+0\longrightarrow U_{\mathrm{mod}}(L^G\perp L_G)
+\xrightarrow{U_{\mathrm{mod}}(j)}U_{\mathrm{mod}}(L)
+\xrightarrow{\pi}\mathbb Z/2\mathbb Z\longrightarrow0,
+\qquad \pi(ae_1+be_2)=a+b\pmod2.
+$$
+The rational projections $\tfrac12(\mathrm{id}\pm I)$ send $e_1$ to
+$\tfrac12(e_1\pm e_2)$. These are outside $L$, and
+$\operatorname{coker}(U_{\mathrm{mod}}(j))\cong\mathbb Z/2\mathbb Z$
+records the failure of the integral direct-sum decomposition.
+
+**Test:** the conclusion computes the integral sublattices and the
+integral obstruction before discussing rational projections.
+$U_{\mathrm{mod}}$ is the forgetful functor to
+$\mathbb Z\text{-}\mathbf{Mod}$. Sources: live Zettlr annotations
+`d9d3d866-9291-46ae-9a8e-73f2436fa3b2`,
+`31b67515-5436-44c4-8531-4b8bff568a2f`, and
+`8a731c50-e3e5-4c4d-bf38-10b32dff2a2f`, quoted manuscript passages.
+
 A theory of $R[G]$-modules is developed by constructions available over
 $R$: kernels and images of $R[G]$-endomorphisms, saturations, orthogonal
 complements, and the sublattices they cut out. Scalar extension to
