@@ -54,7 +54,6 @@ clean:
     sudo apt clean
     sudo apt-get autoclean
     sudo apt-get autoremove
-    uv cache clean
     npm cache clean --force
 
     if command -v docker >/dev/null 2>&1; then
