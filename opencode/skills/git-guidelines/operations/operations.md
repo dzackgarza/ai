@@ -26,7 +26,7 @@ Each old location remains as a redirect stub.
 
 ## The Edit Workflow (Mandatory)
 
-**Read → Checkpoint Commit → Edit → Verify → Commit**
+**Read → Checkpoint Commit → Edit → Commit**
 
 1. **Read** the file
 
@@ -38,9 +38,7 @@ Each old location remains as a redirect stub.
 
 3. **Edit** the file
 
-4. **Verify** — run `git diff` immediately after to confirm what changed
-
-5. **Commit** every coherent substantive change before switching tasks, reporting
+4. **Commit** every coherent substantive change before switching tasks, reporting
    completion, starting a risky follow-up edit, or leaving work to another session.
    Do not leave real work only in the index or working tree.
 
@@ -55,8 +53,6 @@ You are about to violate the workflow if:
   that are not already committed as the pre-edit checkpoint
 
 - You are “just fixing a typo” (still requires checkpoint)
-
-- You plan to diff “at the end” instead of after each file
 
 - You plan to commit “later” after accumulating multiple independent changes
 
@@ -661,7 +657,5 @@ they are not bugs.
 | Excuse | Reality |
 | --- | --- |
 | “The edit is tiny, no checkpoint needed” | Size is irrelevant. Checkpoint first. |
-| “I’ll diff at the end when everything is done” | You verify each file immediately after editing it. |
 | “Bundling files makes history cleaner” | Each file needs its own safety net. Checkpoint each one. |
 | “git add -A is faster” | Faster is not safer. Stage specific files. |
-| “I already know what I changed” | Diff anyway. Surprises exist. |
