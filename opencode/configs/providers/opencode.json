@@ -4,6 +4,7 @@
     "claude-fable-5",
     "claude-fable-5-1",
     "claude-haiku-4-5",
+    "claude-haiku-5-5",
     "claude-opus-4-1",
     "claude-opus-4-5",
     "claude-opus-4-6",
@@ -28,6 +29,7 @@
     "gemini-3.6-flash",
     "gemini-3.7-flash",
     "gemini-3.8-flash",
+    "gemini-4-argon",
     "glm-4.6",
     "glm-4.7",
     "glm-4.7-free",
@@ -84,6 +86,7 @@
     "minimax-m2.5",
     "minimax-m2.7",
     "minimax-m3",
+    "mistral-large-4",
     "muse-spark-1.2",
     "muse-spark-1.3",
     "north-mini-code-free",
@@ -115,9 +118,6 @@
     "fledge-alpha-free": {
       "name": "Fledge Alpha"
     },
-    "jev-1.13-free": {
-      "name": "Jev 1.13 (Free)"
-    },
     "ling-3.0-flash-fin-free": {
       "name": "Ling 3.0 Flash Fin"
     },
@@ -135,21 +135,92 @@
     },
     "space-bunny-free": {
       "name": "Space Bunny"
+    },
+    "beam-free": {
+      "name": "beam-free"
+    },
+    "cat-jam-free": {
+      "name": "cat-jam-free"
+    },
+    "deepseek-v4.1-flash-free": {
+      "name": "deepseek-v4.1-flash-free"
+    },
+    "exo-free": {
+      "name": "exo-free"
+    },
+    "glm-5.3-flash-free": {
+      "name": "glm-5.3-flash-free"
+    },
+    "hy3-free": {
+      "name": "hy3-free"
+    },
+    "laguna-s-2.1-free": {
+      "name": "laguna-s-2.1-free"
+    },
+    "ling-3.0-flash-free": {
+      "name": "ling-3.0-flash-free"
+    },
+    "ll-alpha-free": {
+      "name": "ll-alpha-free"
+    },
+    "longcat-2.0-free": {
+      "name": "longcat-2.0-free"
+    },
+    "mimo-v2-omni-free": {
+      "name": "mimo-v2-omni-free"
+    },
+    "mimo-v2-pro-free": {
+      "name": "mimo-v2-pro-free"
+    },
+    "minimax-m2.5-free": {
+      "name": "minimax-m2.5-free"
+    },
+    "minimax-m3-free": {
+      "name": "minimax-m3-free"
+    },
+    "nemotron-3-super-free": {
+      "name": "nemotron-3-super-free"
+    },
+    "nemotron-3.5-super-vl-free": {
+      "name": "nemotron-3.5-super-vl-free"
+    },
+    "step-5-preview-free": {
+      "name": "step-5-preview-free"
+    },
+    "x-preview-f-free": {
+      "name": "x-preview-f-free"
     }
   },
   "whitelist": [
+    "beam-free",
     "big-pickle",
+    "cat-jam-free",
     "deepseek-v4-flash-free",
+    "deepseek-v4.1-flash-free",
+    "exo-free",
     "fledge-alpha-free",
-    "jev-1.13-free",
+    "glm-5.3-flash-free",
+    "hy3-free",
+    "laguna-s-2.1-free",
     "ling-3.0-flash-fin-free",
+    "ling-3.0-flash-free",
     "ling-3.1-flash-free",
+    "ll-alpha-free",
+    "longcat-2.0-free",
     "longcat-2.5-preview-free",
+    "mimo-v2-omni-free",
+    "mimo-v2-pro-free",
     "mimo-v2.6-flash-free",
+    "minimax-m2.5-free",
+    "minimax-m3-free",
     "muse-spark-1.2-contributor-free",
     "muse-spark-1.3-contributor-free",
+    "nemotron-3-super-free",
     "nemotron-3-ultra-free",
     "nemotron-3.5-lightning-free",
-    "space-bunny-free"
+    "nemotron-3.5-super-vl-free",
+    "space-bunny-free",
+    "step-5-preview-free",
+    "x-preview-f-free"
   ]
 }

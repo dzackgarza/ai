@@ -3,6 +3,8 @@
   "snapshot": false,
   "disabled_providers": [
     "cloudflare-ai-gateway",
+    "github-copilot",
+    "google",
     "groq",
     "huggingface",
     "kaggle-ollama",
@@ -10,9 +12,7 @@
     "morph",
     "openai"
   ],
-  "instructions": [
-    "/home/dzack/.config/opencode/AGENTS.caveman.md"
-  ],
+  "instructions": ["/home/dzack/.config/opencode/AGENTS.caveman.md"],
   "permission": {
     "external_directory": {
       "*": "deny",
@@ -76,35 +76,15 @@
   },
   "formatter": {
     "ruff-check": {
-      "command": [
-        "uvx",
-        "ruff",
-        "check",
-        "--fix",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "check", "--fix", "$FILE"],
+      "extensions": [".py"]
     },
     "ruff-format": {
-      "command": [
-        "uvx",
-        "ruff",
-        "format",
-        "$FILE"
-      ],
-      "extensions": [
-        ".py"
-      ]
+      "command": ["uvx", "ruff", "format", "$FILE"],
+      "extensions": [".py"]
     },
     "prettier": {
-      "command": [
-        "npx",
-        "prettier",
-        "--write",
-        "$FILE"
-      ],
+      "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [
         ".js",
         ".ts",
@@ -118,52 +98,28 @@
       ]
     },
     "just": {
-      "command": [
-        "just",
-        "--unstable",
-        "--fmt",
-        "--justfile",
-        "$FILE"
-      ],
-      "extensions": [
-        "justfile"
-      ]
+      "command": ["just", "--unstable", "--fmt", "--justfile", "$FILE"],
+      "extensions": ["justfile"]
     }
   },
   "lsp": {
     "texlab": {
-      "command": [
-        "texlab"
-      ],
-      "extensions": [
-        ".tex",
-        ".sty",
-        ".cls",
-        ".bib"
-      ]
+      "command": ["texlab"],
+      "extensions": [".tex", ".sty", ".cls", ".bib"]
     }
   },
   "mcp": {
     "lean-lsp": {
       "type": "local",
-      "command": [
-        "uvx",
-        "lean-lsp-mcp"
-      ]
+      "command": ["uvx", "lean-lsp-mcp"]
     },
     "blender": {
       "type": "local",
-      "command": [
-        "uvx",
-        "blender-mcp"
-      ]
+      "command": ["uvx", "blender-mcp"]
     },
     "blender-b": {
       "type": "local",
-      "command": [
-        "uvx",
-        "blender-mcp"
-      ],
+      "command": ["uvx", "blender-mcp"],
       "environment": {
         "BLENDER_PORT": "9877"
       }

@@ -2,7 +2,7 @@
 name: OpenCode Compaction
 description: Hidden system agent that compacts long context into a smaller summary.
 mode: primary
-model: google/gemini-2.5-flash
+model: opencode/big-pickle
 hidden: true
 permission:
   '*': deny
