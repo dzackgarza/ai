@@ -21,6 +21,33 @@ Verify with `zotero.health()` — the returned `capabilities` list names every w
 the addon currently exposes. If the desktop is down or the addon is not loaded, that is
 the blocker to report — not a missing env var, not a missing server, not a missing key.
 
+### Transport from `rack`
+
+On `rack`, `127.0.0.1` is `rack`. It reaches this workstation only while the user's
+SSH connection to `dzack@rack` supplies the reverse endpoint on rack port 2222.
+
+First verify that endpoint:
+
+```bash
+ss -ltn '( sport = :2222 )'
+```
+
+If port 2222 is absent, the workstation is not connected to `rack`. Stop. Do not use
+the cloud API or another Zotero server.
+
+If port 2222 is present and rack port 23119 is absent, start the rack-local Zotero
+forward in a named session:
+
+```bash
+tmux new-session -d -s zotero-forward \
+  'exec ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.local/share/rack-reverse-ssh/known_hosts -i $HOME/.local/share/rack-reverse-ssh/id_ed25519 -p 2222 -L 127.0.0.1:23119:127.0.0.1:23119 dzack@127.0.0.1'
+timeout 10s sh -c 'until curl -fsS http://127.0.0.1:23119/version; do sleep 1; done'
+```
+
+After the health probe succeeds, use the same base addresses and `lib/zotero.py`
+workflow documented below. The forward closes when the workstation's SSH connection to
+`rack` closes.
+
 ## NOT used (do not confuse with the above)
 
 - **Cloud Web API** (`api.zotero.org`, `ZOTERO_API_KEY`, `ZOTERO_USER_ID`) — not used

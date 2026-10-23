@@ -434,6 +434,26 @@ markdown agent under `opencode/agents/`.
 
 ## MCP Servers
 
+### Rack access to workstation services
+
+An SSH connection from this workstation to `dzack@rack` exposes a rack-loopback SSH
+endpoint at `127.0.0.1:2222`. The endpoint is absent when that connection is absent.
+Rack agents use the dedicated key at
+`~/.local/share/rack-reverse-ssh/id_ed25519`.
+
+To expose the workstation's live Zotero desktop API on rack loopback port 23119:
+
+```bash
+ss -ltn '( sport = :2222 )'
+tmux new-session -d -s zotero-forward \
+  'exec ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.local/share/rack-reverse-ssh/known_hosts -i $HOME/.local/share/rack-reverse-ssh/id_ed25519 -p 2222 -L 127.0.0.1:23119:127.0.0.1:23119 dzack@127.0.0.1'
+timeout 10s sh -c 'until curl -fsS http://127.0.0.1:23119/version; do sleep 1; done'
+```
+
+Port 2222 must be present before the inner forward starts. A successful `/version`
+response proves that rack port 23119 reaches the workstation's running Zotero addon.
+The [`zotero` skill](./opencode/skills/zotero/SKILL.md) owns the API and library workflow.
+
 MCP configurations are centralized in `~/ai/mcp/mcp-servers.yml` and synchronized across
 all harnesses using `just --justfile ~/ai/home-justfile install-mcps`.
 
