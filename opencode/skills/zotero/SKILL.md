@@ -25,6 +25,12 @@ the blocker to report — not a missing env var, not a missing server, not a mis
 
 On `rack`, `127.0.0.1` is `rack`. It reaches this workstation only while the user's
 SSH connection to `dzack@rack` supplies the reverse endpoint on rack port 2222.
+The workstation SSH client must apply these options to `Host rack`:
+
+```sshconfig
+RemoteForward 127.0.0.1:2222 127.0.0.1:22222
+ExitOnForwardFailure yes
+```
 
 First verify that endpoint:
 

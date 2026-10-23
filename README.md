@@ -441,6 +441,13 @@ endpoint at `127.0.0.1:2222`. The endpoint is absent when that connection is abs
 Rack agents use the dedicated key at
 `~/.local/share/rack-reverse-ssh/id_ed25519`.
 
+The workstation SSH client must apply these options to `Host rack`:
+
+```sshconfig
+RemoteForward 127.0.0.1:2222 127.0.0.1:22222
+ExitOnForwardFailure yes
+```
+
 To expose the workstation's live Zotero desktop API on rack loopback port 23119:
 
 ```bash
