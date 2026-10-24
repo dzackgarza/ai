@@ -57,6 +57,19 @@ draws the response that they are not there to supervise or hand-hold. They will 
 deltas, plan internals, or partial states; they will open the artifact and use it. Write
 for that reader.
 
+## Explain, don't perform explanation
+
+**Pattern.** Technical prose that gestures at explanation without actually explaining.
+Pseudo-explanatory verbs ("governed by", "driven by", "determined by") with no specified
+mechanism; manufactured scholarly phrasing ("a small stock of", "a family of") that
+names collections without defining them; enumerating related objects without stating
+roles or relationships; gratuitous padding that restates the obvious. Citations cannot
+repair sentences that fail to communicate.
+
+**House rule.** State the actual relation: define objects, specify maps or constraints,
+and show how pieces connect. Prefer concrete statements over scholarly-sounding filler.
+If a sentence adds nothing to what follows, delete it.
+
 ## Dense clause-stacked prose with no recoverable subject
 
 **Pattern.** Sentences that chain qualifications, appositives, and conditionals until the
