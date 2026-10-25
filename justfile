@@ -409,7 +409,7 @@ check-skill-wikilinks:
 
     vault="$(mktemp -d)"
     trap 'rm -rf "$vault"' EXIT
-    rsync -aL --delete --exclude '.git' "{{ skills_dir }}/" "$vault/skills/"
+    rsync -aL --delete --exclude '.git' --exclude '.venv' "{{ skills_dir }}/" "$vault/skills/"
 
     mapfile -d '' skill_files < <(find "$vault/skills" -type f -name SKILL.md -print0)
     ((${#skill_files[@]} > 0))
