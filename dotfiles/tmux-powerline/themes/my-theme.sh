@@ -69,12 +69,9 @@ TMUX_POWERLINE_LEFT_STATUS_SEGMENTS=(
 )
 
 TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS=(
-	"uptime $thm_peach $thm_bg"
 	"disk_usage $thm_blue $thm_bg"
 	"ram $thm_yellow $thm_bg"
 	"cpu $thm_green $thm_bg"
-	"claude_limits $thm_magenta $thm_bg"
-	"codex_limits $thm_teal $thm_bg"
 	"time $thm_cyan $thm_bg"
 	"rainbarf $thm_red $thm_surface0"
 )
