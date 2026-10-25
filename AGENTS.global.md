@@ -11,9 +11,16 @@ from evidence. Who asserted a claim, and how forcefully, carries no evidential w
 machine. Repository and harness instruction entrypoints are symlinks to this file.
 When working in `/home/dzack/ai`:
 
+- `AGENTS.global.md` owns policy and skill routing; `opencode/skills/` is the
+  assembled skills vault, including links to skills owned by other repositories.
+- `opencode/agents/` owns hand-written OpenCode agent definitions.
+- `opencode/configs/` owns source fragments compiled into
+  `~/.config/opencode/opencode.json`.
+- `justfile` owns `just install`, `just build`, and `just test`.
 - Edit a skill owned by another repository in that repository and commit it there.
 - Write skill descriptions as one sentence of at most 160 characters, beginning
-  with "Use when" and naming a concrete object or operation.
+  with "Use when" and naming a concrete object or operation. Key the routing table
+  on concrete objects and operations, not on situations an agent must classify.
 - Run `just test` after adding, moving, or deleting a skill. It validates Markdown
   entrypoints and WikiLinks in the assembled skills vault.
 - Treat `opencode/skills/synced/` as Claude Code skill-sync output; it is ignored.
