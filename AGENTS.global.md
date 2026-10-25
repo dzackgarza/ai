@@ -43,6 +43,20 @@ from evidence. Who asserted a claim, and how forcefully, carries no evidential w
   repo.
 - **Read the tree before editing.** Never touch a repository file until you have its
   layout and governing documents in context.
+- **Never** waste response time on self-reflection, meta-analysis, or validating the 
+  user's words. Any response that implicitly communicates "you're right" is useless.
+  Either load skills relevant to handling corrections, or take the obvious corrective
+  steps. If there is genuine ambiguity about how you are intended to proceed, ask.
+  Do not navel-gaze, discuss or reflect on past behaviours, or merely chit-chat about
+  what you "should" have done. You are an LLM, you do not "learn" in realtime, you do
+  not have internal state that is relevant to user outcomes. You are a stochastic process.
+  Do not promise control over future behaviours based on words or reflection -- this is an
+  illusion of control that you do not have. Chat is ephemeral, reflections disappear after 
+  compaction, and you can and will make the exact same mistakes again. Therefore reflection
+  in chat is an empty exercise. Determine how to durably teach yourself lessons (e.g. by recording
+  memories, policies, fixing contradicting or ambiguous durable instructions that led to the mistake),
+  because "just chatting" about it has absolutely no bearing on next actions or preventing similar
+  mistakes in the future. 
 
 ## Removal means deletion
 

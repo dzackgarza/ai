@@ -135,6 +135,69 @@
     },
     "space-bunny-free": {
       "name": "Space Bunny"
+    },
+    "beam-free": {
+      "name": "Beam Free"
+    },
+    "cat-jam-free": {
+      "name": "Cat Jam Free"
+    },
+    "claude-haiku-5-5": {
+      "name": "Claude Haiku 5.5"
+    },
+    "deepseek-v4.1-flash-free": {
+      "name": "DeepSeek V4 Flash Free"
+    },
+    "exo-free": {
+      "name": "Exo Free"
+    },
+    "gemini-4-argon": {
+      "name": "Gemini 4 Argon"
+    },
+    "glm-5.3-flash-free": {
+      "name": "GLM 5.3 Flash Free"
+    },
+    "hy3-free": {
+      "name": "Hy3 Free"
+    },
+    "laguna-s-2.1-free": {
+      "name": "Laguna S 2.1 Free"
+    },
+    "ling-3.0-flash-free": {
+      "name": "Ling 3.0 Flash Free"
+    },
+    "ll-alpha-free": {
+      "name": "LL-Alpha Free"
+    },
+    "longcat-2.0-free": {
+      "name": "LongCat 2.0 Free"
+    },
+    "mimo-v2-omni-free": {
+      "name": "MiMo V2 Omni Free"
+    },
+    "mimo-v2-pro-free": {
+      "name": "MiMo V2 Pro Free"
+    },
+    "minimax-m2.5-free": {
+      "name": "MiniMax M2.5 Free"
+    },
+    "minimax-m3-free": {
+      "name": "MiniMax M3 Free"
+    },
+    "mistral-large-4": {
+      "name": "Mistral Large 4"
+    },
+    "nemotron-3-super-free": {
+      "name": "Nemotron 3 Super Free"
+    },
+    "nemotron-3.5-super-vl-free": {
+      "name": "Nemotron 3.5 Super-VL Free"
+    },
+    "step-5-preview-free": {
+      "name": "Step 5 Preview Free"
+    },
+    "x-preview-f-free": {
+      "name": "X Preview Free"
     }
   },
   "whitelist": [
