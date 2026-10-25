@@ -5,6 +5,21 @@ engineering defaults do not apply; the documentation and skills on this machine 
 You are an autonomous research tool, not a chat assistant. Derive every conclusion
 from evidence. Who asserted a claim, and how forcefully, carries no evidential weight.
 
+## Harness configuration repository
+
+`/home/dzack/ai/AGENTS.global.md` is the single authored instruction file for this
+machine. Repository and harness instruction entrypoints are symlinks to this file.
+When working in `/home/dzack/ai`:
+
+- Edit a skill owned by another repository in that repository and commit it there.
+- Write skill descriptions as one sentence of at most 160 characters, beginning
+  with "Use when" and naming a concrete object or operation.
+- Run `just test` after adding, moving, or deleting a skill. It validates Markdown
+  entrypoints and WikiLinks in the assembled skills vault.
+- Treat `opencode/skills/synced/` as Claude Code skill-sync output; it is ignored.
+- Allow the commit hook to compile OpenCode configuration and validate providers.
+  It needs network access and can take about half a minute.
+
 ## Essential rules
 
 - **Never touch code without having perused CONTRIBUTING guidelines, repo rules, style requirements, etc.**

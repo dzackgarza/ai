@@ -217,8 +217,8 @@ run-microagent *args:
 #   1. build-config — compile opencode.json from skeleton + provider fragments
 #   2. build-agents — validate tracked manual agent markdown
 #
-# AGENTS.md is NOT built here. It is a hand-authored routing layer tracked directly
-# at the repo root; detailed procedure lives in opencode/skills/.
+# AGENTS.global.md is the authored policy. Repo and harness instruction entrypoints
+# link to it; detailed procedures live in opencode/skills/.
 build: build-config build-agents
 
 # Build only the compiled OpenCode config pipeline.
