@@ -71,6 +71,20 @@ Use this skill whenever you write prose for humans:
 
 Alphabetical reference for usage questions
 
+## Additional Principles
+
+### Avoid Pseudo-Explanation
+
+- **Explain, don't gesture.** Replace pseudo-explanatory verbs ("governed by", "driven by", "determined by") with the actual relation: a theorem, mechanism, mapping, or dependency.
+- **Define before naming.** Don't introduce vague collections ("a small stock of", "a family of") without defining members or structure.
+- **Show connections.** Enumeration is not exposition. State roles and relationships between listed items.
+- **Omit gratuitous padding.** If a sentence adds nothing to what follows (like definitions), delete it.
+- **Citations don't fix vacuity.** A claim needs content; references cannot repair a sentence that fails to communicate.
+
+### Distinguish Description from Performance
+
+Writing that performs the appearance of explanation without explaining anything is slop. Prefer concrete statements about objects, maps, constraints, and evidence over scholarly-sounding filler.
+
 ## Bottom Line
 
-Writing for humans? Read `elements-of-style.md` and apply the rules.
+Writing for humans? Read `elements-of-style.md` and apply the rules. Prefer substance over form.

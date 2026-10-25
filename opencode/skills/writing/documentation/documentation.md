@@ -435,6 +435,27 @@ Delete any sentence that could apply to any project:
 - "It's well-documented"
 - "Community-driven"
 
+#### Pseudo-Explanation and Semantic Vacuity
+
+Delete sentences that perform the appearance of explanation without actually explaining anything. This is especially common in academic, mathematical, or technical exposition.
+
+Red flags:
+- Pseudo-explanatory verbs: "is governed by", "is driven by", "determined by", "controlled by" without specifying the actual relationship (theorem, mechanism, mapping, or dependency).
+- Manufactured scholarly phrasing: vague collective nouns like "a small stock of", "a family of", "an arsenal of" that name a collection without defining its members or structure.
+- Topic association instead of exposition: enumerating related objects without stating their roles or relationships.
+- Gratuitous explanatory padding: statements that restate the obvious or add nothing to definitions that follow.
+- Citations cannot repair vacuity: if a sentence does not communicate a claim, references don't make it explanatory.
+
+Fix by stating the actual relationship: define the objects, specify the map/relation, state the theorem/constraint, or show how pieces connect. Prefer concrete statements over gestures.
+
+Examples:
+
+| Bad | Better |
+|---|---|
+| "The moduli theory is governed by the geometry of a small stock of ambient surfaces." | Specify the surfaces and the governing relation (e.g., which invariants or birational correspondences control the moduli). |
+| "The two descriptions denote the same lattice." | If trivial, omit; if nontrivial, state why (isomorphism map) or the identification criterion. |
+| "X relates to Y, Z, and W." | Explain: X corresponds to Y via map f; Z parameterizes W under condition C. |
+
 #### Badge Spam
 
 Badges are acceptable only if they answer a real question:
