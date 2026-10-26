@@ -599,7 +599,6 @@ Config: `~/ai/opencode/opencode.json`
 | --- | --- | --- |
 | `cc-safety-net` | Safety net for destructive git/fs commands | https://github.com/kenryu42/claude-code-safety-net |
 | `@azumag/opencode-rate-limit-fallback` | Auto fallback on rate limit (429) | https://npmjs.com/package/@azumag/opencode-rate-limit-fallback |
-| `@ramtinj95/opencode-tokenscope` | Token usage stats and cost tracking | https://github.com/ramtinJ95/opencode-tokenscope |
 
 ## JSON Schemas and Validation
 

@@ -16,6 +16,7 @@ When working in `/home/dzack/ai`:
 - `opencode/agents/` owns hand-written OpenCode agent definitions.
 - `opencode/configs/` owns source fragments compiled into
   `~/.config/opencode/opencode.json`.
+- OpenCode maintenance targets the current stable upstream release.
 - `justfile` owns `just install`, `just build`, and `just test`.
 - Edit a skill owned by another repository in that repository and commit it there.
 - Write skill descriptions as one sentence of at most 160 characters, beginning

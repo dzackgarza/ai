@@ -144,6 +144,7 @@ install:
     ln -snf "{{ skills_dir }}" "{{ gemini_home }}/skills"
 
     just --justfile {{ repo }}/justfile _update-shell-rc
+    just --justfile {{ repo }}/justfile install-plugins
 
     echo "✓ Environment installed"
     echo ""
@@ -155,6 +156,10 @@ install:
     echo "System prompts (actual):"
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
     [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
+
+# Install the current OpenCode plugin packages with Bun.
+install-plugins:
+    @bun add --cwd {{ opencode_dir }} cc-safety-net@latest opencode-pty@latest @hueyexe/opencode-ensemble@latest context-mode@latest
 
 # Sync MCP server definitions into each configured harness.
 sync-mcp-configs *args:

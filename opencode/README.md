@@ -44,6 +44,8 @@ owning subtrees instead of adding new root clutter.
 
 ### Canonical Pathways
 
+- `just install-plugins`
+
 - `just build`
 
 - `just build-agents`
@@ -55,6 +57,17 @@ owning subtrees instead of adding new root clutter.
 - `just check-plugins`
 
 - `just opencode-harness run --help`
+
+### Plugin Installation
+
+`just install-plugins` installs the current plugin packages with Bun into
+`node_modules/`. The skeleton config selects their server entrypoint directories.
+PTY uses `opencode-pty/dist/src/v2` for the current OpenCode API.
+
+Run `just build-config` and `opencode reload` after changing the skeleton.
+OpenCode's embedded npm installer can hold startup while installing packages;
+[upstream issue 41934](https://github.com/anomalyco/opencode/issues/41934) tracks
+the unbounded install. Local plugin directories separate installation from startup.
 
 ### Layout
 

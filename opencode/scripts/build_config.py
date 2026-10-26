@@ -433,7 +433,7 @@ def validate_openai_compatible_provider(
         return None
 
     live_ids = {str(model.get("id", "")) for model in live_models if model.get("id")}
-    whitelist = set((provider_cfg.get("models") or {}).keys())
+    whitelist = set(provider_cfg.get("whitelist", provider_cfg.get("models", {})))
     blacklist = set(provider_cfg.get("blacklist") or [])
     return _diff_live_ids(provider_id, live_ids, whitelist, blacklist)
 
@@ -458,7 +458,7 @@ def validate_google_provider(
         )
         return None
 
-    whitelist = set((provider_cfg.get("models") or {}).keys())
+    whitelist = set(provider_cfg.get("whitelist", provider_cfg.get("models", {})))
     blacklist = set(provider_cfg.get("blacklist") or [])
     return _diff_live_ids(provider_id, live_ids, whitelist, blacklist)
 
@@ -475,7 +475,7 @@ def show_provider_partition_diff(
             "for whitelist/blacklist partitioning."
         )
 
-    whitelist = set((provider_cfg.get("models") or {}).keys())
+    whitelist = set(provider_cfg.get("whitelist", provider_cfg.get("models", {})))
     blacklist = set(provider_cfg.get("blacklist") or [])
     overlap = sorted(whitelist & blacklist)
     if overlap:
@@ -526,7 +526,7 @@ def validate_openrouter(config: dict[str, Any]) -> list[str]:
         logger.warning("[yellow]%s[/yellow]", message, extra={"markup": True})
         return issues
 
-    whitelist = set((provider_cfg.get("models") or {}).keys())
+    whitelist = set(provider_cfg.get("whitelist", provider_cfg.get("models", {})))
     blacklist_raw = provider_cfg.get("blacklist", [])
     blacklist = set(blacklist_raw) if isinstance(blacklist_raw, list) else set()
 
