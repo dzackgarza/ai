@@ -38,7 +38,6 @@ ask rather than defaulting to the heavy sweep.
 
 That skill owns the normal-form check: git root/freshness, GitHub public state
 (wiki, issue tree, sub-issues, milestones, PRs, and draft PR claim maps), durable state
-surface classification, SDL-MCP registration/indexing when available, repo instructions,
 `.agents/`, agent-memory binding and memory search, `justfile` shape, and
 `~/ai-review-ci` QC/hooks/CI wiring.
 
