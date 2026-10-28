@@ -143,12 +143,7 @@
       ]
     }
   },
-  "mcp": {
-    "sdl-mcp": {
-      "type": "remote",
-      "url": "http://127.0.0.1:39150/mcp"
-    }
-  },
+  "mcp": {},
   "default_agent": "Interactive",
   "compaction": {
     "reserved": 20000
@@ -160,4 +155,4 @@
     "@hueyexe/opencode-ensemble@0.13.3",
     "context-mode"
   ]
-}
+}\n
