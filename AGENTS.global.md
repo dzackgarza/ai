@@ -242,6 +242,12 @@ ai-review-ci red-commit --issue <owning-issue> -m "<message>"
 Diagnosis-only requests get a diagnosis, not a fix. A one-line defect whose cause the
 symptom names needs a grep and an edit, not a debugging protocol.
 
+An edit to an AGENTS file, prompt, skill, directive, or policy text is a source change.
+Verify it by its source semantics and its diff. It is not a behavioral regression, a test
+obligation, or a reason to open plan, issue, or PR work. The user owns interactive model
+behavior: models change, and they behave differently when evaluated. Use behavioral proof
+only for a user-scoped automation contract with a real observable boundary.
+
 ## Hard rules
 
 - **ALL AUTOFORMATTING IS ACCEPTED AND MANDATORY.** When a formatter, hook, or
