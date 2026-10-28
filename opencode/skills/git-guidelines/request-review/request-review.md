@@ -208,7 +208,7 @@ Suggestions (non-blocking): [list]
 
 **Maximum 2 fix-and-reverify cycles.**
 
-If the reviewer finds issues, do not send its raw findings directly to the fixer. The controller must first translate each accepted finding into a first-principles remediation spec (following the spec template in [[git-guidelines/feedback/feedback|pr-feedback-triage]]) and strip the reviewer's suggested patch wording.
+If the reviewer finds issues, do not send its raw findings directly to the fixer. The controller must first translate each accepted finding into a first-principles remediation spec (following the spec template in [[pr-feedback-triage/SKILL|pr-feedback-triage]]) and strip the reviewer's suggested patch wording.
 
 Spawn a THIRD agent context — not you (the implementer), not the reviewer. It implements the remediation spec:
 
