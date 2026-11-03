@@ -195,8 +195,9 @@ with nothing about the person, the tone, or the wording.
   exists. Flat over nested; early returns; names for what things mean.
 - Fix root causes. Before editing, ask whether a more foundational system should change.
 - No debris: no temp files, dead code, commented-out blocks, or orphaned experiments.
-- Tests assert intended end-to-end behaviour. Never write a test that guards against a
-  past mistake. A test suite over five minutes is a defect.
+- Tests assert intended end-to-end behaviour. Regression tests preserve that behaviour
+  by detecting reported defects through the real affected path. A test suite over five
+  minutes is a defect.
 - Mathematical code is accepted by true assertions about the mathematics it implements,
   stated at the owner of each operation. "Integration tests", "engineering integration"
   and acceptance by a consumer, port or migration contract do not apply to it: a
@@ -265,15 +266,47 @@ own references are progressive disclosure, not new triggers.
 
 ## Bugs
 
-A reproducible regression starts with a committed red test that fails because of the
-real bug. When a hook rejects the red proof, use the sanctioned route:
+The first step for **every user-reported bug or unwanted behaviour is reproduction**.
+Accept the user's reported observation as the starting fact. Reproduction is the work
+of capturing that observation in an executable regression test, not a challenge to
+whether the user experienced it. Distinguish the observed behaviour from any proposed
+explanation of its cause.
+
+Before changing the implementation:
+
+1. Reproduce the reported workflow and conditions on the existing implementation.
+   Inspect the environment and code as needed to make that reproduction faithful.
+2. Turn the reproduction into a regression test that asserts the intended behaviour
+   through the affected application path. An existing test qualifies only if it
+   actually reproduces this report.
+3. Run the test against the unfixed implementation and inspect its failure. The
+   failure must demonstrate the reported defect: identify the expected behaviour,
+   the observed result, and the assertion connecting them. A deliberate failure,
+   unrelated exception, broken fixture, missing dependency, or mock that supplies
+   the defect does not establish this. If a crash is the reported defect, reproduce
+   that specific crash through the reported workflow.
+4. Commit the meaningful failing test before introducing the fix.
+
+Only after this red proof may implementation changes begin. Then rerun the same
+regression test and establish that the fix makes it pass without weakening its
+assertions, bypassing the affected path, or changing the expected behaviour to match
+the defect. Keep the test as regression coverage. A passing test written only after
+the fix does not establish that it could catch the original problem.
+
+This order applies even when the cause seems obvious or the patch is a single line.
+If reproduction is not yet reliable, continue investigating the conditions; do not
+patch speculatively or advance to a claim of repair. Request only genuinely missing
+information needed to reproduce the observation. A test that fails for an irrelevant
+reason is not progress toward this obligation and cannot authorize a fix.
+
+When a hook rejects the committed red proof, use the sanctioned route:
 
 ```bash
 ai-review-ci red-commit --issue <owning-issue> -m "<message>"
 ```
 
-Diagnosis-only requests get a diagnosis, not a fix. A one-line defect whose cause the
-symptom names needs a grep and an edit, not a debugging protocol.
+Diagnosis-only requests follow reproduction and stop at the diagnosis; they do not
+authorize an implementation fix.
 
 An edit to an AGENTS file, prompt, skill, directive, or policy text is a source change.
 Verify it by its source semantics and its diff. It is not a behavioral regression, a test
