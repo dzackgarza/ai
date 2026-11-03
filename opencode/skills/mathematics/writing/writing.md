@@ -4,6 +4,13 @@ description: Use when producing mathematical content, proofs, problem solutions,
 ---
 # Dzack Mathematical Writing
 
+When editing an existing manuscript, load
+[[research-writing/revision/revision|scholarly paper revision]]. Preserve its notation,
+proof style, macro setup, and genre unless the requested change requires otherwise;
+the defaults below do not authorize a conversion. Check exposition with
+[[llm-failure-modes/scholarly-prose|scholarly prose patterns]], preserving precise
+mathematical language and the qualifications on every claim.
+
 ## Philosophy
 
 Mathematical writing is the economical, logically organized presentation of

@@ -73,6 +73,15 @@ Alphabetical reference for usage questions
 
 ## Additional Principles
 
+### Preserve meaning and voice
+
+Apply the economy and authorial-voice principles associated with William Zinsser's
+*On Writing Well*: remove clutter while retaining the author's register and exact
+meaning. Use [[llm-failure-modes/scholarly-prose|scholarly prose patterns]] for a
+contextual editorial pass. Demonstrate redundancy, vagueness, or overstatement before
+changing a rhetorical construction. Useful contrast, parallelism, and precise
+technical terms take precedence over mechanical simplification.
+
 ### Avoid Pseudo-Explanation
 
 - **Explain, don't gesture.** Replace pseudo-explanatory verbs ("governed by", "driven by", "determined by") with the actual relation: a theorem, mechanism, mapping, or dependency.

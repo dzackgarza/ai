@@ -4,6 +4,11 @@ description: "Use when writing or editing prose. Routes by audience and purpose.
 ---
 # Writing
 
+For an existing scholarly manuscript, use
+[[research-writing/revision/revision|scholarly paper revision]]. For a prose style
+pass, use [[llm-failure-modes/scholarly-prose|scholarly prose patterns]] to distinguish
+an evidenced editorial defect from a useful rhetorical or technical construction.
+
 - [[writing/documentation/documentation|documentation]] — technical documentation and runbooks.
 - [[writing/agent-audiences/agent-audiences|agent audiences]] — prompts, instructions, and skill bodies.
 - [[writing/clarity/clarity|clarity]] — concise, readable prose.

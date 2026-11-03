@@ -4,6 +4,13 @@ description: Use when combining multiple sources into a single evidence-linked s
 ---
 # Research Synthesis Workflow
 
+When sources are being integrated into an existing manuscript, load
+[[research-writing/revision/revision|scholarly paper revision]] for full-text checks,
+notation translation, attribution, and project preservation. Keep cited findings,
+illustrative calculations, and new contributions distinct. Use
+[[llm-failure-modes/scholarly-prose|scholarly prose patterns]] to check unsupported
+authority, exaggerated significance, and prose that hides qualifications.
+
 ## Synthesis Gates (not checklists)
 
 Before producing output, answer each gate. If you cannot answer a gate, you have not

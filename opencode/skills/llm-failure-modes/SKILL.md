@@ -87,6 +87,11 @@ Load the relevant section for your context:
 
 ### Testing, Review, and Code Quality
 
+- **Scholarly prose and editorial overcorrection (`PROSE`)** —
+  [scholarly-prose.md](scholarly-prose.md). Passage-based recognition of rhetorical
+  repetition, invented drama, unsupported authority, and semantic loss in rewrites;
+  includes repairs and non-trigger examples for writing and slop reviews.
+
 - **Testing and verification failures** — [testing-failures.md](testing-failures.md)
   Content-free verification, tautological testing, instrumental deception, test-cheat
   escalation ladder (7 sub-tactics).
