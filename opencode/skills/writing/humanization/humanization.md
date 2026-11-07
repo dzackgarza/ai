@@ -358,6 +358,12 @@ wasted motion” tacked onto the end of a sentence instead of written as a real 
 
 **Problem:** LLMs force ideas into groups of three to appear comprehensive.
 
+Apply the [[writing/technical-copy/technical-copy#lists-that-replace-explanation|policy on lists that replace explanation]].
+Inspect longer comma-separated catalogues and sentences containing several lists,
+as well as repeated triads. Require a specific missing relation or redundancy;
+an exact enumeration is not a defect. Varying the number of items or turning them
+into bullets does not supply an explanation.
+
 **Before:**
 > The event features keynote sessions, panel discussions, and networking opportunities.
 > Attendees can expect innovation, inspiration, and industry insights.

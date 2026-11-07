@@ -92,6 +92,11 @@ technical terms take precedence over mechanical simplification.
 
 ### Distinguish Description from Performance
 
+Apply the [[writing/technical-copy/technical-copy#lists-that-replace-explanation|policy on lists that replace explanation]]
+to comma-separated catalogues and repeated lists embedded in sentences. Identify
+the missing relation or redundant terms before revising. Preserve useful
+enumerations; repair the reasoning rather than merely changing punctuation.
+
 Writing that performs the appearance of explanation without explaining anything is slop. Prefer concrete statements about objects, maps, constraints, and evidence over scholarly-sounding filler.
 
 ## Bottom Line

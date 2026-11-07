@@ -70,6 +70,48 @@ repair sentences that fail to communicate.
 and show how pieces connect. Prefer concrete statements over scholarly-sounding filler.
 If a sentence adds nothing to what follows, delete it.
 
+## Lists that replace explanation
+
+**Pattern.** A sentence accumulates related terms instead of making a developed
+claim. Inspect long comma-separated catalogues, repeated three-item lists, multiple
+lists inside one sentence, and strings of near-synonymous adjectives or verbs.
+Also inspect prose made by removing the bullets from a list: punctuation changes
+do not supply the missing argument.
+
+**Policy.** Before shipping a passage with these forms, identify what each item
+contributes and what relation the sentence asserts. Revise when the passage:
+
+- Names topics but leaves their relevance or connection unstated.
+- Piles up overlapping terms without distinguishing their meanings.
+- Places causes, actions, and outcomes on the same level without explaining their
+  dependence.
+- Uses repeated list shapes to imply breadth or completeness without supporting it.
+
+The defect is the missing relation or redundant content, not a comma count. Keep
+an enumeration when its members are the information the reader needs: an exact
+set of supported formats, required inputs, or separately actionable steps. Keep
+technical distinctions and qualifications even when they make the list longer.
+
+**Repair.** State the main claim, then explain the relevant dependency or distinction
+in connected sentences. Remove redundant terms. Use bullets for independent items
+that readers must act on, and a table for comparisons. Moving an unexplained
+catalogue into bullets does not repair an explanation. Changing the list length
+or swapping commas for semicolons does not repair it either. Do not invent a
+causal connection to make the rewrite flow; check the source or state the gap.
+
+**Example.** Suppose the source establishes that a cache avoids repeated downloads
+and reduces waiting time. “The cache improves speed, efficiency, responsiveness,
+performance, and productivity” blurs one supported effect into several claims.
+Write: “The cache avoids repeated downloads, so users spend less time waiting.”
+By contrast, “The importer accepts CSV, TSV, and JSON” gives an exact supported set
+and needs no expansion when the source confirms it.
+
+**Editorial evidence.** [Vivian Delchamps Wolf's writing concerns](https://medium.com/@vivianwolf530/dr-wolfs-chatgpt-writing-concerns-97cb0444dc2f)
+criticize listing ideas in place of developing a claim.
+[A writer's observations on r/ChatGPT](https://www.reddit.com/r/ChatGPT/comments/1nifbgo/how_to_spot_ai_content_manually_every_time_a/)
+specifically identify long comma-separated lists inside sentences. These observations
+motivate inspection; they do not establish AI authorship of an individual passage.
+
 ## Dense clause-stacked prose with no recoverable subject
 
 **Pattern.** Sentences that chain qualifications, appositives, and conditionals until the
