@@ -5,7 +5,7 @@ description: "Use when writing or editing prose. Routes by audience and purpose.
 # Writing
 
 For lists embedded in prose, apply
-[[writing/technical-copy/technical-copy#lists-that-replace-explanation|the policy on lists that replace explanation]].
+[[writing/technical-copy/technical-copy#lists-that-replace-explanation|COPY003: lists that replace explanation]].
 Check whether the passage states how its terms relate or merely accumulates them.
 
 For an existing scholarly manuscript, use

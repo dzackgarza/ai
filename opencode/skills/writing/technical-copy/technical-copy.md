@@ -13,8 +13,13 @@ For prose voice in general — promotional language, weasel attribution, signifi
 inflation, sycophantic tone — see [[writing/humanization/humanization|humanization]].
 
 Each section is the situation, the authority that treats it, and the house rule.
+Each policy has a stable alphanumeric ID. Cite that ID when identifying a violation
+or prescribing a repair. Keep IDs unchanged when sections move; never reuse an ID
+for a different rule.
 
 ## The reader has two axes, and they are independent
+
+**Policy ID: `COPY001`**
 
 Almost every failure below is one failure upstream: writing without a model of who is
 reading. The model collapses two separate facts about the reader into one dial and then
@@ -59,6 +64,8 @@ for that reader.
 
 ## Explain, don't perform explanation
 
+**Policy ID: `COPY002`**
+
 **Pattern.** Technical prose that gestures at explanation without actually explaining.
 Pseudo-explanatory verbs ("governed by", "driven by", "determined by") with no specified
 mechanism; manufactured scholarly phrasing ("a small stock of", "a family of") that
@@ -71,6 +78,8 @@ and show how pieces connect. Prefer concrete statements over scholarly-sounding 
 If a sentence adds nothing to what follows, delete it.
 
 ## Lists that replace explanation
+
+**Policy ID: `COPY003`**
 
 **Pattern.** A sentence accumulates related terms instead of making a developed
 claim. Inspect long comma-separated catalogues, repeated three-item lists, multiple
@@ -114,6 +123,8 @@ motivate inspection; they do not establish AI authorship of an individual passag
 
 ## Dense clause-stacked prose with no recoverable subject
 
+**Policy ID: `COPY004`**
+
 **Pattern.** Sentences that chain qualifications, appositives, and conditionals until the
 actor and the action are gone; agent-invented nouns doing the work of verbs; referents
 that resolve only inside the writing session. The reliable symptom is that the reader
@@ -135,6 +146,8 @@ noun traces to the user's message, a repository document, or a cited source.
 
 ## The point arrives late, or not at all
 
+**Policy ID: `COPY005`**
+
 **Pattern.** The finding is in paragraph four, under the setup. A report opens with what
 was attempted rather than what is true now.
 
@@ -150,6 +163,8 @@ the report contract.
 
 ## Statistics written as a sentence
 
+**Policy ID: `COPY006`**
+
 **Pattern.** Counts strung into prose — so many formalizations, so many packages, so many
 libraries — which is unreadable, unscannable, and impossible to compare.
 
@@ -164,6 +179,8 @@ is computed at build time or served as data, never typed into prose where it is 
 next day.
 
 ## Self-announcing copy
+
+**Policy ID: `COPY007`**
 
 **Pattern.** Copy that asserts its own properties instead of carrying content. Measured
 over the session store it is rare in agent output — roughly 0.2% of substantive assistant
@@ -209,6 +226,8 @@ decisions; do not announce yourself.
 
 ## Denying a property nobody claimed
 
+**Policy ID: `COPY008`**
+
 **Pattern.** A claim made by rejecting a position no one holds: "this is not decorative",
 "not merely a wrapper", "not a stylistic choice", "this isn't just about performance",
 "far from trivial", "no accident that". The negative parallelism in
@@ -232,6 +251,8 @@ entry, including why the standard literature has positive instruments for every 
 gestures at: `mathematics/writing/references/exposition-style.md`.
 
 ## The autobiographical register
+
+**Policy ID: `COPY009`**
 
 **Pattern.** Writing about yourself as a character in the work. Its most persistent form
 is confession performed as wit: *I also did the thing I spent this morning writing rules
@@ -260,6 +281,8 @@ report.
 
 ## Copy that describes the work instead of the result
 
+**Policy ID: `COPY010`**
+
 **Pattern.** Recounting what was tried, what failed, how many rounds it took, what was
 ruled out, or what was deliberately not done — in a reply, a commit body, a PR
 description, or a document. The negative-space variant is its own failure: writing "this
@@ -273,6 +296,8 @@ seventeen shapes, and the signal-against-noise test are in
 
 ## Agreement in place of work
 
+**Policy ID: `COPY011`**
+
 **Pattern.** "Understood." "You're right." A restatement of the user's point as the whole
 response. A claim to have learned or internalized something.
 
@@ -282,6 +307,8 @@ edit. Agreement is also not a correction: renaming a thing to be "more honest" w
 defect stands is laundering, which [[fixing-slop/SKILL|fixing-slop]] owns.
 
 ## Prose that contradicts the code it documents
+
+**Policy ID: `COPY012`**
 
 **Pattern.** A docstring or comment stating the correct definition while the
 implementation does something else; prose pinned to a transient state ("currently three
@@ -300,6 +327,8 @@ current error count or build state. Every named entity carries a link to its def
 
 ## User-facing strings
 
+**Policy ID: `COPY013`**
+
 **Pattern.** An error or fallback message that narrates an internal decision, apologizes,
 or announces a state that should be impossible; a product description opening with the
 runtime, the build tool, and the internal architecture.
@@ -316,6 +345,8 @@ prose and a fallback path — see the bridge-burning policies in
 vocabulary; internal implementation choices are not the product.
 
 ## Copy written from inside the session
+
+**Policy ID: `COPY014`**
 
 **Pattern.** A report, handoff, or subagent prompt that only parses if the reader holds
 your context — internal identifiers, plan-row labels, unexpanded acronyms, references to

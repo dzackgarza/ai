@@ -92,7 +92,7 @@ technical terms take precedence over mechanical simplification.
 
 ### Distinguish Description from Performance
 
-Apply the [[writing/technical-copy/technical-copy#lists-that-replace-explanation|policy on lists that replace explanation]]
+Apply [[writing/technical-copy/technical-copy#lists-that-replace-explanation|COPY003: lists that replace explanation]]
 to comma-separated catalogues and repeated lists embedded in sentences. Identify
 the missing relation or redundant terms before revising. Preserve useful
 enumerations; repair the reasoning rather than merely changing punctuation.
