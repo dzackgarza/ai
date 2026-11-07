@@ -4,6 +4,37 @@ description: Use when creating, editing, reviewing, or evaluating any prose cons
 ---
 # Writing Documentation for LLMs
 
+## Policy index
+
+Cite the policy ID with the affected passage. IDs remain stable when sections move.
+The linked section owns the rule; examples illustrate its application.
+
+| Policy ID | Rule |
+| --- | --- |
+| `AGENT001` | [Assume reasoning capacity; verify applied understanding](#assume-reasoning-capacity-verify-applied-understanding) |
+| `AGENT002` | [Meta-Commentary and Framing](#meta-commentary-and-framing) |
+| `AGENT003` | [Theory-of-Mind Gap: Don’t Write Instructions the Agent Can’t Act On](#theory-of-mind-gap-dont-write-instructions-the-agent-cant-act-on) |
+| `AGENT004` | [Test across models](#test-across-models) |
+| `AGENT005` | [Distill Evaluations Into Task Rules](#distill-evaluations-into-task-rules) |
+| `AGENT006` | [Mine Correction Sequences for Reset Gates](#mine-correction-sequences-for-reset-gates) |
+| `AGENT007` | [Organize like a table of contents](#organize-like-a-table-of-contents) |
+| `AGENT008` | [Table of contents for long files](#table-of-contents-for-long-files) |
+| `AGENT009` | [Consistent terminology](#consistent-terminology) |
+| `AGENT010` | [Descriptions: what + when](#descriptions-what--when) |
+| `AGENT011` | [Examples over explanations](#examples-over-explanations) |
+| `AGENT012` | [Workflows with clear steps](#workflows-with-clear-steps) |
+| `AGENT013` | [Feedback loops for critical tasks](#feedback-loops-for-critical-tasks) |
+| `AGENT014` | [Conditional workflows](#conditional-workflows) |
+| `AGENT015` | [Verifiable intermediate outputs](#verifiable-intermediate-outputs) |
+| `AGENT016` | [Avoid time-sensitive information](#avoid-time-sensitive-information) |
+| `AGENT017` | [Too many options](#too-many-options) |
+| `AGENT018` | [Deeply nested references](#deeply-nested-references) |
+| `AGENT019` | [Vague trigger terms](#vague-trigger-terms) |
+| `AGENT020` | [Windows-style paths](#windows-style-paths) |
+| `AGENT021` | [Create evaluations first](#create-evaluations-first) |
+| `AGENT022` | [Separate Worker Concerns from Orchestrator Concerns](#separate-worker-concerns-from-orchestrator-concerns) |
+| `AGENT023` | [Develop iteratively with Claude](#develop-iteratively-with-claude) |
+
 > Guidance for creating effective documentation and instructions that LLMs can discover,
 > understand, and use successfully.
 
@@ -24,6 +55,8 @@ description: Use when creating, editing, reviewing, or evaluating any prose cons
 ## Core Principles
 
 ### Assume reasoning capacity; verify applied understanding
+
+**Policy ID: `AGENT001`**
 
 The LLM can reason, but a correct explanation does not establish that it will apply
 the distinction while working. Teach a distinction when observed work shows that it
@@ -57,6 +90,8 @@ with pdfplumber.open("file.pdf") as pdf:
 
 ### Meta-Commentary and Framing
 
+**Policy ID: `AGENT002`**
+
 **Rule:** Meta-commentary belongs *only* in skills where the task is explicitly meta.
 Otherwise, the skill should be purely prescriptive.
 
@@ -86,6 +121,8 @@ when compressing it would recreate a subjective escape hatch. A slogan such as �
 objective triggers” is not a substitute for the causal model that makes the rule usable.
 
 ### Theory-of-Mind Gap: Don’t Write Instructions the Agent Can’t Act On
+
+**Policy ID: `AGENT003`**
 
 The most dangerous skill-writing mistake is writing instructions that assume the agent
 has self-awareness about its own failure modes.
@@ -138,10 +175,14 @@ demonstrates this combination of teaching, acceptance rules, and bounded repair.
 
 ### Test across models
 
+**Policy ID: `AGENT004`**
+
 Effectiveness varies by model.
 Skills that work for Claude Opus may need more detail for Claude Haiku.
 
 ### Distill Evaluations Into Task Rules
+
+**Policy ID: `AGENT005`**
 
 Use observed agent failures to improve instructions, but translate them into the
 worker’s normal task language.
@@ -171,6 +212,8 @@ gameable. Endpoint wording without that explanation cannot guide the next design
 
 ### Mine Correction Sequences for Reset Gates
 
+**Policy ID: `AGENT006`**
+
 A long correction sequence is stronger evidence than a single bad answer. Do not distill
 it as "avoid X" for each corrected detail. First map the sequence:
 
@@ -195,6 +238,8 @@ convert contradictions into small procedural omissions.
 ## Structure & Progressive Disclosure
 
 ### Organize like a table of contents
+
+**Policy ID: `AGENT007`**
 
 Main file provides overview and points to detailed materials.
 LLM reads additional files only when needed.
@@ -222,6 +267,8 @@ my-doc/
 
 ### Table of contents for long files
 
+**Policy ID: `AGENT008`**
+
 For any file over 100 lines, include a TOC at the top so LLM sees full scope:
 
 ```markdown
@@ -234,6 +281,8 @@ For any file over 100 lines, include a TOC at the top so LLM sees full scope:
 ```
 
 ### Consistent terminology
+
+**Policy ID: `AGENT009`**
 
 Choose one term per concept and use it throughout:
 
@@ -248,6 +297,8 @@ Choose one term per concept and use it throughout:
 ## Content Patterns
 
 ### Descriptions: what + when
+
+**Policy ID: `AGENT010`**
 
 Enable discovery with concrete descriptions:
 
@@ -270,6 +321,8 @@ Helps with documents
 
 ### Examples over explanations
 
+**Policy ID: `AGENT011`**
+
 Show concrete input/output before abstract descriptions:
 
 ```markdown
@@ -287,6 +340,8 @@ Add login endpoint and token validation middleware
 
 ### Workflows with clear steps
 
+**Policy ID: `AGENT012`**
+
 Break complex operations into sequential steps:
 
 ```markdown
@@ -301,6 +356,8 @@ Task Progress:
 ```
 
 ### Feedback loops for critical tasks
+
+**Policy ID: `AGENT013`**
 
 Use validators for quality-critical work:
 
@@ -318,6 +375,8 @@ Use validators for quality-critical work:
 ```
 
 ### Conditional workflows
+
+**Policy ID: `AGENT014`**
 
 Guide the LLM through decision points:
 
@@ -341,6 +400,8 @@ Guide the LLM through decision points:
 
 ### Verifiable intermediate outputs
 
+**Policy ID: `AGENT015`**
+
 For complex tasks, create verifiable intermediate formats:
 
 ```markdown
@@ -353,6 +414,8 @@ For complex tasks, create verifiable intermediate formats:
 ```
 
 ### Avoid time-sensitive information
+
+**Policy ID: `AGENT016`**
 
 Use “old patterns” sections for deprecated approaches:
 
@@ -375,6 +438,8 @@ The v1 API used: `api.example.com/v1/messages`
 
 ### Too many options
 
+**Policy ID: `AGENT017`**
+
 Don’t present multiple approaches unless necessary.
 
 **Bad**:
@@ -393,10 +458,14 @@ For scanned PDFs requiring OCR, use pdf2image with pytesseract.
 
 ### Deeply nested references
 
+**Policy ID: `AGENT018`**
+
 Keep references one level deep.
 Nested chains (file A → file B → file C) cause partial reads and missed context.
 
 ### Vague trigger terms
+
+**Policy ID: `AGENT019`**
 
 Be specific in descriptions for discovery:
 
@@ -406,6 +475,8 @@ Be specific in descriptions for discovery:
 `Analyze Excel spreadsheets, generate pivot tables, create charts. Use when working with Excel files, spreadsheets, or .xlsx files.`
 
 ### Windows-style paths
+
+**Policy ID: `AGENT020`**
 
 Always use forward slashes (Unix style):
 
@@ -418,6 +489,8 @@ Always use forward slashes (Unix style):
 ## Testing & Iteration
 
 ### Create evaluations first
+
+**Policy ID: `AGENT021`**
 
 Before writing extensive documentation:
 
@@ -443,6 +516,8 @@ source selection, implementation, reuse, or closure decisions over time. Passing
 short exercise or strengthening instruction wording cannot establish those claims.
 
 ### Separate Worker Concerns from Orchestrator Concerns
+
+**Policy ID: `AGENT022`**
 
 When writing agent-facing guidance, distinguish clearly:
 
@@ -480,6 +555,8 @@ Rule: If your skill mentions the harness, runner, or execution wrapper, you are
 contaminating worker guidance with orchestrator concerns.
 
 ### Develop iteratively with Claude
+
+**Policy ID: `AGENT023`**
 
 1. Complete a task with Claude without docs
 

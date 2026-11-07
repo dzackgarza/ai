@@ -5,6 +5,70 @@ description: Use when writing, reviewing, or improving technical documentation, 
 
 # Writing Documentation
 
+## Policy index
+
+Cite the policy ID with the affected passage. IDs remain stable when sections move.
+The linked section owns the rule; examples illustrate its application.
+
+| Policy ID | Rule |
+| --- | --- |
+| `DOC001` | [Required References](#required-references) |
+| `DOC002` | [Core Policy](#core-policy) |
+| `DOC003` | [Documentation Workflow](#documentation-workflow) |
+| `DOC004` | [Concision Rule](#concision-rule) |
+| `DOC005` | [One Source Of Truth](#one-source-of-truth) |
+| `DOC006` | [Type Routing](#type-routing) |
+| `DOC007` | [Validation Checklist](#validation-checklist) |
+| `DOC008` | [Anti-Patterns](#anti-patterns) |
+| `DOC009` | [README Purpose](#readme-purpose) |
+| `DOC010` | [Structure](#structure) |
+| `DOC011` | [OSOT For READMEs](#osot-for-readmes) |
+| `DOC012` | [What To Remove](#what-to-remove) |
+| `DOC013` | [Public/Private Boundary Gate](#publicprivate-boundary-gate) |
+| `DOC014` | [Evidence Rules](#evidence-rules) |
+| `DOC015` | [Surprises To Surface](#surprises-to-surface) |
+| `DOC016` | [README Review Gate](#readme-review-gate) |
+| `DOC017` | [Anti-Slop Rejection Patterns](#anti-slopskillanti-slop-rejection-patterns) |
+| `DOC018` | [Core Policy](#core-policy-1) |
+| `DOC019` | [Structural Requirements](#structural-requirements) |
+| `DOC020` | [Marketing Language](#marketing-language) |
+| `DOC021` | [Feature Counts as Flex](#feature-counts-as-flex) |
+| `DOC022` | [Vague Claims](#vague-claims) |
+| `DOC023` | [Pseudo-Explanation and Semantic Vacuity](#pseudo-explanation-and-semantic-vacuity) |
+| `DOC024` | [Badge Spam](#badge-spam) |
+| `DOC025` | [Slop Phrases](#slop-phrases) |
+| `DOC026` | [Corporate Jargon](#corporate-jargon) |
+| `DOC027` | [First-Person Narration](#first-person-narration) |
+| `DOC028` | [Acknowledgment Sections](#acknowledgment-sections) |
+| `DOC029` | [The Reader Is Not You](#the-reader-is-not-you) |
+| `DOC030` | [The README Is an Information Document, Not a Persuasive Piece](#the-readme-is-an-information-document-not-a-persuasive-piece) |
+| `DOC031` | [Agents Will Eat Your Slop](#agents-will-eat-your-slop) |
+| `DOC032` | [The Reader Needs Boundaries, Not Claims](#the-reader-needs-boundaries-not-claims) |
+| `DOC033` | [Minimize Surprises](#minimize-surprises) |
+| `DOC034` | [One Source of Truth](#one-source-of-truth-1) |
+| `DOC035` | [State What It Does, Not What It Claims](#state-what-it-does-not-what-it-claims) |
+| `DOC036` | [Use Tables for Data, Not Decoration](#use-tables-for-data-not-decoration) |
+| `DOC037` | [Progressive Disclosure](#progressive-disclosure) |
+| `DOC038` | [Answer the Obvious Questions](#answer-the-obvious-questions) |
+| `DOC039` | [Lists Are for Delineation, Not Bragging](#lists-are-for-delineation-not-bragging) |
+| `DOC040` | [The Agent Amplification Loop](#the-agent-amplification-loop) |
+| `DOC041` | [1. Feature Enumeration as Architecture](#1-feature-enumeration-as-architecture) |
+| `DOC042` | [2. Benchmarks Without Context](#2-benchmarks-without-context) |
+| `DOC043` | [3. Development Narrative as Contribution](#3-development-narrative-as-contribution) |
+| `DOC044` | [4. Editorializing Results](#4-editorializing-results) |
+| `DOC045` | [5. Taglines Instead of Integration](#5-taglines-instead-of-integration) |
+| `DOC046` | [6. Jargon That Self-References](#6-jargon-that-self-references) |
+| `DOC047` | [7. Vague Quantification](#7-vague-quantification) |
+| `DOC048` | [8. Emoji Section Headers](#8-emoji-section-headers) |
+| `DOC049` | [9. The "Fits Together" Section That Doesn't Explain Integration](#9-the-fits-together-section-that-doesnt-explain-integration) |
+| `DOC050` | [10. Selling the Feature List](#10-selling-the-feature-list) |
+| `DOC051` | [The "Everything README"](#the-everything-readme) |
+| `DOC052` | [The "Nothing README"](#the-nothing-readme) |
+| `DOC053` | [The "Testimonial README"](#the-testimonial-readme) |
+| `DOC054` | [The "Comparison README"](#the-comparison-readme) |
+| `DOC055` | [The "Philosophy README"](#the-philosophy-readme) |
+| `DOC056` | [README Validation Checklist](#readme-validation-checklist) |
+
 Write documentation that lets its intended reader decide, install, use, verify,
 debug, or extend the thing being documented.
 
@@ -14,6 +78,8 @@ every document; the **Writing READMEs** section at the end carries the README-sp
 acceptance contract and [[anti-slop/SKILL|anti-slop]] patterns.
 
 ## Required References
+
+**Policy ID: `DOC001`**
 
 Load references only as needed for the current documentation type:
 
@@ -26,6 +92,8 @@ Load references only as needed for the current documentation type:
   needs before/after patterns.
 
 ## Core Policy
+
+**Policy ID: `DOC002`**
 
 - Start from the reader's task, not from the repository's internal structure.
 - Preserve every fact the reader needs to succeed.
@@ -46,6 +114,8 @@ Load references only as needed for the current documentation type:
   consumer documentation.
 
 ## Documentation Workflow
+
+**Policy ID: `DOC003`**
 
 Before writing or rewriting:
 
@@ -84,6 +154,8 @@ When reviewing:
 
 ## Concision Rule
 
+**Policy ID: `DOC004`**
+
 Omit needless words, not needed information.
 
 Delete:
@@ -107,6 +179,8 @@ Keep or add:
 
 ## One Source Of Truth
 
+**Policy ID: `DOC005`**
+
 Documentation should point at canonical sources instead of cloning them.
 
 Use this rule:
@@ -124,6 +198,8 @@ Do not use OSOT as an excuse to omit the minimum usable path.
 
 ## Type Routing
 
+**Policy ID: `DOC006`**
+
 - README: project entry point for evaluation, installation, first use, and
   links to deeper docs. See the **Writing READMEs** section below for the full
   README acceptance contract.
@@ -140,6 +216,8 @@ Do not use OSOT as an excuse to omit the minimum usable path.
 
 ## Validation Checklist
 
+**Policy ID: `DOC007`**
+
 - [ ] The target reader and reader task are clear.
 - [ ] The document type matches `reference/doc-types.md`.
 - [ ] Required prerequisites are stated before use.
@@ -154,6 +232,8 @@ Do not use OSOT as an excuse to omit the minimum usable path.
 - [ ] Prose follows `reference/strunk-white-principles.md`.
 
 ## Anti-Patterns
+
+**Policy ID: `DOC008`**
 
 | Pattern | Why it fails | Do instead |
 | --- | --- | --- |
@@ -181,6 +261,8 @@ after identifying the consumer path and the canonical sources that should be lin
 than duplicated.
 ### README Purpose
 
+**Policy ID: `DOC009`**
+
 A README is the repository entry point for consumers and cloners.
 
 It must answer:
@@ -202,6 +284,8 @@ If a README cannot answer these, it has not done its job.
 
 ### Structure
 
+**Policy ID: `DOC010`**
+
 Use the README section in `reference/doc-types.md` as the source of truth.
 Adapt the order to the project, but preserve the reader path:
 
@@ -222,6 +306,8 @@ No section is mandatory by name.
 Every required reader question must still be answered somewhere.
 
 ### OSOT For READMEs
+
+**Policy ID: `DOC011`**
 
 Do not duplicate maintained reference material, but do not hide the first
 usable path behind a link.
@@ -252,6 +338,8 @@ Good OSOT: one runnable path in the README, then links to full references.
 
 ### What To Remove
 
+**Policy ID: `DOC012`**
+
 Delete content that does not help a consumer decide, install, use, verify, or
 understand boundaries:
 
@@ -271,6 +359,8 @@ paths, public modules, public configuration keys, endpoint paths, file formats,
 and documented state locations are consumer-facing facts.
 
 ### Public/Private Boundary Gate
+
+**Policy ID: `DOC013`**
 
 Before keeping README material, identify:
 
@@ -294,6 +384,8 @@ risk for the reader.
 
 ### Evidence Rules
 
+**Policy ID: `DOC014`**
+
 Every important claim needs evidence available to the reader.
 
 - Performance claims need benchmark name, baseline, conditions, and result.
@@ -309,6 +401,8 @@ link to the canonical evidence.
 
 ### Surprises To Surface
 
+**Policy ID: `DOC015`**
+
 State these before or near first use when they apply:
 
 - required accounts, keys, tokens, or paid APIs;
@@ -321,6 +415,8 @@ State these before or near first use when they apply:
 - experimental, archived, internal-only, or unmaintained status.
 
 ### README Review Gate
+
+**Policy ID: `DOC016`**
 
 Reject or rewrite a README when:
 
@@ -339,6 +435,8 @@ Reject or rewrite a README when:
 
 ### [[anti-slop/SKILL|Anti-Slop]] Rejection Patterns
 
+**Policy ID: `DOC017`**
+
 > [!IMPORTANT]
 > Any code, CLI examples, installation steps, or configuration options documented under this skill must adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] in `policy-index/SKILL.md`. These are non-negotiable hard constraints that eliminate runtime defaults, fallbacks, mocks, optional critical dependencies, and other agent validation-evasion pathways. Documented configuration options must represent a complete, fatal configuration regime rather than documenting default values or fallbacks in runtime logic.
 
@@ -346,6 +444,8 @@ Write READMEs that are honest, specific, and short.
 Every sentence must earn its place.
 
 ### Core Policy
+
+**Policy ID: `DOC018`**
 
 - A README answers: What is this?
   How do I use it?
@@ -357,6 +457,8 @@ Every sentence must earn its place.
 - If a sentence is true of any project, delete it.
 
 ### Structural Requirements
+
+**Policy ID: `DOC019`**
 
 A README needs at most these sections, in this order:
 
@@ -378,6 +480,8 @@ Everything else is optional and must justify its existence.
 ### What to Never Put in a README
 
 #### Marketing Language
+
+**Policy ID: `DOC020`**
 
 Delete every instance of:
 
@@ -409,6 +513,8 @@ Delete every instance of:
 
 #### Feature Counts as Flex
 
+**Policy ID: `DOC021`**
+
 Delete:
 
 - "50+ features"
@@ -423,6 +529,8 @@ If a number matters, explain why.
 
 #### Vague Claims
 
+**Policy ID: `DOC022`**
+
 Delete any sentence that could apply to any project:
 
 - "This project is designed to make your workflow easier"
@@ -436,6 +544,8 @@ Delete any sentence that could apply to any project:
 - "Community-driven"
 
 #### Pseudo-Explanation and Semantic Vacuity
+
+**Policy ID: `DOC023`**
 
 Delete sentences that perform the appearance of explanation without actually explaining anything. This is especially common in academic, mathematical, or technical exposition.
 
@@ -458,6 +568,8 @@ Examples:
 
 #### Badge Spam
 
+**Policy ID: `DOC024`**
+
 Badges are acceptable only if they answer a real question:
 
 - Build status (CI pass/fail) — useful
@@ -479,6 +591,8 @@ Rule: max 4 badges.
 If you need more, your README has a structural problem.
 
 #### Slop Phrases
+
+**Policy ID: `DOC025`**
 
 Delete on sight:
 
@@ -505,6 +619,8 @@ Delete on sight:
 
 #### Corporate Jargon
 
+**Policy ID: `DOC026`**
+
 Delete:
 
 - "leverage" → use
@@ -522,6 +638,8 @@ Delete:
 
 #### First-Person Narration
 
+**Policy ID: `DOC027`**
+
 Do not write:
 
 - "We built this because..."
@@ -535,6 +653,8 @@ The backstory is noise.
 
 #### Acknowledgment Sections
 
+**Policy ID: `DOC028`**
+
 Delete unless the project genuinely depends on specific upstream work:
 
 - "Thanks to all contributors"
@@ -546,6 +666,8 @@ Delete unless the project genuinely depends on specific upstream work:
 Write for the reader, not for yourself.
 
 #### The Reader Is Not You
+
+**Policy ID: `DOC029`**
 
 The reader does not know your internals.
 They do not know function names, variable names, module structure, or implementation strategy.
@@ -560,6 +682,8 @@ They are asking: "Is this the right tool for what I need?"
   "Powered by [library]" is noise unless the reader must configure that library.
 
 #### The README Is an Information Document, Not a Persuasive Piece
+
+**Policy ID: `DOC030`**
 
 The reader's question is: "Should I use this?"
 Not: "How impressive is this?"
@@ -584,6 +708,8 @@ If the README can't answer these, it's not a README — it's a brochure.
 
 #### Agents Will Eat Your Slop
 
+**Policy ID: `DOC031`**
+
 Many readers are AI agents.
 They read your README and regurgitate it.
 If your README says "a powerful, cutting-edge memory system with revolutionary compression-first philosophy," the agent will repeat that to its user.
@@ -607,6 +733,8 @@ Not: "This revolutionary system leverages cutting-edge compression-first philoso
 
 #### The Reader Needs Boundaries, Not Claims
 
+**Policy ID: `DOC032`**
+
 The reader does not need to be convinced.
 They need to know the boundary of what this thing does so they can decide if it fits their problem.
 
@@ -623,6 +751,8 @@ Claims without boundaries are useless.
 
 #### Minimize Surprises
 
+**Policy ID: `DOC033`**
+
 If the tool does something unexpected, say so upfront:
 
 - "This reads your browser cookies" — say it, don't hide it.
@@ -634,6 +764,8 @@ Surprises erode trust.
 Honesty builds it.
 
 #### One Source of Truth
+
+**Policy ID: `DOC034`**
 
 Do not duplicate information that lives elsewhere:
 
@@ -649,6 +781,8 @@ These are the things that make a README work.
 
 #### State What It Does, Not What It Claims
 
+**Policy ID: `DOC035`**
+
 Bad: "A powerful, modern tool for managing LLM usage across providers."
 Good: "Uniform quota collection and rendering for CLI- and API-backed LLM providers."
 
@@ -657,6 +791,8 @@ You know if it's relevant to you.
 No adjectives needed.
 
 #### Use Tables for Data, Not Decoration
+
+**Policy ID: `DOC036`**
 
 Tables are good when you have structured data to aggregate:
 
@@ -669,6 +805,8 @@ Tables are bad when they're just badge walls or feature lists with no real data.
 
 #### Progressive Disclosure
 
+**Policy ID: `DOC037`**
+
 Do not inline everything.
 Link to live sources that are always current:
 
@@ -678,6 +816,8 @@ Link to live sources that are always current:
 - A docs site or wiki instead of a 500-line README
 
 #### Answer the Obvious Questions
+
+**Policy ID: `DOC038`**
 
 If your tool does something surprising, explain it:
 
@@ -691,12 +831,16 @@ If your tool does something surprising, explain it:
 
 #### Lists Are for Delineation, Not Bragging
 
+**Policy ID: `DOC039`**
+
 A provider list answers: "Does this support what I use?"
 It is not an achievement.
 Do not enumerate unsupported things — that's implicit.
 Do not add checkmarks or emojis to make the list look impressive.
 
 #### The Agent Amplification Loop
+
+**Policy ID: `DOC040`**
 
 **Pattern:** Persuasive README slop gets regurgitated by agents as fact.
 
@@ -726,6 +870,8 @@ The pattern name, a concrete example, why it fails, and what to write instead.
 
 #### 1. Feature Enumeration as Architecture
 
+**Policy ID: `DOC041`**
+
 **Pattern:** Listing components as if naming them explains them.
 
 **Bad:**
@@ -741,6 +887,8 @@ It explains nothing.
 If the reader needs implementation details, link to architecture docs.
 
 #### 2. Benchmarks Without Context
+
+**Policy ID: `DOC042`**
 
 **Pattern:** Stating a number with no reference point.
 
@@ -762,6 +910,8 @@ If the benchmark is not widely known, explain what it measures.
 
 #### 3. Development Narrative as Contribution
 
+**Policy ID: `DOC043`**
+
 **Pattern:** The main selling point is how the system was built, not what it does.
 
 **Bad:**
@@ -775,6 +925,8 @@ The reader came to understand what this does for them, not how it was developed.
 If the build process is interesting, put it in a separate "Development" or "How This Was Built" section — but lead with the product.
 
 #### 4. Editorializing Results
+
+**Policy ID: `DOC044`**
 
 **Pattern:** Telling the reader what to think about your data.
 
@@ -791,6 +943,8 @@ This tells a story where the conclusion is predetermined: "look how well this wo
 
 #### 5. Taglines Instead of Integration
 
+**Policy ID: `DOC045`**
+
 **Pattern:** Replacing technical explanation with a product slogan.
 
 **Bad:**
@@ -805,6 +959,8 @@ This tells a story where the conclusion is predetermined: "look how well this wo
 > The multimodal backend is lazy-loaded only when non-text inputs are detected."
 
 #### 6. Jargon That Self-References
+
+**Policy ID: `DOC046`**
 
 **Pattern:** Naming components in a way that only makes sense if you already know the internals.
 
@@ -824,6 +980,8 @@ The reader has no entry point.
 
 #### 7. Vague Quantification
 
+**Policy ID: `DOC047`**
+
 **Pattern:** Approximate numbers that exist to sound precise without being accountable.
 
 **Bad:**
@@ -838,6 +996,8 @@ If you don't know the exact number, don't state it.
 
 #### 8. Emoji Section Headers
 
+**Policy ID: `DOC048`**
+
 **Pattern:** Using emoji to decorate section headers.
 
 **Bad:**
@@ -850,6 +1010,8 @@ Emoji headers signal "we're trying to make this feel exciting" rather than "we'r
 > "## Multimodal Memory" "## Self-Evolving Retrieval"
 
 #### 9. The "Fits Together" Section That Doesn't Explain Integration
+
+**Policy ID: `DOC049`**
 
 **Pattern:** A section titled "how they fit together" that contains a code snippet and a slogan.
 
@@ -875,6 +1037,8 @@ The reader knows what function to call but not what happens when they call it.
 
 #### 10. Selling the Feature List
 
+**Policy ID: `DOC050`**
+
 **Pattern:** Describing a system as a list of impressive-sounding capabilities without explaining what they do.
 
 **Bad:**
@@ -894,11 +1058,15 @@ Then, if the features matter, describe what each one does for the reader.
 
 #### The "Everything README"
 
+**Policy ID: `DOC051`**
+
 A README that includes: full API reference, architecture diagram, contributing guide, changelog, FAQ, comparison table, roadmap, and a blog post.
 Split it up.
 Link to separate docs.
 
 #### The "Nothing README"
+
+**Policy ID: `DOC052`**
 
 A README with: project name, one line of text, and a badge wall.
 No installation, no usage, no example.
@@ -906,10 +1074,14 @@ Worse than no README.
 
 #### The "Testimonial README"
 
+**Policy ID: `DOC053`**
+
 A README that quotes users saying how great the project is.
 This is marketing, not documentation.
 
 #### The "Comparison README"
+
+**Policy ID: `DOC054`**
 
 A README that spends 80% of its length comparing itself to competitors.
 State the difference in one sentence.
@@ -917,10 +1089,14 @@ Link to a detailed comparison doc if needed.
 
 #### The "Philosophy README"
 
+**Policy ID: `DOC055`**
+
 A README that opens with 500 words about why the author is dissatisfied with existing tools.
 Get to the point.
 
 ### README Validation Checklist
+
+**Policy ID: `DOC056`**
 
 - [ ] The general documentation workflow and Concision Rule above were followed.
 - [ ] `reference/doc-types.md` supplied the README structure.

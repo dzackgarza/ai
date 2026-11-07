@@ -4,6 +4,25 @@ description: Use when writing any copy this system ships or shows — status rep
 ---
 # Technical Copy
 
+## Policy index
+
+| Policy ID | Rule |
+| --- | --- |
+| `COPY001` | [The reader has two axes, and they are independent](#the-reader-has-two-axes-and-they-are-independent) |
+| `COPY002` | [Explain, don't perform explanation](#explain-dont-perform-explanation) |
+| `COPY003` | [Lists that replace explanation](#lists-that-replace-explanation) |
+| `COPY004` | [Dense clause-stacked prose with no recoverable subject](#dense-clause-stacked-prose-with-no-recoverable-subject) |
+| `COPY005` | [The point arrives late, or not at all](#the-point-arrives-late-or-not-at-all) |
+| `COPY006` | [Statistics written as a sentence](#statistics-written-as-a-sentence) |
+| `COPY007` | [Self-announcing copy](#self-announcing-copy) |
+| `COPY008` | [Denying a property nobody claimed](#denying-a-property-nobody-claimed) |
+| `COPY009` | [The autobiographical register](#the-autobiographical-register) |
+| `COPY010` | [Copy that describes the work instead of the result](#copy-that-describes-the-work-instead-of-the-result) |
+| `COPY011` | [Agreement in place of work](#agreement-in-place-of-work) |
+| `COPY012` | [Prose that contradicts the code it documents](#prose-that-contradicts-the-code-it-documents) |
+| `COPY013` | [User-facing strings](#user-facing-strings) |
+| `COPY014` | [Copy written from inside the session](#copy-written-from-inside-the-session) |
+
 This leaf covers copy this system ships or shows. Every pattern below was corrected
 repeatedly in these artifacts, and each one costs the reader something: copy that
 announces itself instead of informing, agrees instead of working, recounts the process
