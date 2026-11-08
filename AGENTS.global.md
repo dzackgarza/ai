@@ -53,6 +53,10 @@ When working in `/home/dzack/ai`:
   that is destructive or externally visible. A found problem with an obvious fix is work,
   not a finding. An uninstalled package, a syntax error, or an unpushed checkpoint is
   never a blocker.
+- **A decision put to the user passes three checks first.** The governing documents and
+  the user's messages were read and do not answer it, and the reply names them. It lies
+  inside the current task. Each answer leads to a different next action that moves the
+  task forward. An item that fails a check is acted on from its source, or dropped.
 - **Theory of mind.** The user has not read what you read. Explain a topic before you
   build on it. Use standard technical and mathematical English; translate or drop
   agent-invented jargon.
