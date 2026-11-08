@@ -119,6 +119,21 @@ A chore written in a handoff reads as the next obligation and displaces the task
 Exactly one handoff is authoritative. A new handoff replaces the old one whole; a banner
 on a stale document is not a handoff.
 
+## Goals, outlines and plans
+
+An autonomous goal outranks repository rules in practice. A goal, outline, plan or task
+order therefore takes its sequence from the required functionality that remains.
+
+- Order the work by missing required functionality. Each early item names a public
+  capability that a user can run afterward.
+- CI state, timeouts, memory limits, benchmarks and failed expensive runs do not set the
+  order. They are evidence for the item that owns them.
+- Performance is the last phase. It begins only when all required functionality is
+  present. A functional item may use any time and memory that it needs. Repair slowness
+  earlier only when a small required example of the selected capability cannot finish.
+- Add no priority that the user or the owning issue did not state. Read the repository's
+  priority rules before writing the order.
+
 ## Causal answers
 
 A question of the form "why did you X" asks for the process defect that produced X. It
