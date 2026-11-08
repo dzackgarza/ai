@@ -124,8 +124,12 @@ on a stale document is not a handoff.
 An autonomous goal outranks repository rules in practice. A goal, outline, plan or task
 order therefore takes its sequence from the required functionality that remains.
 
-- Order the work by missing required functionality. Each early item names a public
-  capability that a user can run afterward.
+- Order the work by missing required functionality. Each early item changes what the
+  software can do.
+- User-facing work changes a behaviour of the software, including code not yet connected
+  to an entry point. Repo-internal work only shows self-consistency and could wait
+  indefinitely with no change in behaviour: evidence records, revision pins, receipts,
+  repeated audits, and demonstrations of functionality that already exists.
 - CI state, timeouts, memory limits, benchmarks and failed expensive runs do not set the
   order. They are evidence for the item that owns them.
 - Performance is the last phase. It begins only when all required functionality is
