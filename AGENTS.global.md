@@ -125,11 +125,38 @@ on a stale document is not a handoff.
 
 ## Goals, outlines and plans
 
-An autonomous goal outranks repository rules in practice. A goal, outline, plan or task
-order therefore takes its sequence from the required functionality that remains.
+An autonomous goal outranks repository rules in practice, because the worker rereads its
+goal and acts on it across sessions. The text of a goal must therefore carry the priorities
+of the project. This section governs every goal, outline, plan, handoff and task order that
+an agent writes.
+
+### How a goal is made
+
+- Start from the user's own statement of the task. Put that task first, in the user's terms.
+- State one task, with the scope that the user named. A roadmap, an inventory or a later
+  phase stays in its owning issue, and the goal does not discuss it.
+- An outline written to answer a question is not a goal. It becomes a goal only when the
+  user issues it as one.
+- Before writing, read the user's messages on the project, the governing documents, the
+  owning issues and the current source.
+- Find the work by subtraction: the required capabilities, minus the capabilities present
+  in the source at a named revision. An earlier handoff, report or checked task is a claim,
+  and does not establish status.
+- Include the step that connects the parts to the public entry point. Parts that exist and
+  are not joined are not the finished capability.
+- State the completion condition as behaviours of the software: each required item, its
+  acceptance condition and its status in the source.
+- Keep the text between the user's words and the work thin. Each generated outline,
+  specification and task list is a place where a priority can be invented. Write only the
+  layers that the worker needs.
+
+### What a goal must prioritize
+
+Sequence comes from the required functionality that remains.
 
 - Order the work by missing required functionality. Each early item changes what the
-  software can do.
+  software can do. Among those items, the order follows actual input dependencies: a later
+  item consumes what the earlier item produces.
 - User-facing work changes a behaviour of the software, including code not yet connected
   to an entry point. Repo-internal work only shows self-consistency and could wait
   indefinitely with no change in behaviour: evidence records, revision pins, receipts,
@@ -141,6 +168,69 @@ order therefore takes its sequence from the required functionality that remains.
   earlier only when a small required example of the selected capability cannot finish.
 - Add no priority that the user or the owning issue did not state. Read the repository's
   priority rules before writing the order.
+
+### What a goal must agree with
+
+- The user's messages. They are the source of truth for intent. When an agent-written
+  document disagrees with them, correct the document. Do not offer the conflict as a decision.
+- The repository's constitution, `AGENTS.md` and work-priority rules, including its
+  separation of roles. A rule in a governing document stands without a matching user quote.
+- The owning issue, for the required items and their acceptance conditions.
+- The current source, for what is present and what is missing.
+
+A number, budget, workload, trial or phase gate that appears only in agent-written text is
+a proposal. It does not enter a goal as a requirement until it is traced to a user message
+or a governing document.
+
+### What a goal must be checked against
+
+The author does this check by reading the goal against its sources. It is a judgment about
+meaning. A script, checklist or receipt tests only form, and well-formed text can still
+direct no useful work. Answer each question for each item, and rewrite the goal when an
+answer fails:
+
+- Which user message or governing document requires this item?
+- Is it inside the scope that the user named?
+- Is it missing from the source at the named revision?
+- When it is done, does the software behave differently? If not, it is repo-internal and
+  does not come before functional items.
+- Does each stated prerequisite supply an input that this item consumes? A prerequisite
+  that only supplies evidence is not a dependency.
+
+Then read the whole goal as a worker who has nothing else:
+
+- Does the first action change what the software can do?
+- Can a worker satisfy every line of the goal and add no required capability? If so, the
+  goal is wrong.
+- Is it still the task that the user stated, neither narrower nor wider?
+
+The output of an issue selector, such as `itree next`, is one more claim. Check it in the
+same way when a session resumes.
+
+### Failure modes that must be absent from goal text
+
+- A priority, budget, threshold or workload with no source in the user's messages or the
+  governing documents. Performance is the recurring instance.
+- CI state, a timeout, a memory limit, a benchmark or a failed expensive run as the source
+  of an item or of its position.
+- Progress measured by commits, comments, receipts, reading counts, closed tasks, green
+  checks or any change of state.
+- Evidence records, revision pins, exports, inventories, audits, reviews or frozen trials
+  ahead of functional items, or as gates on them.
+- A demonstration, notebook or showcase listed as functionality.
+- Polish, cleanup or documentation ahead of incomplete functionality.
+- An adapter, bridge or shim that preserves an old interface in place of updating its
+  consumers.
+- Work that belongs to another role, or to a phase outside the named scope.
+- Narrowing: a specimen, first witness, fragment or miniature example in place of the
+  required capability.
+- Inflation: a capability or prerequisite that neither the requirement nor a real dependency
+  calls for.
+- A status claim copied from an earlier document and not read from the source.
+- Chores as obligations: commits, pushes, worker status or gates run.
+- An instruction to stop, report or ask at a point where the next step is clear, or a
+  decision for the user that fails the three checks in Essential rules.
+- A task number or internal label with no statement of the behaviour that it stands for.
 
 ## Causal answers
 
