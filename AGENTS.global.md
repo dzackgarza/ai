@@ -250,6 +250,7 @@ own references are progressive disclosure, not new triggers.
 | a JSON or YAML file | `config-file-editing` |
 | a `SKILL.md` or a file a skill links to | `creating-skills`, `writing-for-agent-audiences` |
 | SageMath, Macaulay2, CoxIter, a lattice, a quadratic form, a proof, LaTeX | `mathematics` |
+| a passage, caption, or page of mathematical prose, or a question or correction about one | `mathematical-writing-policy`, then the repository's writing house conventions |
 | a class, function, or type that represents a mathematical object | `mathematics/objects-in-code` |
 | Lean, mathlib, lake, Aristotle, or a counterexample search | `lean4` |
 | a PDF | `reading-pdfs` |
