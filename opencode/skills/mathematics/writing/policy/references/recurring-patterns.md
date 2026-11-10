@@ -817,3 +817,10 @@ $p,q,u,v$ introduced as realizations in a paragraph (SEC-21, SEC-11,
 DEF-47, DEF-41, EX-3). The annotation gate records the class, the sweep,
 the notation ledger, the transformation scope, and the level and
 consumer of a proposal before it is written.
+
+Commentary on the definitions in place of the comparison of the
+objects: a remark that said two subgroups of $\Orth(L)$ "have unrelated
+definitions" and listed what each "depends on", beside the two
+definition blocks and above the table that compares the groups. The
+blocks already show the first; the arguments of the symbols show the
+second; the table is the mathematics (PR-79, with PR-76, PR-36, EV-11).
