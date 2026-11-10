@@ -3133,7 +3133,7 @@ separates them (`PR-36`, `EV-11`). When the document has that
 comparison, the sentence about the definitions is deleted and nothing
 replaces it. When the document does not have it, the comparison is the
 missing mathematics, and it is written as a statement of its own
-instead of as a clause inside another block (`SEC-20`).
+instead of as a clause inside another block (`SEC-22`).
 
 The test has two directions. Delete the sentence: if the reader can
 still count the definitions and read the arguments of each symbol, the
@@ -3148,7 +3148,8 @@ is $\Orth^+(L)$.
 Observed in `dzackgarza/research`,
 `writing/coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md`
 at `abde7cd0fc`, the remark after "Monodromy stabilizes the component
-of the period domain". The corrected remark is at `5c62dad8ae`.
+of the period domain". The sentences are absent at `5c62dad8ae`, and
+the comparison is a proposition at `2bd30d8481` (`SEC-22`).
 
 **Banned:** the remark title "$\Orth^+(L)$ and $\Stab_{G_\ZZ}(D^+)$ are
 defined independently"; "The lattice $L$ then has two subgroups of
@@ -3156,9 +3157,9 @@ $\Orth(L)$ with unrelated definitions."; "It depends only on the
 lattice $(L,Q)$."; "It depends on $(L,Q)$, on the weight $k$ and on the
 Hodge numbers, through $D$."
 
-**Preferred:** the title "Comparison of $\Stab_{G_\ZZ}(D^+)$ with
-$\Orth^+(L)$"; the hypothesis "Let $k=2m$ and let $L$ be indefinite, so
-that $\Orth^+(L)$ is defined"; then the comparison itself: for $m$ odd
+**Preferred:** a proposition titled by its objects,
+"$\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$"; the hypothesis "Let $k=2m$ and
+let $L$ be indefinite"; then the relations as its conclusions: for $m$ odd
 and $h^{m,m}>0$, $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$; for $m$ even and
 $h^{m,m}>0$, $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-$, which
 equals $\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$ exactly when $\det$ is

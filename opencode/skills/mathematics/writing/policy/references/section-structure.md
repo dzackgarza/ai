@@ -752,3 +752,59 @@ congruence $p-q\equiv0\pmod8$ for the even type [@Ser73, Ch. V; @MH73,
 Ch. II], the counts of definite unimodular lattices by rank [@CS10, Ch.
 2, Table 2.2], $E_8$ alone in rank $8$, and the $24$ Niemeier lattices
 in rank $24$ [@CS10, Ch. 16, Table 16.1].
+
+## `SEC-22`: The relation between two defined objects is a claim
+
+When a document defines two objects of one kind — two subgroups of one
+group, two sublattices, two functors — the relation between them is a
+claim with a proof obligation: an equality, an isomorphism, a
+containment with its index or its quotient, or a pair of elements that
+shows neither contains the other. That claim is a lemma or a
+proposition whose conclusions are the relations, each under its
+hypotheses, with a proof and a label (`SEC-11`). A remark titled
+"Comparison of $X$ with $Y$", a table with a column "equal to $Y$:
+always / exactly when …", and a closing sentence "then $X=Y$" at the
+end of another block each hold the same claim with no proof and no
+citable owner. The word "comparison" is the tell: it frames two
+objects as different and reports on them, where the mathematics is
+that they are equal under stated hypotheses, or that one is contained
+in the other. A reader who needs $X=Y$ cites a proposition, not a row
+of a table.
+
+The test is the proof obligation of `SEC-11`, applied to the relation.
+If the block asserts $X=Y$, $X\iscontainedin Y$, $X\cong Y$, or
+$[Y:X]\le2$ under any hypothesis, it is a statement block and the
+relation is its displayed conclusion. A remark is the correct block
+when no relation is asserted: a warning that a source writes
+$\Orth^+(L)$ for a different subgroup, or a pointer to where the two
+objects are used. A relation that one proof uses once stays in that
+proof (`SEC-20`).
+
+Each relation has one owner. When a proposition states $X=Y$, the same
+equality is removed from the block that first mentioned it, and that
+block cites the proposition.
+
+Observed in `dzackgarza/research`,
+`writing/coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md`
+at `5c62dad8ae`: the remark "Comparison of $\Stab_{G_\ZZ}(D^+)$ with
+$\Orth^+(L)$" and the last sentence of the corollary "Monodromy
+stabilizes the component of the period domain". The corrected
+proposition is at `2bd30d8481`.
+
+**Banned:** a remark whose body is the table row "odd | $h^{m,m}>0$ |
+$\Orth^+(L)$ | always" and the row "even | $h^{m,m}>0$ |
+$\Orth^+(L(-1))$ | exactly when $\det$ is trivial on $\Orth(L)$"; as
+the closing sentence of a corollary about monodromy, "If $k=2m$ with
+$m$ odd, $h^{m,m}>0$ and $L$ is indefinite, then
+$\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$."
+
+**Preferred:** a proposition titled by its objects, "$\Stab_{G_\ZZ}(D^+)$
+and $\Orth^+(L)$", with the hypotheses "$k=2m$, $L$ indefinite" and the
+conclusions: (1) if $m$ is odd and $h^{m,m}>0$, then
+$\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$; (2) if $m$ is even and $h^{m,m}>0$,
+then $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-$, and every
+$g\in\Orth(L)$ with $\det g=-1$ lies in exactly one of
+$\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$; (3) if $h^{m,m}=0$, then
+$\Stab_{G_\ZZ}(D^+)=\Orth^+(L)\cap\ker\det$, of index at most $2$ in
+$\Orth^+(L)$; followed by its proof from $\sigma_+\sigma_-=\det$. The
+corollary keeps the monodromy inclusion alone.
