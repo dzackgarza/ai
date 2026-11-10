@@ -809,19 +809,24 @@ $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)\cap\ker\det$, of index at most $2$ in
 $\Orth^+(L)$; followed by its proof from $\sigma_+\sigma_-=\det$. The
 corollary keeps the monodromy inclusion alone.
 
-## `SEC-23`: A claim is recognized by its form, not by the length of its argument
+## `SEC-23`: An assertion is found by asking what the sentence adds to the binding
 
-A claim is a sentence about defined objects for which "why?" has a
-mathematical answer: an argument from the definitions, or a citation.
-A choice (a definition, a notation, a convention) is not a claim, and
-neither is a pointer to where an object is used. The writer who has
-already run a one-line argument reads the sentence as description and
-puts it in prose, in a remark, or at the end of another block. `SEC-11`
-and `SEC-22` then do not fire, because no claim was seen. The check is
-therefore made on the form of the sentence. Each form below asserts
-something, whatever block or prose it stands in.
+The policy's section "The object on the page and the object in the
+writer's head" states the model: a sentence binds a symbol or asserts
+something of a bound object, and the writer does not see an assertion
+whose argument is short, because the fact is part of what the symbol
+means to the writer. `SEC-11` and `SEC-22` then do not fire. This rule
+is the reading that finds the assertion.
 
-| Form | What it asserts |
+For each phrase that refers to a bound object, ask what the sentence
+tells the reader about the referent that its binding did not. The
+answer is a predicate. A predicate can attach to a referent at any
+grammatical place, and the main clause is only one of them. The table
+lists the places observed so far, each with the predicate it attaches.
+It is a record of instances, not the test: a sentence in a form the
+table omits is decided by the question.
+
+| Place where the predicate attaches | What it asserts |
 | --- | --- |
 | A relation word between two named objects: equals, coincides, lies in, reduces to, recovers, differs from | the relation (`SEC-22`) |
 | A case word: always, exactly when, in general, unless | a statement with hypotheses |
@@ -837,10 +842,13 @@ something, whatever block or prose it stands in.
 
 The places to read are the prose between blocks, the sentences after a
 definition, the last sentence of a block, section openings, tables,
-examples, and replies to the reader. Each sentence found there with one
-of these forms becomes a labelled statement with a proof or a citation,
-or is moved into the proof that uses it (`SEC-20`). A sentence that is
-then left with nothing to assert is deleted.
+examples, and replies to the reader. An assertion found there becomes a
+labelled statement with a proof or a citation when a later block uses
+it or a reader would cite it. An assertion that one proof uses once
+moves into that proof (`SEC-20`). A sentence that restates the binding
+or a proved statement is deleted (`PR-76`). A binding, a convention, a
+pointer, and a motivation stay prose: wrapping them in blocks is the
+opposite defect.
 
 A claim outside a statement block gets no proof, so a false one
 survives. In the first observation below the sentence is false: for

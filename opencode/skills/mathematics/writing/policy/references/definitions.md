@@ -1702,3 +1702,44 @@ the definitions (`SEC-12`); for the isotypic sublattices,
 $a_\chi=d_\chi e_\chi\in\bZ[G]$, with "$(L_\chi)_\bQ=e_\chi L_\bQ$" as
 the proposition that follows it; Maschke's theorem cited [@Ser77, §1.3]
 at the step of the proof that uses the complement.
+
+## `DEF-50`: A hypothesis that the defining expression does not use belongs to a theorem
+
+A definition under a hypothesis $H$ is tested by deleting $H$. If the
+defining expression still denotes an object, $H$ is not part of the
+definition. It entered because the theorem the writer had in mind holds
+under $H$ (see "The same difference inside a definition" in the
+policy). The restricted definition has three costs. The symbol is
+undefined where $H$ fails, so a statement that needs it there cannot be
+written. Every statement that uses the symbol inherits $H$ whether or
+not its proof uses $H$ (`STR-8`). The value of the object where $H$
+fails, which is a theorem, is never stated.
+
+The object is defined wherever its defining expression is. Each theorem
+carries the hypotheses its proof uses. The value in the excluded case
+is a proposition.
+
+The opposite defect is a definition extended by a separate clause to a
+case where the defining expression does not denote: "for $L$ definite,
+put $\Orth^+(L)\definedas\Orth(L)$". That is a second definition under
+one symbol. A hypothesis that the expression needs in order to denote
+stays in the definition (`STR-3`).
+
+Observed in `dzackgarza/research`,
+`writing/lattice-theory/arithmetic/spinor-norm.md` at `2bd30d8481`,
+corrected at `2a4b80737d` and `7134794022`. The definition read "For
+every indefinite $L$ define $\Orth^+(L)\definedas\Theta_\bR(L)$", and
+the group $\Theta_\bR(L)$ is defined in the same block for every lattice.
+A proposition on the same page then read "If $L$ is an indefinite
+lattice, then $\Orth^+(L)$ is the kernel of the restriction of
+$\sigma_+$", and its proof does not use indefiniteness.
+
+**Banned:** "For every indefinite $L$ define
+$\Orth^+(L)\definedas\Theta_\bR(L)$", with "indefinite" then copied
+into the hypotheses of each statement about $\Orth^+(L)$.
+
+**Preferred:** "Define $\Orth^+(L)\definedas\Theta_\bR(L)$"; the
+statement "$\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$" for every lattice
+$L$; and the proposition "if $L$ is negative definite, then
+$\Orth^+(L)=\Orth(L)$; if $L$ is positive definite, then
+$\Orth^+(L)=\SO_\bR(L)$", with its proof.
