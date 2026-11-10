@@ -808,3 +808,73 @@ $\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$; (3) if $h^{m,m}=0$, then
 $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)\cap\ker\det$, of index at most $2$ in
 $\Orth^+(L)$; followed by its proof from $\sigma_+\sigma_-=\det$. The
 corollary keeps the monodromy inclusion alone.
+
+## `SEC-23`: A claim is recognized by its form, not by the length of its argument
+
+A claim is a sentence about defined objects for which "why?" has a
+mathematical answer: an argument from the definitions, or a citation.
+A choice (a definition, a notation, a convention) is not a claim, and
+neither is a pointer to where an object is used. The writer who has
+already run a one-line argument reads the sentence as description and
+puts it in prose, in a remark, or at the end of another block. `SEC-11`
+and `SEC-22` then do not fire, because no claim was seen. The check is
+therefore made on the form of the sentence. Each form below asserts
+something, whatever block or prose it stands in.
+
+| Form | What it asserts |
+| --- | --- |
+| A relation word between two named objects: equals, coincides, lies in, reduces to, recovers, differs from | the relation (`SEC-22`) |
+| A case word: always, exactly when, in general, unless | a statement with hypotheses |
+| A table cell that is not a definition | one statement per row |
+| A general object evaluated at a special case | the value in that case |
+| A second description of a defined object: "that is", "which is", "namely", an apposition | the equality of the two descriptions |
+| A new symbol for an object that already has one | the equality of the two symbols |
+| A logical connective outside a proof: so, hence, because, in particular | the inference |
+| A property in an adjective or in "the": "the compact stabilizer", "the component" | the property, or existence and uniqueness |
+| A negative: need not, does not, differ | a statement that owes a witness |
+| A cited fact in running prose that a later proof uses | a theorem with no label to cite |
+| A proof that says "as shown after the definition" | an unlabelled lemma |
+
+The places to read are the prose between blocks, the sentences after a
+definition, the last sentence of a block, section openings, tables,
+examples, and replies to the reader. Each sentence found there with one
+of these forms becomes a labelled statement with a proof or a citation,
+or is moved into the proof that uses it (`SEC-20`). A sentence that is
+then left with nothing to assert is deleted.
+
+A claim outside a statement block gets no proof, so a false one
+survives. In the first observation below the sentence is false: for
+$h^2=2d$ with $d>1$, the isometry $-\id$ of $h^\perp$ preserves the
+Hodge structure and is not the restriction of an isometry of
+$H^2(X,\ZZ)$ that fixes $h$.
+
+Observed in `dzackgarza/research` at `7134794022`, corrected at
+`8f80309ada`.
+`writing/coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md`:
+
+- "For the primitive Hodge structure on $h^\perp$ of a K3 surface $X$
+  with an ample class $h$, these are the restrictions to $h^\perp$ of
+  the Hodge isometries of $H^2(X,\ZZ)$ that fix $h$."
+- "Condition (1) says that the monodromy group lies in
+  $\Orth^+(\bL_s)$."
+- "Statement (1) covers every weight-$2$ period domain with
+  $h^{1,1}>0$, for every value of $h^{2,0}$."
+- "The group $G_\RR$ acts transitively on $D$, the stabilizer $V_F$ of
+  a point $F\in D$ is compact, and $G_\ZZ$ is discrete in $G_\RR$",
+  in prose, used by three later proofs.
+
+`writing/lattice-theory/arithmetic/spinor-norm.md`:
+
+- after the definition of the orientation characters, "The maps
+  $\sigma_\pm$ are group morphisms", a determinant formula, and "so
+  $\sigma_+$ and $\sigma_-$ are continuous", in prose; a later proof
+  reads "The inclusion $\supseteq$ was shown after" the definition.
+
+**Banned:** after a definition, the prose "The maps $\sigma_\pm$ are
+group morphisms, because $\Orth(V)$ acts on the two-element set of
+orientation classes", followed two blocks later by a proof that cites
+"the formula after" the definition.
+
+**Preferred:** a lemma "The orientation characters are continuous group
+morphisms" with numbered conclusions and a proof, placed directly after
+the definition; the later proofs cite its items by number.
