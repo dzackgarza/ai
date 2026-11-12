@@ -34,7 +34,9 @@ groups $G$.
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
 written with distinct symbols. An isomorphism is not written as an
 equality. Everything is implicitly derived and $\infty$-categorical.
-With $X:=\operatorname{Equiv}(A,B)$:
+With $X:=\operatorname{Eq}_C(A,B)$, the space of equivalences in
+`~/research/writing/category-theory/foundations/Identification.md`
+(`#sec-equivalence-spaces`):
 
 - $A\simeq B$: $X$ is inhabited. A point of $X$ is the tower of cells
   $(f,g,\eta,\epsilon,\dots)$.
