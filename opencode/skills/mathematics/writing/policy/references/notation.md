@@ -34,10 +34,13 @@ groups $G$.
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
 written with distinct symbols. An isomorphism is not written as an
 equality. The definitions are in `~/research/writing/category-theory/foundations/Higher-Categories-and-Universes.md`,
-`#def:equality-of-objects`: $\cong$ is an isomorphism in an ordinary
-category (a morphism with a two-sided inverse); $\simeq$ is an
-equivalence, an invertible cell of a higher category (stacks, anima,
-$\infty$-groups, $\infty$-categories). $\hookrightarrow$ denotes a stated inclusion,
+`#def:equality-of-objects`. $\cong$ is an isomorphism: a morphism with
+a two-sided inverse, $g\circ f=\id$ and $f\circ g=\id$. $\simeq$ is an
+equivalence: a morphism invertible only up to higher cells,
+$g\circ f\Rightarrow\id$ and $f\circ g\Rightarrow\id$. The equivalence
+is the weaker claim: every isomorphism is an equivalence, and an
+isomorphism of categories is an equivalence of categories but not
+conversely. Write the strongest claim that the argument proves. $\hookrightarrow$ denotes a stated inclusion,
 embedding, or monomorphism; fullness, faithfulness, and repleteness are
 asserted separately. Strict pullbacks and pseudo-pullbacks are not identified
 by notation.
