@@ -34,23 +34,11 @@ groups $G$.
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
 written with distinct symbols. An isomorphism is not written as an
 equality. Everything is implicitly derived and $\infty$-categorical.
-With $X:=\operatorname{Eq}_C(A,B)$, the space of equivalences in
-`~/research/writing/category-theory/foundations/Identification.md`
-(`#sec-equivalence-spaces`):
-
-- $A\simeq B$: $X$ is inhabited. A point of $X$ is the tower of cells
-  $(f,g,\eta,\epsilon,\dots)$.
-- $A\cong_n B$: $X$ is an inhabited $n$-truncated type.
-- $A\cong B$: $X$ is an inhabited $0$-type, a condition on the tower.
-- $A\equiv_n B$: $\tau_{\le n}X=*$.
-- $A=B$: $X$ is contractible.
-
-So $A=B\Rightarrow A\equiv_n B\Rightarrow A\cong_n B\Rightarrow A\simeq B$.
-For lattices, groups, modules, and schemes $X$ is a set, so $\cong$ is
-the true and stronger claim; for stacks, anima, and $\infty$-groups $X$
-is generally not a set, and $\simeq$ is the claim. Source: the user's
-"Truncation Tower of Equivalence Relations" turn in
-`~/Dropbox/Downloads/chatgpt-web-conversations/ChatGPT_Embedding-n-category-in-Cat-infty_20251201-1640_692d549c.md`.
+The meanings of the symbols are the definitions in
+`~/research/writing/category-theory/foundations/Higher-Categories-and-Universes.md`
+(`#def:equivalence-of-objects`, `#def:isomorphism-of-objects`,
+`#def:equality-of-objects`) and `Equality.md`. Use the symbol whose
+definition the claim satisfies.
 $\hookrightarrow$ denotes a stated inclusion,
 embedding, or monomorphism; fullness, faithfulness, and repleteness are
 asserted separately. Strict pullbacks and pseudo-pullbacks are not identified
