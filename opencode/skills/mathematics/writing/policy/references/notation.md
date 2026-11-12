@@ -33,14 +33,23 @@ groups $G$.
 
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
 written with distinct symbols. An isomorphism is not written as an
-equality. The definitions are in `~/research/writing/category-theory/foundations/Higher-Categories-and-Universes.md`,
-`#def:equality-of-objects`. $\cong$ is an isomorphism: a morphism with
-a two-sided inverse, $g\circ f=\id$ and $f\circ g=\id$. $\simeq$ is an
-equivalence: a morphism invertible only up to higher cells,
-$g\circ f\Rightarrow\id$ and $f\circ g\Rightarrow\id$. The equivalence
-is the weaker claim: every isomorphism is an equivalence, and an
-isomorphism of categories is an equivalence of categories but not
-conversely. Write the strongest claim that the argument proves. $\hookrightarrow$ denotes a stated inclusion,
+equality. Everything is implicitly derived and $\infty$-categorical.
+With $X:=\operatorname{Equiv}(A,B)$:
+
+- $A\simeq B$: $X$ is inhabited. A point of $X$ is the tower of cells
+  $(f,g,\eta,\epsilon,\dots)$.
+- $A\cong_n B$: $X$ is an inhabited $n$-truncated type.
+- $A\cong B$: $X$ is an inhabited $0$-type, a condition on the tower.
+- $A\equiv_n B$: $\tau_{\le n}X=*$.
+- $A=B$: $X$ is contractible.
+
+So $A=B\Rightarrow A\equiv_n B\Rightarrow A\cong_n B\Rightarrow A\simeq B$.
+For lattices, groups, modules, and schemes $X$ is a set, so $\cong$ is
+the true and stronger claim; for stacks, anima, and $\infty$-groups $X$
+is generally not a set, and $\simeq$ is the claim. Source: the user's
+"Truncation Tower of Equivalence Relations" turn in
+`~/Dropbox/Downloads/chatgpt-web-conversations/ChatGPT_Embedding-n-category-in-Cat-infty_20251201-1640_692d549c.md`.
+$\hookrightarrow$ denotes a stated inclusion,
 embedding, or monomorphism; fullness, faithfulness, and repleteness are
 asserted separately. Strict pullbacks and pseudo-pullbacks are not identified
 by notation.
