@@ -32,33 +32,23 @@ and the loop then re-enters the item forever.
 Provider credentials (`MINERU_API_TOKEN`, `MISTRAL_API_KEY`) live in the machine
 environment. Do not put API keys in commands, docs, or committed files.
 
-## Local extraction recipes (`~/pdf-extraction`)
+## MinerU through `mineru-open-api`
 
-For non-library PDFs, prefer the managed recipes in `~/pdf-extraction` over hand-rolled
-scripts. They handle environment setup automatically via `uv sync`.
+The MinerU API is reached through its official CLI, `mineru-open-api` (run it with
+`bunx mineru-open-api`). The token is the machine's `MINERU_API_TOKEN`; the CLI reads
+`MINERU_TOKEN`, so export it once in the shell (`export MINERU_TOKEN="$MINERU_API_TOKEN"`)
+rather than writing the token into a command.
 
 ```bash
-# From any directory
-just -f ~/pdf-extraction/justfile -d ~/pdf-extraction <recipe>
+bunx mineru-open-api flash-extract paper.pdf -o out/ --language en   # up to 20 pages and 10 MB
+bunx mineru-open-api extract paper.pdf -o out/ --model pipeline       # larger files, token
+bunx mineru-open-api extract *.pdf -o out/ --model pipeline           # a batch
 ```
 
-| Recipe | Purpose |
-| --- | --- |
-| `sample-pdf` | Regenerate the smoke-test PDF |
-| `docling` | Extract with Docling |
-| `mineru` | Extract with MinerU |
-| `smoke` | Run both extraction checks |
-
-Outputs appear under `~/pdf-extraction/artifacts/` and `~/pdf-extraction/outputs/`.
-
-**Do not** create a separate venv or install ad hoc — let the recipes manage the
-environment.
-
-When only structured extraction data is needed, prefer a recipe that emits the minimal
-MinerU JSON artifacts (`middle.json` and `content_list.json`) without generating extra
-rendered PDFs or Markdown. The recipe should own that mode; do not run private one-off
-extraction scripts. After extraction, verify the expected output files and keep the run
-log with the artifacts.
+`--model pipeline` does not hallucinate text; `vlm` is more accurate on complex
+layouts and can. For a source that a proof is transcribed from, use `pipeline`, and
+`vlm` only for a page the pipeline cannot read. Kaggle GPU jobs and local MinerU
+installs are not the route.
 
 ## PDF storage layout (non-library)
 
