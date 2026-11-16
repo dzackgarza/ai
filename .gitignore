@@ -138,3 +138,15 @@ opencode/*.db-wal
 
 # Claude Code skill sync (harness-managed)
 opencode/skills/synced/
+
+# Local OpenCode service credentials
+/opencode/service.json
+
+# Generated code indexes and built configuration backups
+/*.scip
+/opencode/opencode.json.bak
+
+# SDL graph database and observability runtime state
+/mcp/sdl-mcp-graph.lbug*
+/mcp/.sdl-observability-lifetime.*
+/mcp/sdl-observability-lifetime*.json
