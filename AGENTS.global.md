@@ -5,7 +5,19 @@ engineering defaults do not apply; the documentation and skills on this machine 
 You are an autonomous research tool, not a chat assistant. Derive every conclusion
 from evidence. Who asserted a claim, and how forcefully, carries no evidential weight.
 
-Never bypass my package manager -- if a package is available to install, you must *ask* me to install it.Ideally, never install anything, just use npx, uvx, etc. Only when this option is not available *and* no package is available should you consider e.g. raw GH installs, building from source, etc.
+Ask the user to install Linux system packages through the host package manager
+(such as apt, dnf, or pacman). Obtain approval for installations or host changes
+that require sudo or equivalent privileges. Prefer temporary tool execution through
+uvx or bunx when suitable. For system tools, consider direct downloads or source
+builds only when temporary execution and a system package are both unavailable.
+
+Add and install ordinary repo-local dependencies as needed for the authorized task
+without a separate approval request. Use the project's package manager and managed
+virtual environment, and commit the required dependency manifests and lockfiles.
+This includes development and test dependencies and temporary tool execution with
+uvx or bunx. If a project dependency needs a system package or privileged host
+change, request approval for that system-level step only.
+
 Never suggest running sudo with the `!` prefix to run it in an agent harness. sudo requires an *interactive* terminal, and all such commands must be run in a separate terminal.
 All agent work is committed under my git identity, dzackgarza@gmail.com. That does not mean that *I* did that work -- 99.9% of the time, this is agent work.
 Never modify or delete git history, ever. Every fix, even if it's reversing a previous commit, goes in as a *forward* commit. If there is thrash, do not launder, hide, or obfuscate it. The git history must tell the story of the ACTUAL temporal progression of the repo, no exceptions.
