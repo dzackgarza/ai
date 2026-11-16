@@ -3113,3 +3113,54 @@ asked of the morphism".
 **Preferred:** "(2) implies (3)" or "(3) follows from (2) by …",
 whichever the proof shows; "the morphism is invertible" as a
 hypothesis, or "the morphism is an isomorphism" as the conclusion.
+
+## `PR-79`: A sentence about the definitions is not a statement about the objects
+
+Two definition blocks define two objects, and a symbol shows its
+arguments. A sentence, a block title, or a list that reports these
+facts — the objects "have unrelated definitions", "are defined
+independently", "are a priori distinct", "each has a definition", "it
+depends only on $L$" — states a property of the document that the
+blocks and the notation already show. This is `PR-76` at the level of
+the block: the block structure is restated in words. The sentence
+states nothing about the objects. The reader gets no containment, no
+equality, and no separating element.
+
+The statement owed is the comparison of the objects: the hypotheses
+under which they are equal, and where equality fails, the description
+of each in common terms and the condition or the element that
+separates them (`PR-36`, `EV-11`). When the document has that
+comparison, the sentence about the definitions is deleted and nothing
+replaces it. When the document does not have it, the comparison is the
+missing mathematics, and it is written as a statement of its own
+instead of as a clause inside another block (`SEC-22`).
+
+The test has two directions. Delete the sentence: if the reader can
+still count the definitions and read the arguments of each symbol, the
+sentence carried nothing. Keep a sentence that states a relation
+between the objects that the notation does not show: an equality with
+its hypotheses, a strict containment with its witness, or the
+independence of a construction from a choice that the construction
+made. "Depends only on $L$" is a theorem when the construction chose a
+basis, a section, or a base point; it is a restatement when the symbol
+is $\Orth^+(L)$.
+
+Observed in `dzackgarza/research`,
+`writing/coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md`
+at `abde7cd0fc`, the remark after "Monodromy stabilizes the component
+of the period domain". The sentences are absent at `5c62dad8ae`, and
+the comparison is a proposition at `2bd30d8481` (`SEC-22`).
+
+**Banned:** the remark title "$\Orth^+(L)$ and $\Stab_{G_\ZZ}(D^+)$ are
+defined independently"; "The lattice $L$ then has two subgroups of
+$\Orth(L)$ with unrelated definitions."; "It depends only on the
+lattice $(L,Q)$."; "It depends on $(L,Q)$, on the weight $k$ and on the
+Hodge numbers, through $D$."
+
+**Preferred:** a proposition titled by its objects,
+"$\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$"; the hypothesis "Let $k=2m$ and
+let $L$ be indefinite"; then the relations as its conclusions: for $m$ odd
+and $h^{m,m}>0$, $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$; for $m$ even and
+$h^{m,m}>0$, $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-$, which
+equals $\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$ exactly when $\det$ is
+trivial on $\Orth(L)$, because $\sigma_+\sigma_-=\det$.

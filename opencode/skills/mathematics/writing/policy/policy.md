@@ -35,8 +35,10 @@ the page?**
 - If the notation is present, the sentence is bookkeeping and is deleted.
   An arrow written $\iota\colon S\injects M$ is a monomorphism; writing
   "the image subobject" or "the underlying monomorphism" beside it adds
-  no information (`PR-76`). A display enlarges nothing: it exposes
-  structure the sentence cannot hold (`PR-75`).
+  no information (`PR-76`). Two definition blocks define two objects;
+  writing "defined independently" beside them adds none (`PR-79`). A
+  display enlarges nothing: it exposes structure the sentence cannot
+  hold (`PR-75`).
 
 The same test fixes the level at which the mathematics is stated. The
 level is the one at which the claim is a theorem of the subject: the
@@ -70,6 +72,130 @@ The style presupposes a writer who knows the theory at the generality
 where its constructions are native. A rewrite of sentences toward its
 surface — the vocabulary without the construction, its category, and its
 standard source — reproduces the appearance and not the mathematics.
+
+## The object on the page and the object in the writer's head
+
+A definition gives the reader an object with exactly one known
+property: its definition. The writer holds a richer object under the
+same symbol: the definition, and everything the writer has proved,
+computed, or read about it. The difference between the two objects is a
+list of theorems. The rules on blocks, definitions, and commentary all
+police that difference, and none of them fires for a writer who does
+not see it.
+
+The writer does not see it because, to the writer, the list is part of
+what the symbol means. A fact with a one-line argument, or an argument
+run long ago, is recalled together with the name. Writing it down feels
+like saying what the object is, not like claiming something about it.
+Knuth's question, "What does the reader know so far?" (Knuth, Larrabee,
+Roberts, *Mathematical Writing*, 1988, §1), has a definite answer at
+each point of a mathematical text: the definitions and the statements
+above that point, and nothing else.
+
+### Two acts
+
+A sentence in a mathematical text performs one of two acts.
+
+- **It binds.** It attaches a symbol or a term to a referent: a
+  definition, a notation, a convention, "let". The writer could have
+  chosen otherwise, so the sentence cannot be false.
+- **It asserts.** It says something of a referent that is already
+  bound. The referent decides whether the sentence is true, so it can
+  be false, and the reader is owed the reason. "When your reader
+  reaches the period of a sentence, they should either know why each
+  claim up to that point is true or know that an explanation will
+  follow" (Bell, Kadets, Srinivasan, Triantafillou, Vogt, "Practical
+  Suggestions for Mathematical Writing", *Notices of the AMS*, June
+  2021, §3.3, "Don't leave your reader hanging").
+
+There is no third act. Describing, explaining, comparing, summarizing,
+clarifying, and "recalling what $X$ is" are names the writer gives to
+assertions made without noticing. A sentence that neither binds nor
+asserts points somewhere (to a use, a source, a later block) or
+motivates, and it says nothing of a bound object that the reader could
+check.
+
+### The question
+
+Read each sentence with one question, for each phrase in it that
+refers to a bound object:
+
+> What does this sentence tell the reader about the referent that its
+> binding did not?
+
+- **Nothing.** The sentence restates the binding. Delete it (`PR-76`),
+  or keep it as a link to the binding.
+- **Something.** The sentence asserts. Find its hypotheses, its proof
+  or citation, and the block that owns it (`SEC-11`, `SEC-22`,
+  `SEC-20`).
+
+The question is asked of phrases, not of sentences, because the
+assertion is often not the main clause. An adjective, an apposition, a
+definite article, a table cell, a second symbol, and a block title each
+attach a predicate to a referent. `SEC-23` lists the grammatical places
+observed so far. A predicate in a place it does not list is found by
+the same question.
+
+A second test isolates the writer's contribution. Cover everything on
+the page except the binding of $X$ and the sentence. If the reader
+needs an argument to accept the sentence, the argument is the missing
+proof, whatever its length.
+
+### The signal is the feeling that no proof is needed
+
+The sentences in the blind spot are the ones that feel like
+description. "This is just what $X$ is", "of course", "clearly", "by
+definition" when the sentence is not the definition, and the absence of
+any urge to justify are marks of a fact held in the writer's object and
+absent from the page's object. They are not evidence that the fact is
+trivial. Bell et al. (§3.3, "Explain the 'obvious'") report a proofreading pass that found a false
+claim preceded by "clearly", and half a dozen more on searching for
+the word. An assertion outside a statement block gets no proof, so a
+false one survives: `SEC-23` records one from this policy's own
+evidence.
+
+### The same difference inside a definition
+
+A binding contains only what determines the referent. The writer's
+richer object enters a definition in three ways, and each puts an
+assertion where the reader cannot see or cite it.
+
+- **A hypothesis the defining expression does not use.** The writer
+  knows the theorem that matters holds under $H$, so the definition is
+  stated under $H$. Delete $H$: if the defining expression still
+  denotes an object, $H$ belongs to the theorems that need it, and the
+  value of the object where $H$ fails is a theorem (`DEF-50`,
+  `DEF-38`, `STR-8`).
+- **A characterization in place of the construction.** The writer
+  knows an equivalent description and offers it as the definition.
+  The symbol then has two anchors. The equivalence, which was the
+  content, is a theorem with no statement, and every earlier use of the
+  symbol has changed meaning (`DEF-22`, `DEF-39`).
+- **A consequence inside the definition block** (`DEF-16`, `DEF-44`).
+
+The question for a definition block is the mirror of the question for
+a sentence: which parts of this block did the writer choose, and which
+parts are true of the result?
+
+### Conversation is not exempt
+
+A reply to a collaborator, a review comment, and a summary are text
+about bound objects. A relation, a value, or a case distinction
+reported there is an assertion with no page under it. It is written in
+the document as a statement with its proof first; the reply then cites
+the label.
+
+### The opposite defect
+
+The two acts do not make every sentence a block. A binding, a
+convention, a pointer, and a motivation assert nothing and stay prose.
+An assertion that one proof uses once is a step of that proof
+(`SEC-20`). A sentence that repeats a proved statement in other words
+is deleted, not promoted (`PR-76`). A statement block with no later
+use is moved to its use or deleted (`SEC-20`). A revision that answers
+"this is a claim" by wrapping every sentence between blocks in a block,
+without asking what each one tells the reader, has changed the markup
+and not the reading.
 
 ## The preferences under the rules
 
@@ -117,7 +243,7 @@ the writer's recollection of what rigorous writing looks like.
 | Judgment | Rule |
 | --- | --- |
 | Which formulation states the mathematics | `TERM-16`, `TERM-19`, `MA-19`, `DEF-39`, `DEF-41`, `DEF-42`, `DEF-43`, `PR-15` |
-| Which hypotheses are intrinsic and which are proof artifacts | `STR-3`, `STR-8`, `CITE-6` |
+| Which hypotheses are intrinsic and which are proof artifacts | `STR-3`, `STR-8`, `DEF-50`, `CITE-6` |
 | Which notation is standard, which is necessary, which is redundant | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `SYM-14`, `SYM-16` |
 | Which relation earns a diagram or sequence, which an equation | `DIA-7`, `DEF-40`, `PR-75`, `PR-77` |
 | Which construction is foundational, which an immediate consequence | `DEF-16`, `DEF-22`, `DEF-44`, `DEF-45`, `SEC-16`, `SEC-18`, `SEC-19`, `STR-6` |
@@ -145,7 +271,7 @@ that decide the position.
 | Constructions | variants by near-identical formulas; the special case defined first, elementwise, in the subcategory alone | named variants with no relation between them; the general case stated and the special case re-defined beside it | one general construction; variants as fibers and pullbacks; the subcategory's version as the composite with the reduction functor; the named special case as an example; the standard construction at its owner | `DEF-42`, `DEF-48`, `SEC-12`, `DEF-41` |
 | Definitions | a formula-dependent definition; a property defined through a derived invariant or the existence of a witness; consequences inside the block; a general notion redefined at its special case | a characterization through machinery the notion is not an instance of | the definition in the framework where the notion is an instance; the condition on the structure, with the invariant and the witness as propositions; consequences as propositions; the general notion recalled at its owner and the special case defined through it | `DEF-41`, `DEF-47`, `DEF-16`, `DEF-22`, `DEF-45` |
 | Theorems | a recipe as the statement; the claim after a paragraph of constructions | notation setup as the statement | the assertion, first after its hypotheses; the construction in the proof | `SEC-16`, `SEC-18`, `DEF-44` |
-| Hypotheses | an unjustified restriction | the hypotheses one proof used | the claim's hypotheses, in the block | `STR-8`, `STR-3`, `CITE-6` |
+| Hypotheses | an unjustified restriction | the hypotheses one proof used | the claim's hypotheses, in the block; a definition with only the hypotheses its defining expression uses | `STR-8`, `STR-3`, `DEF-50`, `CITE-6` |
 | Notation | an alias for a standard construction; two symbols or two spellings for one object; a nickname for a result; a relative notion with no ambient; components extracted from a graded functor | a name for every map | standard, minimal, stable; one spelling per construction; the ambient in the symbol; the functor as the functor | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `NOT-11`, `XREF-7`, `PR-57` |
 | Sameness | a relation asserted with no map: "the same", "coincide", "agrees canonically", "factors through", "differs from" | "canonical" asserted after a choice, or with no universal property proved | the specified isomorphism; the drawn lift; naturality; independence of the choice | `EV-11`, `MA-1`, `DIA-7` |
 | Classification | elementary conditions; one case of a trichotomy with the others named in passing; a congruence with no statement of what it classifies | a local classification with no global object | the global structural formulation, with the local description as its consequence; the whole classification — every class, the deciding invariant, the enumeration — as one theorem with its citation | `DEF-41`, `TERM-16`, `SEC-21`, `EX-3` |
@@ -161,8 +287,8 @@ that decide the position.
 | Coordinates | the form as a matrix; properties of the form as determinant conditions; a codomain coarser than the construction determines | "intrinsic" asserted over an argument that computes in a basis | the form as a morphism; the Gram matrix after a basis is chosen; properties through the adjoint and its sequence; the codomain the construction determines, with the monomorphism into the coarse object named | `DEF-39`, `PR-58`, `PR-61`, `SYM-16`, `EV-10` |
 | Fluency | a local term, symbol, or adjective where the document or the literature already has one; a first-principles definition of a notion the literature names; a hypothesis named by an undefined term; an established object re-described in prose | a local name recorded beside the standard one | the established term and symbol, with its citation, and the document's definition as its instance; the document's own symbol at every occurrence, including every later statement; the hypothesis written as its condition; semantic macros with their operands | `TERM-16`, `TERM-17`, `TERM-19`, `TERM-20`, `TERM-7`, `MA-19`, `NOT-4`, `NOT-6`, `NOT-7` |
 | Architecture | a catch-all chapter; a fact filed where it was first needed; classical background exposed at the document's own level | chapters named after theories whose bodies are lists of facts | general pairings, bilinear modules, lattices, discriminant forms, then the definite, indefinite, hyperbolic, embedding, and arithmetic theories; Eichler and Miranda–Morrison theory as developments of their own; classical notions cited at first use | `SEC-9`, `SEC-12`, `SEC-13`, `SEC-14`, `SEC-15`, `SEC-19` |
-| Blocks | a Proposition as a container for a definition, a computation, and a remark; a claim inside a definition; a definition inside an example; a result inside a remark; the claim or the defined term after a paragraph of constructions | typed blocks with the wrong types: a Theorem for a computation, a Lemma for a definition's consequence | one lede per block, first after its hypotheses; the block type as the logical status of its content; claim and hypotheses in the block, the construction in the proof; a definition's consequences as a proposition after it; a computation as an example; a failed implication as a counterexample; a characterization as a proposition, not the definition | `DEF-44`, `SEC-11`, `SEC-7`, `SEC-16`, `SEC-18`, `DEF-16`, `DEF-22`, `EX-2`, `PR-64` |
-| Commentary | a sentence about the mathematics in place of the mathematics: that a notion is standard, carries more information, differs from another, or behaves additively; a causal metaphor for an implication | the commentary kept with a formula appended | the statement with its hypotheses and citation; the equations; the map that separates the two notions; the implication in logical vocabulary | `PR-51`, `PR-52`, `PR-74`, `PR-78`, `EV-11`, `CITE-4`, `SEC-17` |
+| Blocks | a Proposition as a container for a definition, a computation, and a remark; a claim inside a definition; a definition inside an example; a result inside a remark; the claim or the defined term after a paragraph of constructions | typed blocks with the wrong types: a Theorem for a computation, a Lemma for a definition's consequence | one lede per block, first after its hypotheses; the block type as the logical status of its content; claim and hypotheses in the block, the construction in the proof; a definition's consequences as a proposition after it; a computation as an example; a failed implication as a counterexample; a characterization as a proposition, not the definition; the equality or containment of two defined objects as a proposition, not a "comparison" remark or table; every sentence between blocks that has the form of a claim as a labelled statement | `DEF-44`, `SEC-11`, `SEC-7`, `SEC-16`, `SEC-18`, `SEC-22`, `SEC-23`, `DEF-16`, `DEF-22`, `EX-2`, `PR-64` |
+| Commentary | a sentence about the mathematics in place of the mathematics: that a notion is standard, carries more information, differs from another, is defined independently of another, or behaves additively; a causal metaphor for an implication | the commentary kept with a formula appended | the statement with its hypotheses and citation; the equations; the map that separates the two notions; the comparison of two objects with the hypotheses of equality and the separating element; the implication in logical vocabulary | `PR-51`, `PR-52`, `PR-74`, `PR-78`, `PR-79`, `EV-11`, `CITE-4`, `SEC-17` |
 | Level | a theory organized over the field of fractions $K$ while its objects live over the ring $R$: idempotents of $K[G]$, auxiliary cokernels, scalar extension in the definitions | the ring renamed, the constructions still rational | kernels of $R[G]$-endomorphisms, saturations, and complements as the definitions; base change as a proof step | `DEF-49`, `MA-16`, `NOT-5`, `TERM-18` |
 | Direction | an isomorphism written from the whole to the sum of its parts | an arrow with a formula in neither direction | the map the inclusions induce, from the sum, decorated once proved | `SYM-17`, `NOT-2`, `EV-11` |
 | Sources | the source's convention, sign, and reading instruction inside the statement; a hypothesis named after its source | a result re-derived from memory | the result in the document's conventions with the source cited; the translation once, at the definition | `CITE-9`, `CITE-1`, `TERM-7` |

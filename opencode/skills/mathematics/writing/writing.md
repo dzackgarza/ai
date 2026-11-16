@@ -4,6 +4,13 @@ description: Use when producing mathematical content, proofs, problem solutions,
 ---
 # Dzack Mathematical Writing
 
+When editing an existing manuscript, load
+[[research-writing/revision/revision|scholarly paper revision]]. Preserve its notation,
+proof style, macro setup, and genre unless the requested change requires otherwise;
+the defaults below do not authorize a conversion. Check exposition with
+[[llm-failure-modes/scholarly-prose|scholarly prose patterns]], preserving precise
+mathematical language and the qualifications on every claim.
+
 ## Philosophy
 
 Mathematical writing is the economical, logically organized presentation of
@@ -145,7 +152,11 @@ formulation is the floor, not the ceiling: a notion the document has placed in
 a more structured setting is stated there, and the elementary formulation is
 the proposition recovered from it. Categorical vocabulary carries an argument
 only when the argument uses a categorical property, and the construction is
-then taken in that category. The checkable catalogue,
+then taken in that category. A second test decides each referring phrase: what
+does the sentence tell the reader about the referent that its binding did not?
+A non-empty answer is a claim, and it takes a statement block with a status.
+The checkable catalogue, the model of the object on the page against the
+object in the writer's head,
 the ten editorial judgments, the oscillation gate, and the annotation
 gate are in
 [[mathematics/writing/policy/policy|mathematical-writing-policy]] — load it
@@ -278,6 +289,14 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 - [ ] No case dismissed as "similar to the previous one"
 
 - [ ] All variables bound with explicit quantifiers or type declarations
+
+- [ ] Every sentence either binds a name or asserts; each assertion about a
+  bound object has a statement block, a status, and a proof or citation
+  (policy section "The object on the page and the object in the writer's
+  head", `SEC-22`, `SEC-23`)
+
+- [ ] Each definition holds only the hypotheses its defining expression uses
+  (`DEF-50`)
 
 - [ ] Every non-trivial step has inline justification in square brackets
 

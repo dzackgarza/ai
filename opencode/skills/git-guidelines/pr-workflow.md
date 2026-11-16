@@ -179,7 +179,7 @@ Re-check CI status using the commands from Section 4 above.
 
 > CI failures and PR review comments are different.
 > CI failures can be fixed mechanically after root-cause diagnosis.
-> Review comments must first be routed to `pr-feedback-triage`.
+> Review comments must first be routed to [[pr-feedback-triage/SKILL|pr-feedback-triage]].
 > Do not auto-fix review comments merely because they are unresolved.
 
 ### Auto-Fix Loop Pattern
@@ -197,7 +197,7 @@ Before merge, require all mandatory checks to pass and every review finding to h
 visible disposition. Route only findings that affect the current PR's claim, acceptance or
 proof obligations, required checks, user-visible correctness, hard policy, or PR-caused
 regressions through another remediation cycle. A true localized low-risk maintainability
-finding may instead follow `pr-feedback-triage`'s `Backlogged as minor technical debt`
+finding may instead follow [[pr-feedback-triage/SKILL|pr-feedback-triage]]'s `Backlogged as minor technical debt`
 route, with a linked batched debt issue and evidence that the PR remains complete.
 
 **With gh:**

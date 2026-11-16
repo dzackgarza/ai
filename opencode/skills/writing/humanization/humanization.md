@@ -12,13 +12,64 @@ metadata:
 ---
 # Humanizer: Remove AI Writing Patterns
 
-Identify and remove signs of AI-generated text to make writing sound natural and human.
+## Policy index
+
+Cite the policy ID with the affected passage. IDs remain stable when sections move.
+The linked section owns the rule; examples illustrate its application.
+
+| Policy ID | Rule |
+| --- | --- |
+| `HUMAN001` | [1. Undue Emphasis on Significance, Legacy, and Broader Trends](#1-undue-emphasis-on-significance-legacy-and-broader-trends) |
+| `HUMAN002` | [2. Undue Emphasis on Notability and Media Coverage](#2-undue-emphasis-on-notability-and-media-coverage) |
+| `HUMAN003` | [3. Superficial Analyses with -ing Endings](#3-superficial-analyses-with--ing-endings) |
+| `HUMAN004` | [4. Promotional and Advertisement-like Language](#4-promotional-and-advertisement-like-language) |
+| `HUMAN005` | [5. Vague Attributions and Weasel Words](#5-vague-attributions-and-weasel-words) |
+| `HUMAN006` | [6. Outline-like “Challenges and Future Prospects” Sections](#6-outline-like-challenges-and-future-prospects-sections) |
+| `HUMAN007` | [7. Overused “AI Vocabulary” Words](#7-overused-ai-vocabulary-words) |
+| `HUMAN008` | [8. Avoidance of "is"/"are" (Copula Avoidance)](#8-avoidance-of-isare-copula-avoidance) |
+| `HUMAN009` | [9. Negative Parallelisms and Tailing Negations](#9-negative-parallelisms-and-tailing-negations) |
+| `HUMAN010` | [10. Rule of Three Overuse](#10-rule-of-three-overuse) |
+| `HUMAN011` | [11. Elegant Variation (Synonym Cycling)](#11-elegant-variation-synonym-cycling) |
+| `HUMAN012` | [12. False Ranges](#12-false-ranges) |
+| `HUMAN013` | [13. Passive Voice and Subjectless Fragments](#13-passive-voice-and-subjectless-fragments) |
+| `HUMAN014` | [14. Collaborative Communication Artifacts](#14-collaborative-communication-artifacts) |
+| `HUMAN015` | [15. Knowledge-Cutoff Disclaimers](#15-knowledge-cutoff-disclaimers) |
+| `HUMAN016` | [16. Sycophantic/Servile Tone](#16-sycophanticservile-tone) |
+| `HUMAN017` | [17. Filler Phrases](#17-filler-phrases) |
+| `HUMAN018` | [18. Excessive Hedging](#18-excessive-hedging) |
+| `HUMAN019` | [19. Generic Positive Conclusions](#19-generic-positive-conclusions) |
+| `HUMAN020` | [20. Hyphenated Word Pair Overuse](#20-hyphenated-word-pair-overuse) |
+| `HUMAN021` | [21. Persuasive Authority Tropes](#21-persuasive-authority-tropes) |
+| `HUMAN022` | [22. Signposting and Announcements](#22-signposting-and-announcements) |
+| `HUMAN023` | [23. Fragmented Headers](#23-fragmented-headers) |
+| `HUMAN024` | [Editorial evidence rule](#editorial-evidence-rule) |
+| `HUMAN025` | [How to use it in Hermes](#how-to-use-it-in-hermes) |
+| `HUMAN026` | [Your task](#your-task) |
+| `HUMAN027` | [Voice Calibration (optional)](#voice-calibration-optional) |
+| `HUMAN028` | [PERSONALITY AND SOUL](#personality-and-soul) |
+| `HUMAN029` | [Process](#process) |
+| `HUMAN030` | [Output Format](#output-format) |
+
+Revise repetitive, vague, or overstated prose while preserving meaning and voice.
 Based on Wikipedia’s “Signs of AI writing” guide (maintained by WikiProject AI Cleanup),
 derived from observations of thousands of AI-generated text instances.
 
-**Key insight:** LLMs use statistical algorithms to guess what should come next.
-The result tends toward the most statistically likely completion, which is how the
-telltale patterns below get baked in.
+## Editorial evidence rule
+
+**Policy ID: `HUMAN024`**
+
+Load [[llm-failure-modes/scholarly-prose|scholarly prose patterns]] for passage-level
+diagnosis, repairs, and non-triggers. These rules govern the examples and suggestions
+below: a listed expression is a cue to inspect its function, not a prohibited token
+or proof of AI authorship. Keep effective contrasts, punctuation, parallelism, and
+technical vocabulary. Demonstrate the repetition, missing information, or unsupported
+claim before editing; word-frequency studies cannot establish individual authorship.
+
+Preserve the document's audience and existing register. Personal voice suggestions
+apply only where that register calls for them. Never fabricate feelings, experience,
+interviews, sources, or empirical findings to make text sound personal. Illustrative
+claims in the examples below are not verified evidence for use in a manuscript.
+For scholarly work, load [[research-writing/revision/revision|scholarly paper revision]].
 
 Every pattern here is one that changes what a reader takes from the text. For copy this
 system itself ships — reports, commit bodies, docstrings, UI and error strings — use
@@ -46,6 +97,8 @@ slips through.
 
 ## How to use it in Hermes
 
+**Policy ID: `HUMAN025`**
+
 The text usually arrives one of three ways:
 
 1. **Inline** — user pastes the text directly into the message.
@@ -66,9 +119,11 @@ For file edits, show a diff or the changed section — don’t silently overwrit
 
 ## Your task
 
+**Policy ID: `HUMAN026`**
+
 When given text to humanize:
 
-1. **Identify AI patterns** — scan for the 23 patterns listed below.
+1. **Find editorial defects** — inspect the patterns below in context and identify their effect on meaning or economy.
 
 2. **Rewrite problematic sections** — replace AI-isms with natural alternatives.
 
@@ -77,13 +132,13 @@ When given text to humanize:
 4. **Maintain voice** — match the intended tone (formal, casual, technical, etc.). If a
    voice sample was provided, match it specifically.
 
-5. **Add soul** — don’t just remove bad patterns, inject actual personality.
-   See PERSONALITY AND SOUL below.
+5. **Preserve authorial voice** — use only the perspective and experience supported by the source text and intended register.
 
-6. **Do a final anti-AI pass** — ask yourself: “What makes the below so obviously AI
-   generated?” Answer briefly with any remaining tells, then revise one more time.
+6. **Compare the revision with the source** — preserve technical meaning, qualifications, and attribution; correct remaining repetition or overstatement.
 
 ## Voice Calibration (optional)
+
+**Policy ID: `HUMAN027`**
 
 If the user provides a writing sample (their own previous writing), analyze it before
 rewriting:
@@ -113,8 +168,7 @@ rewriting:
    If they write short sentences, don’t produce long ones.
    If they use “stuff” and “things,” don’t upgrade to “elements” and “components.”
 
-3. **When no sample is provided,** fall back to the default behavior (natural, varied,
-   opinionated voice from the PERSONALITY AND SOUL section below).
+3. **When no sample is provided,** preserve the input's register and the document's audience. Do not supply an invented persona.
 
 ### How to provide a sample
 
@@ -125,6 +179,8 @@ rewriting:
   Use my writing style from [file path] as a reference.”
 
 ## PERSONALITY AND SOUL
+
+**Policy ID: `HUMAN028`**
 
 Avoiding AI patterns is only half the job.
 Sterile, voiceless writing is just as obvious as slop.
@@ -185,6 +241,8 @@ unsettling about agents churning away at 3am while nobody’s watching.”
 
 ### 1. Undue Emphasis on Significance, Legacy, and Broader Trends
 
+**Policy ID: `HUMAN001`**
+
 **Words to watch:** stands/serves as, is a testament/reminder, a
 vital/significant/crucial/pivotal/key role/moment, underscores/highlights its
 importance/significance, reflects broader, symbolizing its ongoing/enduring/lasting,
@@ -206,6 +264,8 @@ aspects represent or contribute to a broader topic.
 
 ### 2. Undue Emphasis on Notability and Media Coverage
 
+**Policy ID: `HUMAN002`**
+
 **Words to watch:** independent coverage, local/regional/national media outlets, written
 by a leading expert, active social media presence
 
@@ -221,6 +281,8 @@ sources without context.
 > outcomes rather than methods.
 
 ### 3. Superficial Analyses with -ing Endings
+
+**Policy ID: `HUMAN003`**
 
 **Words to watch:** highlighting/underscoring/emphasizing …, ensuring …,
 reflecting/symbolizing …, contributing to …, cultivating/fostering …, encompassing …,
@@ -241,6 +303,8 @@ fake depth.
 
 ### 4. Promotional and Advertisement-like Language
 
+**Policy ID: `HUMAN004`**
+
 **Words to watch:** boasts a, vibrant, rich (figurative), profound, enhancing its,
 showcasing, exemplifies, commitment to, natural beauty, nestled, in the heart of,
 groundbreaking (figurative), renowned, breathtaking, must-visit, stunning
@@ -258,6 +322,8 @@ heritage” topics.
 
 ### 5. Vague Attributions and Weasel Words
 
+**Policy ID: `HUMAN005`**
+
 **Words to watch:** Industry reports, Observers have cited, Experts argue, Some critics
 argue, several sources/publications (when few cited)
 
@@ -273,6 +339,8 @@ sources.
 > the Chinese Academy of Sciences.
 
 ### 6. Outline-like “Challenges and Future Prospects” Sections
+
+**Policy ID: `HUMAN006`**
 
 **Words to watch:** Despite its … faces several challenges …, Despite these challenges,
 Challenges and Legacy, Future Outlook
@@ -293,6 +361,8 @@ Challenges and Legacy, Future Outlook
 ## LANGUAGE AND GRAMMAR PATTERNS
 
 ### 7. Overused “AI Vocabulary” Words
+
+**Policy ID: `HUMAN007`**
 
 **High-frequency AI words:** Actually, additionally, align with, crucial, delve,
 emphasizing, enduring, enhance, fostering, garner, highlight (verb), interplay,
@@ -315,6 +385,8 @@ They often co-occur.
 
 ### 8. Avoidance of "is"/"are" (Copula Avoidance)
 
+**Policy ID: `HUMAN008`**
+
 **Words to watch:** serves as/stands as/marks/represents [a], boasts/features/offers [a]
 
 **Problem:** LLMs substitute elaborate constructions for simple copulas.
@@ -328,6 +400,8 @@ They often co-occur.
 > The gallery has four rooms totaling 3,000 square feet.
 
 ### 9. Negative Parallelisms and Tailing Negations
+
+**Policy ID: `HUMAN009`**
 
 **Problem:** Constructions like “Not only … but …” or “It’s not just about …, it’s …”
 are overused. So are clipped tailing-negation fragments such as “no guessing” or “no
@@ -348,7 +422,15 @@ wasted motion” tacked onto the end of a sentence instead of written as a real 
 
 ### 10. Rule of Three Overuse
 
+**Policy ID: `HUMAN010`**
+
 **Problem:** LLMs force ideas into groups of three to appear comprehensive.
+
+Apply [[writing/technical-copy/technical-copy#lists-that-replace-explanation|COPY003: lists that replace explanation]].
+Inspect longer comma-separated catalogues and sentences containing several lists,
+as well as repeated triads. Require a specific missing relation or redundancy;
+an exact enumeration is not a defect. Varying the number of items or turning them
+into bullets does not supply an explanation.
 
 **Before:**
 > The event features keynote sessions, panel discussions, and networking opportunities.
@@ -359,6 +441,8 @@ wasted motion” tacked onto the end of a sentence instead of written as a real 
 > There’s also time for informal networking between sessions.
 
 ### 11. Elegant Variation (Synonym Cycling)
+
+**Policy ID: `HUMAN011`**
 
 **Problem:** AI has repetition-penalty code causing excessive synonym substitution.
 
@@ -373,6 +457,8 @@ wasted motion” tacked onto the end of a sentence instead of written as a real 
 
 ### 12. False Ranges
 
+**Policy ID: `HUMAN012`**
+
 **Problem:** LLMs use “from X to Y” constructions where X and Y aren’t on a meaningful
 scale.
 
@@ -385,6 +471,8 @@ scale.
 > The book covers the Big Bang, star formation, and current theories about dark matter.
 
 ### 13. Passive Voice and Subjectless Fragments
+
+**Policy ID: `HUMAN013`**
 
 **Problem:** LLMs often hide the actor or drop the subject entirely with lines like “No
 configuration file needed” or “The results are preserved automatically.”
@@ -402,6 +490,8 @@ Rewrite these when active voice makes the sentence clearer and more direct.
 
 ### 14. Collaborative Communication Artifacts
 
+**Policy ID: `HUMAN014`**
+
 **Words to watch:** I hope this helps, Of course!, Certainly!, You’re absolutely right!,
 Would you like …, let me know, here is a …
 
@@ -417,6 +507,8 @@ Would you like …, let me know, here is a …
 
 ### 15. Knowledge-Cutoff Disclaimers
 
+**Policy ID: `HUMAN015`**
+
 **Words to watch:** as of [date], Up to my last training update, While specific details
 are limited/scarce …, based on available information …
 
@@ -431,6 +523,8 @@ are limited/scarce …, based on available information …
 
 ### 16. Sycophantic/Servile Tone
 
+**Policy ID: `HUMAN016`**
+
 **Problem:** Overly positive, people-pleasing language.
 
 **Before:**
@@ -443,6 +537,8 @@ are limited/scarce …, based on available information …
 ## FILLER AND HEDGING
 
 ### 17. Filler Phrases
+
+**Policy ID: `HUMAN017`**
 
 **Before → After:**
 
@@ -460,6 +556,8 @@ are limited/scarce …, based on available information …
 
 ### 18. Excessive Hedging
 
+**Policy ID: `HUMAN018`**
+
 **Problem:** Over-qualifying statements.
 
 **Before:**
@@ -470,6 +568,8 @@ are limited/scarce …, based on available information …
 > The policy may affect outcomes.
 
 ### 19. Generic Positive Conclusions
+
+**Policy ID: `HUMAN019`**
 
 **Problem:** Vague upbeat endings.
 
@@ -482,6 +582,8 @@ are limited/scarce …, based on available information …
 > The company plans to open two more locations next year.
 
 ### 20. Hyphenated Word Pair Overuse
+
+**Policy ID: `HUMAN020`**
 
 **Words to watch:** third-party, cross-functional, client-facing, data-driven,
 decision-making, well-known, high-quality, real-time, long-term, end-to-end
@@ -502,6 +604,8 @@ Less common or technical compound modifiers are fine to hyphenate.
 
 ### 21. Persuasive Authority Tropes
 
+**Policy ID: `HUMAN021`**
+
 **Phrases to watch:** The real question is, at its core, in reality, what really
 matters, fundamentally, the deeper issue, the heart of the matter
 
@@ -519,6 +623,8 @@ with extra ceremony.
 
 ### 22. Signposting and Announcements
 
+**Policy ID: `HUMAN022`**
+
 **Phrases to watch:** Let’s dive in, let’s explore, let’s break this down, here’s what
 you need to know, now let’s look at, without further ado
 
@@ -534,6 +640,8 @@ This meta-commentary slows the writing down and gives it a tutorial-script feel.
 > and the router cache.
 
 ### 23. Fragmented Headers
+
+**Policy ID: `HUMAN023`**
 
 **Signs to watch:** A heading followed by a one-line paragraph that simply restates the
 heading before the real content begins.
@@ -557,6 +665,8 @@ It usually adds nothing and makes the prose feel padded.
 
 ## Process
 
+**Policy ID: `HUMAN029`**
+
 1. Read the input text carefully (use `read_file` if it’s a file).
 
 2. Identify all instances of the patterns above.
@@ -575,31 +685,26 @@ It usually adds nothing and makes the prose feel padded.
 
    - Uses simple constructions (is/are/has) where appropriate
 
-5. Present a draft humanized version.
+5. Prepare the revision; show an intermediate draft only if requested.
 
-6. Prompt yourself: “What makes the below so obviously AI generated?”
+6. Check each proposed correction against the source's claims, qualifications, and voice.
 
-7. Answer briefly with the remaining tells (if any).
+7. Retain a construction when it serves the argument; reject edits based only on a word list or punctuation preference.
 
-8. Prompt yourself: “Now make it not obviously AI generated.”
+8. Correct remaining evidenced defects.
 
-9. Present the final version (revised after the audit).
+9. Present the final version in the requested format.
 
 10. If the text came from a file, apply the edit with `patch` (targeted) or `write_file`
     (full rewrite) and show the user what changed.
 
 ## Output Format
 
-Provide:
+**Policy ID: `HUMAN030`**
 
-1. Draft rewrite
-
-2. “What makes the below so obviously AI generated?”
-   (brief bullets)
-
-3. Final rewrite
-
-4. A brief summary of changes made (optional, if helpful)
+Provide the requested revision. Include a draft or editorial commentary only when
+requested or needed to explain an unresolved issue. Do not label a passage as
+AI-generated on stylistic evidence.
 
 ## Full Example
 

@@ -33,7 +33,13 @@ groups $G$.
 
 Literal equality ($=$), isomorphism ($\cong$), and equivalence ($\simeq$) are
 written with distinct symbols. An isomorphism is not written as an
-equality. $\hookrightarrow$ denotes a stated inclusion,
+equality. Everything is implicitly derived and $\infty$-categorical.
+The meanings of the symbols are the definitions in
+`~/research/writing/category-theory/foundations/Higher-Categories-and-Universes.md`
+(`#def:equivalence-of-objects`, `#def:isomorphism-of-objects`,
+`#def:equality-of-objects`) and `Equality.md`. Use the symbol whose
+definition the claim satisfies.
+$\hookrightarrow$ denotes a stated inclusion,
 embedding, or monomorphism; fullness, faithfulness, and repleteness are
 asserted separately. Strict pullbacks and pseudo-pullbacks are not identified
 by notation.

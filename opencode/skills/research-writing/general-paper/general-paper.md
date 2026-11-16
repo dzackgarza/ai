@@ -4,6 +4,14 @@ description: Use when writing a formal research, academic, or conference paper.
 ---
 # Research Paper Writer
 
+For an existing manuscript, load
+[[research-writing/revision/revision|scholarly paper revision]] first. Its preservation
+rules take precedence over the creation outline, format, length, citation-count,
+proof-format, and clarification defaults below. For new work, use the actual venue
+requirements and requested genre; the templates below are examples, not requirements
+to impose on every paper. Apply
+[[llm-failure-modes/scholarly-prose|scholarly prose patterns]] during the editorial pass.
+
 ## Overview
 
 This skill guides the creation of formal academic research papers that meet publication

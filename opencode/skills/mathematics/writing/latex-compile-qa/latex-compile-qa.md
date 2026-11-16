@@ -4,6 +4,21 @@ description: "Use when compiling a LaTeX project or running build QA — latex c
 ---
 # LaTeX Compile + QA
 
+## Existing projects
+
+Read the project's build configuration and compile its actual root using its chosen
+engine, bibliography backend, and output paths. Those settings govern the build;
+the scaffold paths and XeLaTeX commands below apply only to projects configured that
+way. Do not switch engines for a quick check. Use a helper only if it supports the
+project's build conventions. Impose page limits only when the task specifies them.
+
+After the final source change, rebuild, inspect the log for errors and unresolved
+references, and inspect the affected PDF pages. Check equations, layout, citations,
+and page breaks. Report a failed or unavailable build accurately. Supply a separate
+build-report artifact only when requested or required by the project workflow.
+For manuscript edits, also use
+[[research-writing/revision/revision|scholarly paper revision]].
+
 Compile the LaTeX project and produce a PDF (when the toolchain is available), plus a
 short build report.
 
