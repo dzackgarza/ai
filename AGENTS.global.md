@@ -166,14 +166,25 @@ be acted on now belong in that work, not in a temporary audit document. Work def
 to a later session belongs in the existing issue or owning artifact, with enough
 context to act on it. Update that record as the work is resolved.
 
-Distinguish durable knowledge from facts computed from changing sources before
-persisting either. Keep lasting decisions at their owner; query current state when
-needed. Do not create a document merely to have something to summarize or act on.
+Durable documentation and memory are like the movie Memento: they are keyed hints
+to a future self whose memory has reset. You "learn" by teaching your future self,
+a blank slate, a solution, not by keeping a diary. Write for that future reader's
+missing knowledge, not for the context you currently hold.
 
-Persist definitions, selection criteria, editorial judgments, decisions, and their
-reasons at the existing owner. Compute membership, counts, differences, and completion
-status from their authoritative sources. Copying these results into prose creates
-another account that needs maintenance whenever its sources change.
+Persist only timeless facts that future agents need and do not already know from
+the durable repository context. Give each note a recognizable concept, problem, or
+symptom as its key so the reader can find it when needed. Explain the concept or
+solution, when it applies, why it works, and the definitions and source references
+needed to reconstruct it. Keep this knowledge at its existing owner. Query changing
+state from authoritative sources; track deferred work in issues or the current
+handoff, rather than treating it as permanent knowledge.
+
+Before saving, actually read the text from the perspective of a newborn agent with
+only the durable repository context: would that agent understand it completely?
+Check every name, reference, prerequisite, and reasoning step against what that
+reader can access. Supply missing context or link to its durable owner. Do not leave
+the reader to guess what a term means, why a decision follows, or how to apply the
+solution. Such gaps compound across memory resets and distort the knowledge.
 
 When the task requires a reusable view of changing state, retain a reproducible query
 or comparison against those sources. Keep editorial judgments separate, keyed to stable
