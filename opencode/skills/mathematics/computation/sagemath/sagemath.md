@@ -21,7 +21,7 @@ v = vector([1, 2, 3])
 # ✅ GOOD: Use canonical objects from algebraic structures
 R = RootSystem(['A', 2])
 L = R.weight_lattice()
-alpha = L.simple_roots()
+α = L.simple_roots()
 ```
 
 **Never test against hardcoded values:**
@@ -33,7 +33,7 @@ if gram[0][1] == -1:
     ...
 
 # ✅ GOOD: Test mathematical properties
-assert alpha[1].inner_product(alpha[2]) == -1
+assert α[1].inner_product(α[2]) == -1
 assert M.is_positive_definite()
 ```
 
@@ -41,6 +41,11 @@ assert M.is_positive_definite()
 Canonical objects encode structure, enable verification, and make code self-documenting.
 
 ## Core Rules
+
+> [!IMPORTANT]
+> Code and test examples must satisfy the non-negotiable
+> [[policy-index/SKILL|bridge-burning policies]], especially the canonical proof and
+> assertion rules.
 
 ### 1. NO Manual Matrix Construction
 
@@ -95,3 +100,102 @@ Every assertion must be mathematically verifiable with clear documentation:
 - Code is runnable in sage blocks
 
 - Result includes citation to mathematical fact
+
+### 4. Compare Mathematical Objects, Not Enumeration Order
+
+Never assert equality of ordered collections when the mathematical guarantee is
+order-independent. In particular, do not sort two lists and assert that the resulting
+lists are equal:
+
+```sage
+# ❌ BAD: Couples the assertion to a non-canonical ordering choice
+assert sorted(actual_roots) == sorted(expected_roots)
+
+# ✅ GOOD: Tests equality of the underlying mathematical sets
+assert set(actual_roots) == set(expected_roots)
+```
+
+Use multiset equality instead when multiplicities are mathematically significant.
+Assert sequence equality only when a canonical ordering or normal form is itself part of
+the mathematics or the documented public contract, and state that canonicality in the
+assertion's explanation.
+
+Tests and examples must survive changes to enumeration and sorting algorithms whenever
+those choices do not alter the underlying mathematical object.
+
+### 5. Bind Generators with Sage Syntax
+
+In Sage input, bind a parent and its named generators in the defining assignment:
+
+```sage
+# ✅ GOOD: Idiomatic Sage generator binding
+R.<x, y> = PolynomialRing(QQ, 2)
+```
+
+Do not construct the parent and then name or unpack its generators separately:
+
+```sage
+# ❌ BAD: Repeats generator names and separates them from the parent definition
+R = PolynomialRing(QQ, 2, names=("x", "y"))
+x, y = R.gens()
+
+# ❌ BAD: Spells out the preparser expansion
+R = PolynomialRing(QQ, 2, names=("x", "y"))
+x, y = R._first_ngens(2)
+```
+
+Use `R.<x, y> = ...` whenever the generators are known when the parent is constructed.
+This keeps the mathematical declaration atomic and makes the intended Sage structure
+immediately legible. The angle-bracket form is Sage preparser syntax for Sage input,
+not ordinary Python syntax.
+
+### 6. Make the Code Read Like Mathematics
+
+Choose notation that makes the Sage source resemble the mathematical argument. Sage
+supports Unicode identifiers; use standard mathematical symbols when the surrounding
+mathematics gives them a clear meaning:
+
+```sage
+# ❌ BAD: Transliteration obscures the notation used in the mathematics
+alpha1 = L.simple_root(1)
+phi = Hom(A, B)(data)
+
+# ✅ GOOD: The source uses the mathematical symbols directly
+α_1 = L.simple_root(1)
+φ = Hom(A, B)(data)
+```
+
+Prefer `α_1`, `φ`, `Δ`, or `W_I` to `alpha1`, `phi`, `delta`, or similarly transliterated
+names when those symbols are the established notation. Keep indices visible with
+underscores. Apply the same principle to expressions, object names, and the order of
+computations: a mathematician should be able to compare the code directly with the
+corresponding definition or proof.
+
+Do not introduce symbolic names whose meaning is not established by the surrounding
+mathematics. Mathematical readability, not Unicode decoration, is the criterion.
+
+### 7. Write Notebooks as Mathematical Narratives
+
+Heavily prefer narrative notebooks using `jupyterlab_myst` syntax. Code cells should
+primarily establish computations and named mathematical objects; adjacent Markdown cells
+should explain, list, and present those results in prose:
+
+```sage
+name = "Me"
+array = vector(ZZ, 2, [1, 1])
+```
+
+```markdown
+Hello, {eval}`name`! Your array is: {eval}`array`.
+The sum is: {eval}`array.sum()`.
+```
+
+Use `{eval}` interpolation to place computed values inside the mathematical explanation.
+Do not make the reader reconstruct the argument from a sequence of code cells and raw
+outputs. Introduce the question in prose, perform the computation in a focused code cell,
+and interpret the result in the next Markdown cell.
+
+For exploratory notebooks, prefer more, shorter cells over monolithic computations.
+Call `show(...)` frequently after constructing or transforming an object so the reader
+can see its mathematical form, representation, and intermediate shape. Each cell should
+advance one legible step of the exploration.
