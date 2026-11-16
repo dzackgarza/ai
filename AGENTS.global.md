@@ -171,6 +171,20 @@ to a future self whose memory has reset. You "learn" by teaching your future sel
 a blank slate, a solution, not by keeping a diary. Write for that future reader's
 missing knowledge, not for the context you currently hold.
 
+Metaphors and explicit examples carry compressed lessons and shared cultural
+memory. Preserve useful pithy statements, aphorisms, similes, and cultural or
+historical touchstones when teaching future agents. They can recall a rich body of
+context more efficiently than an abstract rule or a long explanation from first
+principles. Replacing them with abstractions can erase the understanding they carry
+and leave the rule open to incompatible interpretations in a new setting.
+
+Pair the principle with a grounded example or memorable comparison, and explain
+what connects them. Here, "preserve context" alone leaves the writing task vague;
+Memento evokes a reader who cannot remember yesterday and must reconstruct a
+solution from deliberately chosen clues. Keep that concrete meaning in the lesson.
+Check that the example teaches the general principle, rather than narrowing the
+rule to the example or leaving the reader to invent the analogy's meaning.
+
 Persist only timeless facts that future agents need and do not already know from
 the durable repository context. Give each note a recognizable concept, problem, or
 symptom as its key so the reader can find it when needed. Explain the concept or
