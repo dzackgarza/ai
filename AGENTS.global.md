@@ -53,6 +53,7 @@ of each step. These duties apply throughout the task, not only at visible checks
 machine. Repository and harness instruction entrypoints are symlinks to this file.
 When working in `/home/dzack/ai`:
 
+- Commit repository changes and checkpoints directly to `main`.
 - `AGENTS.global.md` owns policy and skill routing; `opencode/skills/` is the
   assembled skills vault, including links to skills owned by other repositories.
 - `opencode/agents/` owns hand-written OpenCode agent definitions.
