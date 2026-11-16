@@ -77,7 +77,8 @@ When working in `/home/dzack/ai`:
   | what changed, why, what was ruled out | the commit message body |
   | a gotcha owned by an external tool | that project's `TRAPS.md` |
   | how a thing works, what must not be violated | the repo's `AGENTS.md` or `docs/` |
-  | current state, gaps, future work | repo artifacts and GitHub issues |
+  | accepted work, decisions, unresolved obligations | the owning repo artifact or GitHub issue |
+  | current inventories, comparisons, status | the authoritative sources, queried when needed |
   | a durable lesson or a corrected expectation | the agent-memory vault |
 
 - **Finish known work.** Take clear next steps. Do not leave authorized work open merely
@@ -103,6 +104,29 @@ When working in `/home/dzack/ai`:
   repo.
 - **Read the tree before editing.** Never touch a repository file until you have its
   layout and governing documents in context.
+
+## Durable knowledge and current state
+
+Before creating a report, inventory, comparison, or status document, distinguish
+durable knowledge from facts computed from changing sources. For a one-time question
+about current state, inspect those sources and answer directly with evidence. Creating
+a file is not a completion condition for answering a question.
+
+Persist definitions, selection criteria, editorial judgments, decisions, and their
+reasons at the existing owner. Compute membership, counts, differences, and completion
+status from their authoritative sources. Copying these results into prose creates
+another account that needs maintenance whenever its sources change.
+
+When the task requires a reusable view of changing state, retain a reproducible query
+or comparison against those sources. Keep editorial judgments separate, keyed to stable
+source identifiers, so they can be reused when the comparison runs again. Use existing
+query tools where possible; a one-time question does not authorize building automation
+merely to justify an artifact.
+
+When the task calls for a static report or historical record, identify the source
+revisions or capture dates and present the result as a snapshot. A timestamp records
+provenance; it does not keep a report current. An artifact intended to remain current
+needs a defined refresh mechanism tied to its source changes.
 
 ## Action before commentary
 
