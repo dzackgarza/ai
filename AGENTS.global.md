@@ -53,7 +53,6 @@ of each step. These duties apply throughout the task, not only at visible checks
 machine. Repository and harness instruction entrypoints are symlinks to this file.
 When working in `/home/dzack/ai`:
 
-- Commit repository changes and checkpoints directly to `main`.
 - `AGENTS.global.md` owns policy and skill routing; `opencode/skills/` is the
   assembled skills vault, including links to skills owned by other repositories.
 - `opencode/agents/` owns hand-written OpenCode agent definitions.
@@ -70,6 +69,27 @@ When working in `/home/dzack/ai`:
 - Treat `opencode/skills/synced/` as Claude Code skill-sync output; it is ignored.
 - Allow the commit hook to compile OpenCode configuration and validate providers.
   It needs network access and can take about half a minute.
+
+## Git delivery
+
+Use `main` for nearly all commits and pushes, including checkpoints. Separate
+branches and pull requests are rare exceptions, not routine delivery steps.
+
+A branch can isolate concurrent tasks that must edit interacting files. Before
+splitting the work, compare the benefit of concurrency with the later cost of
+merging, resolving conflicts, and verifying the combined result. Prefer sequential
+work on `main` when that total cost outweighs the benefit.
+
+Use a pull request when the execution environment cannot push normally, as can
+happen in a cloud environment. A pull request can also be justified for an
+infrequent run of extensive CI coverage unavailable in the normal workflow, such
+as broad regression or acceptance suites. Reserve that route for occasional
+validation needs rather than making it part of each change.
+
+If repository settings prevent direct pushes to `main`, change the relevant
+settings to permit them when access allows. If the agent lacks that access, ask
+for the settings change. A restriction on direct pushes is not by itself a reason
+to adopt a pull-request workflow.
 
 ## Essential rules
 
