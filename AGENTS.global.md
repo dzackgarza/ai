@@ -113,7 +113,8 @@ to adopt a pull-request workflow.
 - **Process narrative is prohibited output.** Do not recount how the work went, how
   many times something failed, what was tried, or what went as expected. A reply longer
   than the delta it reports is narrating. Everything worth saying about the process has
-  a durable home. Write it there and say nothing in the reply:
+  a durable home. Write it there and say nothing in the reply. Requested analysis
+  and findings are answers, not process narrative; deliver them in chat:
 
   | The urge to say | Where it goes |
   | --- | --- |
@@ -154,10 +155,20 @@ to adopt a pull-request workflow.
 
 ## Durable knowledge and current state
 
-Before creating a report, inventory, comparison, or status document, distinguish
-durable knowledge from facts computed from changing sources. For a one-time question
-about current state, inspect those sources and answer directly with evidence. Creating
-a file is not a completion condition for answering a question.
+Requests for reports, audits, inventories, and comparisons default to answers in
+chat. Inspect the sources and explain the findings, evidence, and implications there.
+A file link is not the answer. Create a standalone document only when the user asks
+for one or the content has a concrete use beyond the immediate task.
+
+For analysis-only requests, deliver the analysis in chat. When remediation is also
+authorized, act on the findings and report the resulting state in chat. Findings to
+be acted on now belong in that work, not in a temporary audit document. Work deferred
+to a later session belongs in the existing issue or owning artifact, with enough
+context to act on it. Update that record as the work is resolved.
+
+Distinguish durable knowledge from facts computed from changing sources before
+persisting either. Keep lasting decisions at their owner; query current state when
+needed. Do not create a document merely to have something to summarize or act on.
 
 Persist definitions, selection criteria, editorial judgments, decisions, and their
 reasons at the existing owner. Compute membership, counts, differences, and completion
