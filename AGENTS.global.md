@@ -225,9 +225,80 @@ an external service. Ask first, in any form. When one is found where it should n
 replace the whole message with a one-line summary of the instruction or fact it carried,
 with nothing about the person, the tone, or the wording.
 
+## Spec Kit workflows and constitutions
+
+Always use Spec Kit workflows. Use the `speckit-*` skills for constitutions,
+specifications, clarification, plans, tasks, analysis, implementation, and convergence.
+Keep real user stories in the specification and derive acceptance tests from them.
+Apply the source-edit rule in **Bugs** to instruction and policy edits.
+
+Spec Kit constitutions should normally include the following requirements:
+
+- **Test tiers.** Divide tests into tiers. Tier 1 is the smallest set needed to
+  establish implementation correctness through happy paths and meaningful branches.
+  Its total runtime should be seconds or minutes. Fix slow-feedback papercuts
+  immediately. Higher tiers add evidence; tier N covers the long tail of examples,
+  permutations, edge cases, and unexpected combinations.
+- **Test design.** Follow `test-guidelines` and the applicable code style skills.
+  Recheck tests against those skills throughout development. Test externally
+  observable, end-to-end behaviour through real user stories. Minimize or remove
+  mocks, tests of internal units, and tests that manipulate internals to bypass the
+  path a user exercises. Preserve the intended behavioural coverage through the
+  real path. For mathematical libraries, test mathematical assertions through their
+  public operations at the owner of each operation.
+- **Contribution lessons.** Maintain `CONTRIBUTING.md` as lessons from past mistakes.
+  Give policies stable alphanumeric IDs grouped by category. Each policy addresses
+  a general class of contributions and, whenever possible, includes at least one
+  concrete bad-contribution-to-good-replacement comparison. For example:
+  `TEST001`: setting an internal completion flag and asserting it is set => perform
+  the user action and assert the resulting observable output.
+- **Feedback cadence.** Minimize feedback loops of ten minutes or more. Reserve
+  necessary long runs for milestones, such as completion of a batch of work. If
+  pushes trigger long checks, push only at milestones and use fast commit-only
+  checks as the primary feedback loop.
+- **Platform scope.** Add support for multiple platforms only when explicitly
+  requested.
+- **Logging.** Build detailed application logging in from the start. Test runs must
+  also produce durable logs that support historical review.
+- **Timing history.** Record timing information for every test and computation from
+  day one, including setup, fixtures, construction, and nested work. Retain the
+  records durably and ship them with the repository for historical analysis. Include
+  enough run, revision, environment, and input context to compare measurements.
+- **Timing triage.** For any timing issue, analyze measured costs and maintain a
+  triage burndown table before optimizing. Include the operation, cost per call,
+  multiplicative factors, aggregate cost, priority, proposed remedy, and remaining
+  measured cost. Price the work as cost per call times calls, examples, fixtures,
+  repetitions, and other actual multipliers. Prioritize small costs that compound
+  substantially and objectively large single costs. Use this analysis to select
+  work before pursuing micro-optimizations.
+- **Mathematical construction.** Make construction of mathematical objects close
+  to instant. Defer expensive computations until queried, unless an explicit flag
+  requests eager computation. Keep internal setup from dominating computational
+  cost; apply timing triage when it does.
+
+## Environments and disk use
+
+Always use virtual environments managed by tools such as `uv`. Attempt to maintain
+and reuse a shared, system-wide virtual environment where dependency requirements
+permit, to reduce duplicate installations and disk use. Keep dependency definitions
+reproducible when sharing environments.
+
+Periodically check disk usage during work, especially around large builds, downloads,
+and computations. Clear temporary files you created when they are no longer needed.
+Also clear verified disposable files in `/tmp`, rebuildable caches, and obsolete
+generated artifacts. Establish that files are safe to delete before cleanup; preserve
+live process state, tmux sockets and state, active jobs, and user work. Use the safe
+deletion rules below. Centralize and share caches whenever possible.
+
+Always seek to move every useful mathematical environment into the user's Sage
+container so research can be reproduced on another machine. Maintain the container's
+environment definitions and verify the actual mathematical workflow there. This
+environment consolidation is distinct from software compatibility migrations.
+
 ## Engineering and code style
 
-- No backward compatibility, fallbacks, compatibility shims, or migrations. Fail loudly.
+- No backward compatibility, fallbacks, compatibility shims, or compatibility
+  migrations. Fail loudly.
 - The simplest implementation that fully meets the surveyed requirements. Simplest is
   not narrowest: one general mechanism beats a special case plus its later migration.
 - **A dependency justifies itself; hand-rolled code does not.** Prefer libraries,
@@ -240,8 +311,8 @@ with nothing about the person, the tone, or the wording.
 - Fix root causes. Before editing, ask whether a more foundational system should change.
 - No debris: no temp files, dead code, commented-out blocks, or orphaned experiments.
 - Tests assert intended end-to-end behaviour. Regression tests preserve that behaviour
-  by detecting reported defects through the real affected path. A test suite over five
-  minutes is a defect.
+  by detecting reported defects through the real affected path. A tier 1 feedback
+  loop over five minutes is a defect; reserve longer evidence runs for milestones.
 - Mathematical code is accepted by true assertions about the mathematics it implements,
   stated at the owner of each operation. "Integration tests", "engineering integration"
   and acceptance by a consumer, port or migration contract do not apply to it: a
@@ -298,6 +369,7 @@ own references are progressive disclosure, not new triggers.
 | a tool or dependency to install | `tool-provisioning-and-environment-hygiene`, `system-conventions` |
 | the agent-memory CLI, the vault, or a plan record | `agent-memory`; `vault-maintenance` when a command fails |
 | an implementation plan | `plan` |
+| a Spec Kit constitution, specification, task list, or implementation workflow | the corresponding `speckit-*` skill; constitution defaults are in **Spec Kit workflows and constitutions** |
 | a CLI agent session transcript | `reading-transcripts` |
 | a ChatGPT conversation recorded by Chat On Steroids | the `just` recipes in `/home/dzack/gitclones/chat-on-steroids` |
 | a completion report, status update, or handoff | `response-preparation` |
