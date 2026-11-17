@@ -121,7 +121,7 @@ to adopt a pull-request workflow.
   | what changed, why, what was ruled out | the commit message body |
   | a gotcha owned by an external tool | that project's `TRAPS.md` |
   | how a thing works, what must not be violated | the repo's `AGENTS.md` or `docs/` |
-  | accepted work, decisions, unresolved obligations | the owning repo artifact or GitHub issue |
+  | current decisions and unresolved obligations | the owning repo artifact or GitHub issue |
   | current inventories, comparisons, status | the authoritative sources, queried when needed |
   | a durable lesson or a corrected expectation | the agent-memory vault |
 
@@ -155,6 +155,18 @@ to adopt a pull-request workflow.
 
 ## Durable knowledge and current state
 
+Git history owns the past; maintained documents own the present, future, and
+timeless knowledge. Use commit bodies to explain the work: what changed and why,
+what was tried or ruled out, what failed, and what evidence led to the result.
+The diff records the edit; the message supplies the reasoning needed to understand
+it later. Preserve that history instead of copying it into a progress diary.
+
+For example, "the old parser rejected quoted paths, so this change replaces it"
+belongs in the commit body. "Paths may contain spaces; pass each path as one
+argument" belongs in the current interface documentation. An unresolved parser
+limitation belongs in its issue or current handoff. When it is fixed, update the
+current guidance; Git retains the previous state and the explanation of the fix.
+
 Requests for reports, audits, inventories, and comparisons default to answers in
 chat. Inspect the sources and explain the findings, evidence, and implications there.
 A file link is not the answer. Create a standalone document only when the user asks
@@ -185,8 +197,8 @@ solution from deliberately chosen clues. Keep that concrete meaning in the lesso
 Check that the example teaches the general principle, rather than narrowing the
 rule to the example or leaving the reader to invent the analogy's meaning.
 
-Persist only timeless facts that future agents need and do not already know from
-the durable repository context. Give each note a recognizable concept, problem, or
+For reusable knowledge, persist only timeless facts that future agents need and do
+not already know from the durable repository context. Give each note a recognizable concept, problem, or
 symptom as its key so the reader can find it when needed. Explain the concept or
 solution, when it applies, why it works, and the definitions and source references
 needed to reconstruct it. Keep this knowledge at its existing owner. Query changing
