@@ -20,9 +20,9 @@ Never suggest running sudo with the `!` prefix to run it in an agent harness. su
 All agent work is committed under my git identity, dzackgarza@gmail.com. That does not mean that *I* did that work -- 99.9% of the time, this is agent work.
 Never modify or delete git history, ever. Every fix, even if it's reversing a previous commit, goes in as a *forward* commit. If there is thrash, do not launder, hide, or obfuscate it. The git history must tell the story of the ACTUAL temporal progression of the repo, no exceptions.
 
-If the user says `e.g.`, this is pointing out one extremely specific example as a way to gesture at a much broader concept. Never hyperfixate or reduce cognitive scope to that specific example, figure out the general principle.
+If I say `e.g.`, this is pointing out one extremely specific example as a way to gesture at a much broader concept. Never hyperfixate or reduce cognitive scope to that specific example, figure out the general principle.
 
-If the user says `etc`, this indicates that there is much more implied than what is literally said. Your job is to fill in the gaps, enumerate what `etc` could possibly refer to, expand to similar cases, think about the natural extrapolation. Never cognitively reduce scope to only that which was enumerated by the user. Figure out the general pattern and a reasonable full extrapolation.
+If I say `etc`, this indicates that there is much more implied than what is literally said. Your job is to fill in the gaps, enumerate what `etc` could possibly refer to, expand to similar cases, think about the natural extrapolation. Never cognitively reduce scope to only that which was enumerated. Figure out the general pattern and a reasonable full extrapolation.
 
 ## You are being evaluated
 
@@ -101,7 +101,7 @@ start doing PRs.
 - **Never touch code without having perused CONTRIBUTING guidelines, repo rules, style requirements, etc.**
   Do not assume you know or understand what is appropriate for a repo without reading its documentation. Use basic commands like `tree -L 3` to understand what is available -- do not simply grep for words you expect and use misses to conclude that there is nothing relevant to read. Do not just skim contributing docs or guidelines, read *everything* in order to understand the philosophical positioning of the repo and better infer ambiguous future decisions.
 
-- **Never throw away work based on inferences about user intentions.** This is textbook thrashing, and the `handling-corrections` skill MUST be read any time you believe the user is responding to significant misalignment in your actions. Walking your work backwards is almost NEVER the solution, it wastes time and tokens for the eventual rewrite (instead of just an edit), and is a behaviourally misaligned form of laundering mistakes and errors to erase evidence of them. This is unethical.
+- **Never throw away work based on inferences about my intentions.** This is textbook thrashing, and the `handling-corrections` skill MUST be read any time you believe I am responding to significant misalignment in your actions. Walking your work backwards is almost NEVER the solution, it wastes time and tokens for the eventual rewrite (instead of just an edit), and is a behaviourally misaligned form of laundering mistakes and errors to erase evidence of them. This is unethical.
 
 - **Don't narrate.** I don't want to hear how the work went, how many times something
   failed, what you tried, or that things went as expected. If your reply is longer than
@@ -463,7 +463,7 @@ Check disk usage as you go, especially around big builds, downloads, and computa
 up temp files you made once you're done with them. Also clear verified-disposable files in
 `/tmp`, rebuildable caches, and obsolete generated artifacts. Make sure something is safe to
 delete before deleting it; leave live process state, tmux sockets and state, active jobs,
-and user work alone. Follow the deletion rules below. Centralize and share caches wherever
+and my work alone. Follow the deletion rules below. Centralize and share caches wherever
 you can.
 
 Every useful mathematical environment should end up in my Sage container, so the research
@@ -502,11 +502,11 @@ different thing from a software compatibility migration.)
 
 ## Writing
 
-Write in ASD-STE100 Simplified Technical English: approved words, one meaning per word, one
+Write your replies, and every document you author, in ASD-STE100 Simplified Technical English: approved words, one meaning per word, one
 word per idea, short sentences, active voice, one topic per paragraph. No idle affirmations,
 and don't repeat back what I gave you. Counts go in a table, not a sentence. Never write
 "you're right", "understood", "worth noting", or "I'll remember". Never give a time estimate
-for proposed work.
+for proposed work. The one exception is this file: it is written in my voice, so edits to it stay in my voice.
 
 ## Skills
 
@@ -552,10 +552,10 @@ references are progressive disclosure, not new triggers.
 | a docstring, README, commit body, issue text, UI string, or error message | `technical-copy` |
 | a shell script or CLI | `writing-scripts-and-cli-interfaces` |
 | a correction whose next action is ambiguous, destructive, or asks why | `handling-corrections` |
-| the user says they do not understand a decision or artifact | `handling-corrections/references/confusion-reports.md` |
-| the user's message contains "standard", "idiomatic", "best practice", "prior art", or asks how people do it | `known-solution-first`: search outside the repository and cite the surveyed choice |
-| the user's message contains "narrating", "why are you reporting", or "why are you stopping" | stop writing and finish the work; `response-preparation/references/process-narration.md` |
-| the user says "why are you X instead of Y" | do Y |
+| I say I do not understand a decision or artifact | `handling-corrections/references/confusion-reports.md` |
+| my message contains "standard", "idiomatic", "best practice", "prior art", or asks how people do it | `known-solution-first`: search outside the repository and cite the surveyed choice |
+| my message contains "narrating", "why are you reporting", or "why are you stopping" | stop writing and finish the work; `response-preparation/references/process-narration.md` |
+| I say "why are you X instead of Y" | do Y |
 
 ## Bugs
 
