@@ -38,8 +38,9 @@ First verify that endpoint:
 ss -ltn '( sport = :2222 )'
 ```
 
-If port 2222 is absent, the workstation is not connected to `rack`. Stop. Do not use
-the cloud API or another Zotero server.
+If port 2222 is absent, the workstation is not connected to `rack`. Stop the write or
+the loop. Do not use another Zotero server. A read of the library can still go through
+the "Cloud Web API" read route below.
 
 If port 2222 is present and rack port 23119 is absent, start the rack-local Zotero
 forward in a named session:
@@ -54,17 +55,42 @@ After the health probe succeeds, use the same base addresses and `lib/zotero.py`
 workflow documented below. The forward closes when the workstation's SSH connection to
 `rack` closes.
 
+## Cloud Web API: the read route before a source is called absent
+
+The library is synced online, and the online library is where the owner's PDFs and
+their `*_extracted.md` attachments live. The local API can be down, and it can answer
+with no item for a source that the online library holds (observed 2026-11-19: three
+books absent from the local API and from `~/Zotero/storage`, present online with PDF
+and extraction). So an empty local answer does not show that a source is absent.
+
+Before you report an item, a PDF or an extraction as absent, search the Web API. The
+key is `ZOTERO_API_KEY` in the machine environment (`~/.envrc`); never write it into a
+command. The user id comes from the key itself:
+
+```bash
+curl -fsS -H "Zotero-API-Key: $ZOTERO_API_KEY" https://api.zotero.org/keys/current        # .userID
+curl -fsS -H "Zotero-API-Key: $ZOTERO_API_KEY" \
+  "https://api.zotero.org/users/<userID>/items/top?q=<title words>&qmode=everything"
+curl -fsS -H "Zotero-API-Key: $ZOTERO_API_KEY" \
+  "https://api.zotero.org/users/<userID>/items/<itemKey>/children"                         # the PDF and *_extracted.md
+curl -fsS -L -H "Zotero-API-Key: $ZOTERO_API_KEY" -o out \
+  "https://api.zotero.org/users/<userID>/items/<attachmentKey>/file"
+```
+
+A stored `.md` attachment arrives as a zip archive; unzip it. Read the extraction and
+leave the attachment unchanged.
+
+This section is a read route. Writes through `lib/zotero.py` and the extraction loop
+still need the running desktop's local API.
+
 ## NOT used (do not confuse with the above)
 
-- **Cloud Web API** (`api.zotero.org`, `ZOTERO_API_KEY`, `ZOTERO_USER_ID`) — not used
-  here. A dead or unset cloud key is never a blocker on this workstation.
 - **Standalone translation server** (`:1969`) — not used here. A dead `:1969` is never a
   blocker.
-- Any external read-only proxy to the cloud library is stale; route everything through
-  the running desktop's local API instead.
+- Any external read-only proxy to the cloud library is stale.
 
-If a guide, script, or memory record tells you to set `ZOTERO_API_KEY` /
-`ZOTERO_USER_ID` or to call `api.zotero.org` for this library, that source is out of date.
+A guide, script, or memory record that makes `api.zotero.org` the transport for writes
+or for the extraction loop is out of date.
 
 ## The I/O boundary: `lib/zotero.py`
 
@@ -233,8 +259,9 @@ named surface does not cover the need.
 
 | Pattern | Why bad | Do instead |
 | --- | --- | --- |
-| Set `ZOTERO_API_KEY` / `ZOTERO_USER_ID` for this library | cloud Web API is not used here | call the running desktop's local API |
-| Call `api.zotero.org` | cloud is not the transport here | `http://127.0.0.1:23119/api/users/0/...` |
+| Write to the library through `api.zotero.org` | the cloud is a read route here, not the write transport | `http://127.0.0.1:23119/api/users/0/...` through `lib/zotero.py` |
+| Report a source absent after an empty local answer | the local API can lack an item that the online library holds | search the "Cloud Web API" read route first |
+| Replace or edit an existing `*_extracted.md` | it is the owner's artifact; a rewritten extraction is no longer what the loop attached | read it; put a derived form outside Zotero |
 | Fall back to translation server `:1969` | not used here; a dead `:1969` is never a blocker | use `import_by_identifier` on the local addon |
 | Treat a collection `limit=500` as library-wide | silent coverage gaps | full parent/child walk with `iter_top()` + `get_children()` |
 | Trust a stale report/cache over live state | live Zotero is the only source of truth | reread through `lib/zotero.py` |
