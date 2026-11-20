@@ -9,7 +9,11 @@ Interact with the **live Zotero library on this workstation** through the runnin
 desktop's own local API. There is no exported mirror, shard store, or proof ledger —
 live Zotero is the only source of truth.
 
-## Transport (the only sanctioned surface)
+## Transport
+
+**Reading** uses the web API, which always answers: `https://api.zotero.org/users/<id>/items...` with header `Zotero-API-Key: $ZOTERO_API_KEY` (the id from `https://api.zotero.org/keys/current`); a stored file arrives from `/items/<key>/file`, a `.md` attachment as a zip. A down local API blocks no read and is never reported as a blocker.
+
+**Writing** (below) uses the local addon:
 
 - **Read base:** `http://127.0.0.1:23119/api/users/0/...`
 - **Write:** `POST http://127.0.0.1:23119/write` (local write-API addon)
