@@ -81,15 +81,17 @@ in `/home/dzack/ai`:
 
 ## Git delivery
 
-Commit and push to `main`. Nearly always, checkpoints included. Branches and PRs are
-rare exceptions, not a ritual for every change.
+All work goes directly onto `main`: commit and push straight to `main`, checkpoints
+included. Do not open a branch or a PR for ordinary work. Branches and PRs are almost
+never used -- rare exceptions, not a step in the normal workflow.
 
-A branch makes sense when concurrent tasks must edit files that interact. Before you
-split the work, actually weigh it: concurrency now versus merging, conflict resolution,
-and re-verifying the combined result later. Usually sequential work on `main` is cheaper.
+A branch is justified only when concurrent tasks must edit files that interact. Before
+you split the work, weigh it: concurrency now versus merging, conflict resolution, and
+re-verifying the combined result later. Sequential work on `main` is almost always
+cheaper.
 
-A PR makes sense when the environment can't push normally (some cloud setups), or for
-the occasional run of heavy CI that the normal workflow doesn't have -- broad
+A PR is justified only when the environment can't push normally (some cloud setups), or
+for the occasional run of heavy CI that the normal workflow doesn't have -- broad
 regression or acceptance suites. Occasional. Not every change.
 
 If repo settings block direct pushes to `main`, change the settings if you have the
