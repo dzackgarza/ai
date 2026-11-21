@@ -660,7 +660,8 @@
     "~z-ai/glm-flash-latest",
     "nvidia/switchyard",
     "openrouter/auto-code",
-    "typesafe/jev-router"
+    "typesafe/jev-router",
+    "humansand/ampersand-v0.1"
   ],
   "models": {
     "kilo-auto/free": {
@@ -692,9 +693,6 @@
     },
     "reflection/beam-free": {
       "name": "reflection/beam-free"
-    },
-    "humansand/ampersand-v0.1": {
-      "name": "humansand/ampersand-v0.1"
     }
   },
   "whitelist": [
@@ -707,7 +705,6 @@
     "recursive/flint-v1.0:free",
     "baidu/ernie-5.5-flash-preview:free",
     "inclusionai/ling-3.2-flash:free",
-    "reflection/beam-free",
-    "humansand/ampersand-v0.1"
+    "reflection/beam-free"
   ]
 }

@@ -31,6 +31,38 @@ mirror. Every other provider is checked against models.dev. Either check
 fails the run if a whitelisted model has rotated off the live catalog or a
 live model isn't yet triaged into the whitelist or blacklist.
 
+## Whitelist Criteria
+
+A whitelist is the set of models an OpenCode agent can use. Every model in it
+must pass all of these tests:
+
+1. **It costs nothing on the account that this config uses.** A per-token
+   price, a credit requirement, or a paid-plan gate (for example the Cloudflare
+   Workers Paid plan) excludes the model. A catalog price on models.dev is
+   evidence, but the account's own API response is the authority.
+2. **It is a general chat model that can do agent work.** Embedding, reranking,
+   image, video, speech, translation, PII, safety-classifier, router, and
+   decision-only models (for example `jev-*`, `*-decision`) go in the
+   blacklist.
+3. **It has at least about 35B parameters.** See
+   `notes/openrouter-model-vetting.md` for the evidence behind this limit.
+4. **It is current.** Deprecated models, and obsolete generations such as
+   `gpt-oss-120b`, go in the blacklist. A dated tag that duplicates a
+   whitelisted id also goes in the blacklist.
+5. **It answers a live call through `opencode run -m <provider>/<model>`.**
+   The validator's catalog diff proves only that the id is listed. Providers
+   deprecate models before their catalogs drop them, and models.dev lags
+   behind both. Slow is not dead: NVIDIA NIM models are known to answer
+   slowly.
+
+Tool-call support is assumed for current chat models of this size, so it
+needs no separate test.
+
+A provider that the user no longer uses has its fragment deleted and its id
+added to `disabled_providers` in `../config_skeleton.json`. OpenCode's
+built-in registry keeps listing a provider that has no local fragment, so
+deleting the fragment alone is not enough.
+
 ## Placement Rules
 
 1. Put durable provider maintenance in `scripts/`.

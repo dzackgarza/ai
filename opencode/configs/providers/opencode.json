@@ -124,7 +124,8 @@
     "text-embedding-3-large",
     "text-embedding-3-small",
     "voyage-4",
-    "voyage-code-4"
+    "voyage-code-4",
+    "jev-1.13-free"
   ],
   "models": {
     "big-pickle": {
@@ -144,9 +145,6 @@
     },
     "nemotron-3.5-super-vl-free": {
       "name": "Nemotron 3.5 Super-VL Free"
-    },
-    "jev-1.13-free": {
-      "name": "Jev 1.13 (Free)"
     },
     "claude-haiku-5-5": {
       "name": "Claude Haiku 5.5"
@@ -177,7 +175,6 @@
     "beam-free",
     "big-pickle",
     "deepseek-v4.1-flash-free",
-    "jev-1.13-free",
     "mimo-v2.6-flash-free",
     "nemotron-3.5-lightning-free",
     "nemotron-3.5-super-vl-free",

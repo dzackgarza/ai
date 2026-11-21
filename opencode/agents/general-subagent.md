@@ -5,7 +5,7 @@ description: 'Use when a coordinator needs a narrow delegated helper for read-on
   any enforced repo rules. Ask ''Handle only this delegated task: [task]'' or ''Investigate
   [question] within [scope] and report back concisely''.'
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash
+model: ollama-cloud/deepseek-v4.1-flash
 permission:
   write: deny
   question: deny
