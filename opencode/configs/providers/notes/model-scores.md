@@ -4,8 +4,12 @@ These scores rank every whitelisted model by general reasoning and task
 performance on one 0–100 scale. They are judgment scores, not benchmark
 results. Use them to choose a model for an agent and to order fallbacks.
 
-- **Anchor:** DeepSeek V4.1 Flash, the newest DeepSeek model, is exactly 50.
-- **Scale:** a 10-point gap is a difference you see on most tasks. A gap of
+- **Anchors:** the current frontier models of Anthropic and OpenAI, at
+  maximum effort, are 100. On 2026-11-21 these are the newest Claude Fable
+  and the newest OpenAI Astra. DeepSeek V4.1 Flash, the newest DeepSeek
+  model, is exactly 50. When a new frontier model is released, it becomes
+  the 100 anchor, and the other scores go down.
+- **Scale:** the scale is linear between the two anchors. A 10-point gap is a difference you see on most tasks. A gap of
   3 points or less is noise.
 - **Basis:** benchmark impressions from the 2026-11 provider review (Vals.ai
   Terminal-Bench 2.1, Terminal-Bench 4.0, SWE-bench Pro, GPQA, HLE), model
@@ -20,6 +24,7 @@ The same model can be served by more than one provider. It has one score.
 
 | Score | Model | Provider ids | Note |
 | ---: | --- | --- | --- |
+| 100 | Frontier Anthropic and OpenAI | not whitelisted | anchor: newest Fable and newest Astra, maximum effort |
 | 62 | Kimi K3.1 Pro | `nvidia/moonshotai/kimi-k3.1-pro`, `ollama-cloud/kimi-k3.1-pro` | strongest reasoning here; NVIDIA serves it slowly |
 | 58 | Kimi K3 | `ollama-cloud/kimi-k3` | |
 | 57 | GLM 5.3 | `ollama-cloud/glm-5.3` | strong agentic operation |
@@ -46,5 +51,5 @@ The same model can be served by more than one provider. It has one score.
 | 40 | Ling 3.2 Flash | `openrouter/inclusionai/ling-3.2-flash:free` | thin evidence |
 | 40 | MiMo V2.5 | `tokenharbor/mimo-v2.5:free` | previous generation |
 | 40 | OpenRouter Free router | `openrouter/openrouter/free` | the routed model, so the quality, changes per call |
-| 35 | Inkling 2 Small | `ollama-cloud/inkling-2-small` | Terminal-Bench 4.0: 12.63 (Sonnet 5.5: 64.14) |
-| 35 | Particle 1 | `openrouter/particle-ai/particle-1:free` | thin evidence |
+| 25 | Inkling 2 Small | `ollama-cloud/inkling-2-small` | Terminal-Bench 4.0: 12.63 (Sonnet 5.5: 64.14) |
+| 30 | Particle 1 | `openrouter/particle-ai/particle-1:free` | thin evidence |
