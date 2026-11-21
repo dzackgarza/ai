@@ -2,7 +2,12 @@
   "$schema": "https://opencode.ai/config.json",
   "snapshot": false,
   "disabled_providers": [
+    "anthropic",
+    "bai",
     "cloudflare-ai-gateway",
+    "cloudflare-workers-ai",
+    "cohere",
+    "deepseek",
     "github-copilot",
     "google",
     "groq",
@@ -10,7 +15,11 @@
     "kaggle-ollama",
     "mistral",
     "morph",
-    "openai"
+    "openai",
+    "opencode-go",
+    "vectorengine",
+    "z-ai",
+    "zai"
   ],
   "instructions": [
     "/home/dzack/.config/opencode/AGENTS.caveman.md"

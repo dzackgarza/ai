@@ -7,7 +7,7 @@ description: 'Fast agent specialized for exploring codebases. Use this when you 
   level: "quick" for basic searches, "medium" for moderate exploration, or "very thorough"
   for comprehensive analysis across multiple locations and naming conventions.'
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: ollama-cloud/deepseek-v4.1-flash
 permission:
   write: deny
   question: deny

@@ -739,6 +739,37 @@ def validate_provider_partitions(
     return all_issues
 
 
+def compile_model_filters(
+    config: dict[str, Any], models_dev_data: dict[str, Any]
+) -> dict[str, Any]:
+    """Return the output config with each fragment's whitelist and blacklist
+    compiled to per-model `status: "deprecated"` entries.
+
+    OpenCode 2 ignores the V1 provider fields `whitelist` and `blacklist`
+    (https://opencode.ai/docs/migrate-v1/#accepted-but-unsupported-fields)
+    and has no wildcard model entry, so every catalog id outside the allowed
+    set is listed. V1 `status: "deprecated"` migrates to V2 `disabled: true`
+    (https://opencode.ai/docs/migrate-v1/#models-and-variants), which hides
+    the model and makes `opencode run -m` fail with "Model unavailable". A
+    native V2 `providers.<id>` entry is not used: it replaces the V1 model
+    map of a custom provider such as tokenharbor. OpenCode's catalog is
+    models.dev plus the config's own `models`, so models.dev is the id
+    source. An empty whitelist is default-allow: only the blacklist is hidden.
+    """
+    output = json.loads(json.dumps(config))
+    for provider_id, provider_cfg in output["provider"].items():
+        models = provider_cfg.setdefault("models", {})
+        whitelist = set(provider_cfg.pop("whitelist", None) or models)
+        blacklist = set(provider_cfg.pop("blacklist", None) or [])
+        catalog = get_models_dev_provider_models(models_dev_data, provider_id) or set()
+        hidden = blacklist | (catalog - whitelist if whitelist else set())
+        for model_id in sorted(hidden):
+            models.setdefault(model_id, {})["status"] = "deprecated"
+        if not models:
+            del provider_cfg["models"]
+    return output
+
+
 def build_config(
     strict: bool = False,
     validate_only: bool = False,
@@ -747,10 +778,11 @@ def build_config(
     config = load_config_sources()
 
     if not validate_only:
-        schema = fetch_config_schema(config)
+        output = compile_model_filters(config, fetch_models_dev_api())
+        schema = fetch_config_schema(output)
         remove_model_enum(schema)
-        validate_config_schema(config, schema)
-        _write_json(OUTPUT_PATH, config)
+        validate_config_schema(output, schema)
+        _write_json(OUTPUT_PATH, output)
         logger.info(
             "[green]Validated and wrote %s[/green]",
             OUTPUT_PATH,

@@ -41,15 +41,22 @@ syntactically valid JSON tool calls matching the OpenCode schemas.
 - `openrouter/poolside/laguna-xs.2:free` *(dead 2026-08; succeeded by the
   laguna 2.1 line below)*
 
-- `openrouter/poolside/laguna-s-2.1:free` *(provisional 2026-08: successor of
-  the approved laguna line; passed a live chat call, strict tool-call vetting
-  still pending)*
+- `openrouter/poolside/laguna-s-2.1:free` *(dead 2026-11: HTTP 404, no
+  provider serves it — removed from whitelist)*
 
-- `openrouter/poolside/laguna-xs-2.1:free` *(provisional 2026-08: successor of
-  the approved laguna line; passed a live chat call, strict tool-call vetting
-  still pending)*
+- `openrouter/poolside/laguna-xs-2.1:free` *(dead 2026-11: HTTP 404, no
+  provider serves it — removed from whitelist)*
 
 - `openrouter/z-ai/glm-4.5-air:free`
+
+- Provisional 2026-11 (new free-tier models; each passed the validator's live
+  chat call and models.dev lists tool-call support; strict tool-call vetting
+  still pending): `baidu/ernie-5.5-flash-preview:free`,
+  `inclusionai/ling-3.2-flash:free`, `nvidia/nemotron-3.5-super-vl:free`,
+  `particle-ai/particle-1:free`, `recursive/flint-v1.0:free`.
+
+- Dead 2026-11 (HTTP 404, removed from whitelist): `cohere/north-mini-code:free`,
+  `stealth/space-bunny-alpha`.
 
 * * *
 
@@ -99,6 +106,8 @@ not use bash”), and suffer rapid context degradation.
 - `google/gemma-3n-e4b-it:free`
 
 - `liquid/lfm-2.5-1.2b-instruct:free`
+
+- `liquid/lfm-3-1.7b:free`
 
 - `meta-llama/llama-3.2-3b-instruct:free`
 

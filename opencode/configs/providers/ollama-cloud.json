@@ -28,38 +28,53 @@
     "qwen3-vl:235b-instruct",
     "qwen3.5",
     "qwen3.5:397b",
-    "rnj-1:8b"
+    "rnj-1:8b",
+    "clef:27b",
+    "deepseek-v4.1-flash:1017",
+    "gpt-oss:120b",
+    "nemotron-3-ultra",
+    "kimi-k2.7-code",
+    "kimi-k3"
   ],
   "models": {
     "deepseek-v4.1-flash": {
-      "name": "DeepSeek V4.1 Flash"
+      "name": "[50] DeepSeek V4.1 Flash"
     },
     "deepseek-v4-pro:0813": {
-      "name": "DeepSeek V4 Pro (0813)"
+      "name": "[40] DeepSeek V4 Pro (0813)"
     },
     "glm-5.3": {
-      "name": "GLM 5.3"
+      "name": "[49] GLM 5.3"
     },
     "glm-5.3-flash": {
-      "name": "GLM 5.3 Flash"
-    },
-    "gpt-oss:120b": {
-      "name": "GPT-OSS 120B"
-    },
-    "kimi-k2.7-code": {
-      "name": "Kimi K2.7 Code"
-    },
-    "kimi-k3": {
-      "name": "Kimi K3"
+      "name": "[41] GLM 5.3 Flash"
     },
     "minimax-m3": {
-      "name": "MiniMax M3"
+      "name": "[38] MiniMax M3"
     },
-    "mistral-large-3:675b": {
-      "name": "Mistral Large 3 675B"
+    "beam": {
+      "name": "[10] Beam"
     },
-    "nemotron-3-ultra": {
-      "name": "Nemotron 3 Ultra"
+    "inkling-2-small": {
+      "name": "[11] Inkling 2 Small"
+    },
+    "kimi-k3.1-pro": {
+      "name": "[75] Kimi K3.1 Pro"
+    },
+    "mimo-v2.6-flash": {
+      "name": "[38] MiMo V2.6 Flash"
+    },
+    "mimo-v2.6-pro": {
+      "name": "[53] MiMo V2.6 Pro"
+    },
+    "minimax-m3.1-flash": {
+      "name": "[43] MiniMax M3.1 Flash"
+    },
+    "mistral-large-4": {
+      "name": "[35] Mistral Large 4"
+    },
+    "muse-spark-open": {
+      "name": "[33] Muse Spark Open"
     }
   },
   "whitelist": [
@@ -67,11 +82,14 @@
     "deepseek-v4-pro:0813",
     "glm-5.3",
     "glm-5.3-flash",
-    "gpt-oss:120b",
-    "kimi-k2.7-code",
-    "kimi-k3",
     "minimax-m3",
-    "mistral-large-3:675b",
-    "nemotron-3-ultra"
+    "beam",
+    "inkling-2-small",
+    "kimi-k3.1-pro",
+    "mimo-v2.6-flash",
+    "mimo-v2.6-pro",
+    "minimax-m3.1-flash",
+    "mistral-large-4",
+    "muse-spark-open"
   ]
 }

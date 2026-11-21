@@ -1,0 +1,16 @@
+{
+  "whitelist": [],
+  "blacklist": [
+    "deepseek-v4-flash:cloud",
+    "deepseek-v4-pro:cloud",
+    "deepseek-v4.1-flash:cloud",
+    "gemma4:31b-cloud",
+    "glm-5.1:cloud",
+    "glm-5.3-flash:cloud",
+    "kimi-k2.6:cloud",
+    "kimi-k3:cloud",
+    "minimax-m2.7:cloud",
+    "minimax-m3:cloud",
+    "qwen3.5:cloud"
+  ]
+}

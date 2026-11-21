@@ -25,11 +25,97 @@ just providers-debug nvidia        # single provider, warn-only (no exit 1)
 ```
 
 `providers-validate` checks directly-queryable providers (any config with
-`options.baseURL`, e.g. NVIDIA NIM, VectorEngine, Antigravity) against their
+`options.baseURL`, e.g. NVIDIA NIM, Antigravity) against their
 own live `/models` endpoint — authoritative over the third-party models.dev
 mirror. Every other provider is checked against models.dev. Either check
 fails the run if a whitelisted model has rotated off the live catalog or a
 live model isn't yet triaged into the whitelist or blacklist.
+
+## Whitelist Criteria
+
+A whitelist is the set of models an OpenCode agent can use. Every model in it
+must pass all of these tests:
+
+1. **It costs nothing on the account that this config uses.** A per-token
+   price, a credit requirement, or a paid-plan gate (for example the Cloudflare
+   Workers Paid plan) excludes the model. A catalog price on models.dev is
+   evidence, but the account's own API response is the authority.
+2. **It is a general chat model that can do agent work.** Embedding, reranking,
+   image, video, speech, translation, PII, safety-classifier, router, and
+   decision-only models (for example `jev-*`, `*-decision`) go in the
+   blacklist.
+3. **It is not substantially worse than Qwen3.7-Plus.** A model below that
+   bar is not useful for any work that goes through OpenCode, whatever its
+   size or price. OpenCode agents do more than code: they discuss
+   mathematics, do research, summarize papers, organize and clean up files,
+   fix minor bugs, and file GitHub issues. So the comparison has two parts,
+   and a model must pass both:
+   - **Agentic operation** (tool use in a terminal, which every task needs).
+     Primary evidence: the Vals.ai Terminal-Bench 2.1 board
+     (vals.ai/benchmarks/terminal-bench-2-1). All models there run in one
+     harness, and Qwen 3.7 Plus scores 52.81. Other evidence: SWE-bench Pro,
+     or vendor Terminal-Bench figures against Qwen's vendor figures.
+   - **General reasoning and knowledge** (mathematics, research, reading).
+     Evidence: Artificial Analysis component evals (GPQA Diamond, HLE,
+     MMLU-Pro), LiveBench, or the Vals.ai general boards.
+
+   "Substantially worse" means more than about 5% below on the same
+   benchmark. Record which benchmark settled each verdict. A specialist model
+   is judged on general capability too: a coding model that is weak at
+   reasoning fails. Size is only a weak signal: a 30B-A3B model scored 10.86
+   on Terminal-Bench 2.1.
+4. **It is current.** Deprecated models, and obsolete generations such as
+   `gpt-oss-120b`, go in the blacklist. A dated tag that duplicates a
+   whitelisted id also goes in the blacklist.
+5. **It is the strongest model of its series and tier on that provider.**
+   When one provider serves two or more models of one series (for example
+   Kimi K2.x and Kimi K3.x), only the most powerful one stays. A Pro tier
+   counts as stronger than the base tier of the same series. A Flash (fast,
+   light) variant is a separate tier: a provider keeps both the strongest
+   Flash model and the strongest full model of a series. Compare within one
+   provider only; the same series on another provider is judged there.
+6. **It answers a live call through `opencode run -m <provider>/<model>`.**
+   The validator's catalog diff proves only that the id is listed. Providers
+   deprecate models before their catalogs drop them, and models.dev lags
+   behind both. Slow is not dead: NVIDIA NIM models are known to answer
+   slowly.
+
+A gateway that forwards to another configured provider gets no copy of that
+provider's models. Kilo forwards to OpenRouter: its error bodies are
+OpenRouter's, with OpenRouter's BYOK link, and its catalog carries almost
+every OpenRouter id under the same name. So every Kilo id that is also in
+OpenRouter's catalog goes in the Kilo blacklist, and the model is triaged and
+used through `openrouter` directly. Kilo's routers that resolve to OpenRouter
+slugs (`kilo-auto/*`, which reports the slug in `x-kilo-resolved-model`) are
+blacklisted for the same reason. Only models that OpenRouter does not list can
+be in the Kilo whitelist.
+
+OpenCode 2 ignores the provider fields `whitelist` and `blacklist`, and it
+has no wildcard model entry. `scripts/build_config.py` therefore compiles
+them: every models.dev id of the provider outside the whitelist, and every
+blacklisted id, gets `status: "deprecated"` in the generated
+`opencode.json`. OpenCode 2 reads that as `disabled: true`, so the model is
+hidden and `opencode run -m` fails with "Model unavailable". A model that
+models.dev adds after the last build is visible until the next build. Do
+not write a native V2 `providers.<id>` entry: it replaces the model map of a
+custom provider such as `tokenharbor`.
+
+Tool-call support is assumed for current chat models of this size, so it
+needs no separate test.
+
+Every provider that `opencode models` lists has a fragment here. A provider
+that OpenCode lists without a fragment shows its whole catalog. Examples:
+OpenCode finds `thinkingmachines` in models.dev, and
+`ollama` through the local Ollama daemon. When no model of such a provider
+passes the criteria, its fragment blacklists every listed id.
+`thinkingmachines` is paid per token. `ollama` serves only
+`:cloud` tags, which forward to Ollama Cloud, so its ids are triaged in
+`ollama-cloud`.
+
+A provider that the user no longer uses has its fragment deleted and its id
+added to `disabled_providers` in `../config_skeleton.json`. OpenCode's
+built-in registry keeps listing a provider that has no local fragment, so
+deleting the fragment alone is not enough.
 
 ## Placement Rules
 
@@ -49,3 +135,5 @@ live model isn't yet triaged into the whitelist or blacklist.
 - Google Antigravity routing details: `notes/google-provider.md`
 
 - OpenRouter vetting notes: `notes/openrouter-model-vetting.md`
+
+- Whitelisted model scores: `notes/model-scores.md`
