@@ -99,18 +99,27 @@
     "ring-2.6-1t-free",
     "trinity-large-preview-free",
     "bge-m3",
+    "claude-fable-5-2",
     "codestral-embed",
     "cohere-embed-v5-fast",
     "cohere-embed-v5-pro",
+    "gemini-4-carbon",
+    "gemini-4-hydrogen",
+    "gemini-4-neon",
     "gemini-decision-1",
     "gemini-embedding-001",
     "gemini-embedding-2",
     "gemini-nano-banana-2.1",
+    "gemini-omni-1.2-flash",
     "gpt-6-luna-decision",
+    "gpt-6.2-astra",
+    "gpt-6.2-sol",
     "gpt-image-2.5-sunburst",
     "gpt-live-1",
     "grok-imagine-image-2.0",
     "mistral-embed",
+    "muse-ember-1.0",
+    "muse-wonder-1.0",
     "qwen3-embedding-8b",
     "text-embedding-3-large",
     "text-embedding-3-small",
@@ -162,33 +171,6 @@
     },
     "tidepool-alpha-free": {
       "name": "tidepool-alpha-free"
-    },
-    "claude-fable-5-2": {
-      "name": "claude-fable-5-2"
-    },
-    "gemini-4-carbon": {
-      "name": "gemini-4-carbon"
-    },
-    "gemini-4-hydrogen": {
-      "name": "gemini-4-hydrogen"
-    },
-    "gemini-4-neon": {
-      "name": "gemini-4-neon"
-    },
-    "gemini-omni-1.2-flash": {
-      "name": "gemini-omni-1.2-flash"
-    },
-    "gpt-6.2-astra": {
-      "name": "gpt-6.2-astra"
-    },
-    "gpt-6.2-sol": {
-      "name": "gpt-6.2-sol"
-    },
-    "muse-ember-1.0": {
-      "name": "muse-ember-1.0"
-    },
-    "muse-wonder-1.0": {
-      "name": "muse-wonder-1.0"
     }
   },
   "whitelist": [
@@ -203,15 +185,6 @@
     "hy4-flash-free",
     "iceman-free",
     "longcat-2.5-free",
-    "tidepool-alpha-free",
-    "claude-fable-5-2",
-    "gemini-4-carbon",
-    "gemini-4-hydrogen",
-    "gemini-4-neon",
-    "gemini-omni-1.2-flash",
-    "gpt-6.2-astra",
-    "gpt-6.2-sol",
-    "muse-ember-1.0",
-    "muse-wonder-1.0"
+    "tidepool-alpha-free"
   ]
 }

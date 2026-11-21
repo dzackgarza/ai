@@ -218,9 +218,33 @@
         "gemini-3.5-flash",
         "qwen3.8-27b",
         "mimo-v2.5-pro",
+        "claude-fable-5.1",
+        "claude-fable-5.2",
+        "claude-haiku-5.5",
+        "claude-opus-5.5",
+        "claude-sonnet-5.5",
+        "gemini-3.8-flash",
+        "glm-5.3-flashx",
+        "gpt-6-astra",
+        "gpt-6-luna",
+        "gpt-6-sol",
+        "gpt-6.1-sol",
+        "gpt-6.1-terra",
+        "gpt-6.2-astra",
+        "gpt-6.2-sol",
         "gpt-image-2",
+        "hy4",
+        "hy4-preview",
+        "jev-1.13.0",
+        "jev-latest",
+        "kimi-k2.8-preview",
+        "kimi-k3.1-pro",
+        "kimi-k3.1-pro-highspeed",
+        "mimo-v2.6-pro",
         "minimax-h3-image",
         "minimax-h3-image-highspeed",
+        "qwen3.7-flash",
+        "qwen4-max",
         "seedance-2.0",
         "seedance-2.0-fast",
         "seedance-2.0-mini",
@@ -233,31 +257,7 @@
         "deepseek-v4.1-flash": {},
         "mimo-v2.6-flash": {},
         "hy4-flash": {},
-        "minimax-m3.1-flash": {},
-        "claude-fable-5.1": {},
-        "claude-fable-5.2": {},
-        "claude-haiku-5.5": {},
-        "claude-opus-5.5": {},
-        "claude-sonnet-5.5": {},
-        "gemini-3.8-flash": {},
-        "glm-5.3-flashx": {},
-        "gpt-6-astra": {},
-        "gpt-6-luna": {},
-        "gpt-6-sol": {},
-        "gpt-6.1-sol": {},
-        "gpt-6.1-terra": {},
-        "gpt-6.2-astra": {},
-        "gpt-6.2-sol": {},
-        "hy4": {},
-        "hy4-preview": {},
-        "jev-1.13.0": {},
-        "jev-latest": {},
-        "kimi-k2.8-preview": {},
-        "kimi-k3.1-pro": {},
-        "kimi-k3.1-pro-highspeed": {},
-        "mimo-v2.6-pro": {},
-        "qwen3.7-flash": {},
-        "qwen4-max": {}
+        "minimax-m3.1-flash": {}
       }
     },
     "cloudflare-workers-ai": {
@@ -867,572 +867,6 @@
         "~openai/gpt-mini-latest",
         "~x-ai/grok-latest",
         "~z-ai/glm-latest",
-        "google/gemini-nano-banana-2.1",
-        "liquid/lfm-3-1.7b",
-        "liquid/lfm-3-1.7b:free",
-        "openai/gpt-oss-safeguard-120b",
-        "z-ai/glm-5.3-flashx-legal",
-        "nvidia/switchyard",
-        "openrouter/auto-code",
-        "typesafe/jev-router"
-      ],
-      "models": {
-        "kilo-auto/free": {
-          "name": "Kilo-Auto (Free)"
-        },
-        "openrouter/free": {
-          "name": "Free"
-        },
-        "nvidia/nemotron-3-ultra-550b-a55b:free": {
-          "name": "nemotron-3-ultra-550b-a55b:free"
-        },
-        "particle-ai/particle-1:free": {
-          "name": "particle-ai/particle-1:free"
-        },
-        "nvidia/nemotron-3.5-super-vl:free": {
-          "name": "nvidia/nemotron-3.5-super-vl:free"
-        },
-        "stealth/glyph-cluster": {
-          "name": "stealth/glyph-cluster"
-        },
-        "recursive/flint-v1.0:free": {
-          "name": "recursive/flint-v1.0:free"
-        },
-        "baidu/ernie-5.5-flash-preview:free": {
-          "name": "baidu/ernie-5.5-flash-preview:free"
-        },
-        "inclusionai/ling-3.2-flash:free": {
-          "name": "inclusionai/ling-3.2-flash:free"
-        },
-        "reflection/beam-free": {
-          "name": "reflection/beam-free"
-        },
-        "humansand/ampersand-v0.1": {
-          "name": "humansand/ampersand-v0.1"
-        },
-        "aion-labs/aion-3.5": {
-          "name": "aion-labs/aion-3.5"
-        },
-        "aion-labs/aion-3.5-mini": {
-          "name": "aion-labs/aion-3.5-mini"
-        },
-        "amazon/nova-lite": {
-          "name": "amazon/nova-lite"
-        },
-        "amazon/nova-micro": {
-          "name": "amazon/nova-micro"
-        },
-        "amazon/nova-pro": {
-          "name": "amazon/nova-pro"
-        },
-        "anthropic/claude-fable-5.1": {
-          "name": "anthropic/claude-fable-5.1"
-        },
-        "anthropic/claude-fable-5.2": {
-          "name": "anthropic/claude-fable-5.2"
-        },
-        "anthropic/claude-haiku-5.5": {
-          "name": "anthropic/claude-haiku-5.5"
-        },
-        "anthropic/claude-opus-5.5": {
-          "name": "anthropic/claude-opus-5.5"
-        },
-        "anthropic/claude-sonnet-5.5": {
-          "name": "anthropic/claude-sonnet-5.5"
-        },
-        "baidu/ernie-light-dt-1.0-intl": {
-          "name": "baidu/ernie-light-dt-1.0-intl"
-        },
-        "callstack/apex": {
-          "name": "callstack/apex"
-        },
-        "cohere/command-a-plus": {
-          "name": "cohere/command-a-plus"
-        },
-        "deepseek/deepseek-v3.2-thinking": {
-          "name": "deepseek/deepseek-v3.2-thinking"
-        },
-        "deepseek/deepseek-v4.1-flash": {
-          "name": "deepseek/deepseek-v4.1-flash"
-        },
-        "deepseek/deepseek-v4.1-flash-1017": {
-          "name": "deepseek/deepseek-v4.1-flash-1017"
-        },
-        "deepseek/deepseek-v4.1-flash-1017-fast": {
-          "name": "deepseek/deepseek-v4.1-flash-1017-fast"
-        },
-        "deepseek/deepseek-v4.1-flash-1017-ultrafast": {
-          "name": "deepseek/deepseek-v4.1-flash-1017-ultrafast"
-        },
-        "deepseek/deepseek-v4.1-flash-fast": {
-          "name": "deepseek/deepseek-v4.1-flash-fast"
-        },
-        "elorian/glimpse": {
-          "name": "elorian/glimpse"
-        },
-        "fireworks/ember-1": {
-          "name": "fireworks/ember-1"
-        },
-        "google/gemini-3-flash": {
-          "name": "google/gemini-3-flash"
-        },
-        "google/gemini-3.8-flash": {
-          "name": "google/gemini-3.8-flash"
-        },
-        "google/gemini-4-argon": {
-          "name": "google/gemini-4-argon"
-        },
-        "google/gemini-4-carbon": {
-          "name": "google/gemini-4-carbon"
-        },
-        "google/gemini-4-hydrogen": {
-          "name": "google/gemini-4-hydrogen"
-        },
-        "google/gemini-4-neon": {
-          "name": "google/gemini-4-neon"
-        },
-        "google/gemini-omni-1.1-flash": {
-          "name": "google/gemini-omni-1.1-flash"
-        },
-        "google/gemini-omni-1.2-flash": {
-          "name": "google/gemini-omni-1.2-flash"
-        },
-        "google/gemini-omni-flash-preview": {
-          "name": "google/gemini-omni-flash-preview"
-        },
-        "ibm-granite/granite-4.2-8b": {
-          "name": "ibm-granite/granite-4.2-8b"
-        },
-        "inception/mercury-3": {
-          "name": "inception/mercury-3"
-        },
-        "inclusionai/ling-3.0-flash-fin": {
-          "name": "inclusionai/ling-3.0-flash-fin"
-        },
-        "inclusionai/ling-3.0-flash-sante": {
-          "name": "inclusionai/ling-3.0-flash-sante"
-        },
-        "inclusionai/ling-3.0-flash-vl": {
-          "name": "inclusionai/ling-3.0-flash-vl"
-        },
-        "inclusionai/ling-3.0-tiny": {
-          "name": "inclusionai/ling-3.0-tiny"
-        },
-        "inclusionai/ling-3.1-flash": {
-          "name": "inclusionai/ling-3.1-flash"
-        },
-        "inclusionai/ling-3.1-flash-1019": {
-          "name": "inclusionai/ling-3.1-flash-1019"
-        },
-        "inference-net/schematron-v2-small": {
-          "name": "inference-net/schematron-v2-small"
-        },
-        "inference-net/schematron-v2-turbo": {
-          "name": "inference-net/schematron-v2-turbo"
-        },
-        "interfaze/interfaze-beta": {
-          "name": "interfaze/interfaze-beta"
-        },
-        "kt/midm-k-3.0-pro": {
-          "name": "kt/midm-k-3.0-pro"
-        },
-        "liquid/lfm-2.5-24b-a2b": {
-          "name": "liquid/lfm-2.5-24b-a2b"
-        },
-        "meituan/longcat-2.5": {
-          "name": "meituan/longcat-2.5"
-        },
-        "meta/muse-ember": {
-          "name": "meta/muse-ember"
-        },
-        "meta/muse-spark-1.2-contributor": {
-          "name": "meta/muse-spark-1.2-contributor"
-        },
-        "meta/muse-spark-1.3": {
-          "name": "meta/muse-spark-1.3"
-        },
-        "meta/muse-spark-1.3-contributor": {
-          "name": "meta/muse-spark-1.3-contributor"
-        },
-        "meta/muse-spark-open": {
-          "name": "meta/muse-spark-open"
-        },
-        "meta/muse-wonder": {
-          "name": "meta/muse-wonder"
-        },
-        "minimax/minimax-m3.1-flash": {
-          "name": "minimax/minimax-m3.1-flash"
-        },
-        "mistralai/codestral": {
-          "name": "mistralai/codestral"
-        },
-        "mistralai/ministral-14b": {
-          "name": "mistralai/ministral-14b"
-        },
-        "mistralai/ministral-3b": {
-          "name": "mistralai/ministral-3b"
-        },
-        "mistralai/mistral-large-4-0": {
-          "name": "mistralai/mistral-large-4-0"
-        },
-        "mistralai/mistral-small": {
-          "name": "mistralai/mistral-small"
-        },
-        "mistralai/pixtral-large-2502": {
-          "name": "mistralai/pixtral-large-2502"
-        },
-        "mixedbread/toast-1": {
-          "name": "mixedbread/toast-1"
-        },
-        "moondream/moondream3-preview": {
-          "name": "moondream/moondream3-preview"
-        },
-        "moondream/moondream3.1-9b-a2b": {
-          "name": "moondream/moondream3.1-9b-a2b"
-        },
-        "moonshotai/kimi-k2.7-code-highspeed": {
-          "name": "moonshotai/kimi-k2.7-code-highspeed"
-        },
-        "moonshotai/kimi-k3-fast": {
-          "name": "moonshotai/kimi-k3-fast"
-        },
-        "moonshotai/kimi-k3.1-pro": {
-          "name": "moonshotai/kimi-k3.1-pro"
-        },
-        "moonshotai/kimi-k3.1-pro-highspeed": {
-          "name": "moonshotai/kimi-k3.1-pro-highspeed"
-        },
-        "motif-technologies/motif-3": {
-          "name": "motif-technologies/motif-3"
-        },
-        "nex-agi/nex-n2.5-mini": {
-          "name": "nex-agi/nex-n2.5-mini"
-        },
-        "nex-agi/nex-n2.5-pro": {
-          "name": "nex-agi/nex-n2.5-pro"
-        },
-        "nex-agi/nex-n2.6": {
-          "name": "nex-agi/nex-n2.6"
-        },
-        "nvidia/nemotron-3.5-content-safety": {
-          "name": "nvidia/nemotron-3.5-content-safety"
-        },
-        "nvidia/nemotron-3.5-super-vl": {
-          "name": "nvidia/nemotron-3.5-super-vl"
-        },
-        "openai/gpt-4.1-fast": {
-          "name": "openai/gpt-4.1-fast"
-        },
-        "openai/gpt-4.1-mini-fast": {
-          "name": "openai/gpt-4.1-mini-fast"
-        },
-        "openai/gpt-4o-fast": {
-          "name": "openai/gpt-4o-fast"
-        },
-        "openai/gpt-4o-mini-fast": {
-          "name": "openai/gpt-4o-mini-fast"
-        },
-        "openai/gpt-5-fast": {
-          "name": "openai/gpt-5-fast"
-        },
-        "openai/gpt-5-mini-fast": {
-          "name": "openai/gpt-5-mini-fast"
-        },
-        "openai/gpt-5.1-thinking": {
-          "name": "openai/gpt-5.1-thinking"
-        },
-        "openai/gpt-5.1-thinking-fast": {
-          "name": "openai/gpt-5.1-thinking-fast"
-        },
-        "openai/gpt-5.2-fast": {
-          "name": "openai/gpt-5.2-fast"
-        },
-        "openai/gpt-5.3-codex-fast": {
-          "name": "openai/gpt-5.3-codex-fast"
-        },
-        "openai/gpt-5.4-fast": {
-          "name": "openai/gpt-5.4-fast"
-        },
-        "openai/gpt-5.4-mini-fast": {
-          "name": "openai/gpt-5.4-mini-fast"
-        },
-        "openai/gpt-5.5-fast": {
-          "name": "openai/gpt-5.5-fast"
-        },
-        "openai/gpt-5.6-luna-fast": {
-          "name": "openai/gpt-5.6-luna-fast"
-        },
-        "openai/gpt-5.6-sol-fast": {
-          "name": "openai/gpt-5.6-sol-fast"
-        },
-        "openai/gpt-5.6-terra-fast": {
-          "name": "openai/gpt-5.6-terra-fast"
-        },
-        "openai/gpt-6-astra": {
-          "name": "openai/gpt-6-astra"
-        },
-        "openai/gpt-6-astra-fast": {
-          "name": "openai/gpt-6-astra-fast"
-        },
-        "openai/gpt-6-astra-pro": {
-          "name": "openai/gpt-6-astra-pro"
-        },
-        "openai/gpt-6-luna": {
-          "name": "openai/gpt-6-luna"
-        },
-        "openai/gpt-6-luna-fast": {
-          "name": "openai/gpt-6-luna-fast"
-        },
-        "openai/gpt-6-luna-pro": {
-          "name": "openai/gpt-6-luna-pro"
-        },
-        "openai/gpt-6-sol": {
-          "name": "openai/gpt-6-sol"
-        },
-        "openai/gpt-6-sol-fast": {
-          "name": "openai/gpt-6-sol-fast"
-        },
-        "openai/gpt-6-sol-pro": {
-          "name": "openai/gpt-6-sol-pro"
-        },
-        "openai/gpt-6.1-sol": {
-          "name": "openai/gpt-6.1-sol"
-        },
-        "openai/gpt-6.1-sol-fast": {
-          "name": "openai/gpt-6.1-sol-fast"
-        },
-        "openai/gpt-6.1-sol-pro": {
-          "name": "openai/gpt-6.1-sol-pro"
-        },
-        "openai/gpt-6.1-terra": {
-          "name": "openai/gpt-6.1-terra"
-        },
-        "openai/gpt-6.1-terra-fast": {
-          "name": "openai/gpt-6.1-terra-fast"
-        },
-        "openai/gpt-6.1-terra-pro": {
-          "name": "openai/gpt-6.1-terra-pro"
-        },
-        "openai/gpt-6.2-astra": {
-          "name": "openai/gpt-6.2-astra"
-        },
-        "openai/gpt-6.2-astra-fast": {
-          "name": "openai/gpt-6.2-astra-fast"
-        },
-        "openai/gpt-6.2-astra-pro": {
-          "name": "openai/gpt-6.2-astra-pro"
-        },
-        "openai/gpt-6.2-sol": {
-          "name": "openai/gpt-6.2-sol"
-        },
-        "openai/gpt-6.2-sol-fast": {
-          "name": "openai/gpt-6.2-sol-fast"
-        },
-        "openai/gpt-6.2-sol-pro": {
-          "name": "openai/gpt-6.2-sol-pro"
-        },
-        "openai/o3-fast": {
-          "name": "openai/o3-fast"
-        },
-        "paperinstruments/ultramarine-1-flash": {
-          "name": "paperinstruments/ultramarine-1-flash"
-        },
-        "particle-ai/particle-1": {
-          "name": "particle-ai/particle-1"
-        },
-        "particle/particle-1": {
-          "name": "particle/particle-1"
-        },
-        "perceptron/perceptron-mk1.5": {
-          "name": "perceptron/perceptron-mk1.5"
-        },
-        "prism-ml/ternary-bonsai-2-27b": {
-          "name": "prism-ml/ternary-bonsai-2-27b"
-        },
-        "prism-ml/ternary-bonsai-2-9b": {
-          "name": "prism-ml/ternary-bonsai-2-9b"
-        },
-        "quiverai/arrow-2": {
-          "name": "quiverai/arrow-2"
-        },
-        "quiverai/arrow-2-telos": {
-          "name": "quiverai/arrow-2-telos"
-        },
-        "qwen/qwen-3-14b": {
-          "name": "qwen/qwen-3-14b"
-        },
-        "qwen/qwen3.5-flash": {
-          "name": "qwen/qwen3.5-flash"
-        },
-        "qwen/qwen3.5-plus": {
-          "name": "qwen/qwen3.5-plus"
-        },
-        "qwen/qwen3.8-flash": {
-          "name": "qwen/qwen3.8-flash"
-        },
-        "qwen/qwen3.8-max-0902": {
-          "name": "qwen/qwen3.8-max-0902"
-        },
-        "qwen/qwen3.8-max-prime": {
-          "name": "qwen/qwen3.8-max-prime"
-        },
-        "qwen/qwen3.8-omni-flash": {
-          "name": "qwen/qwen3.8-omni-flash"
-        },
-        "qwen/qwen4-max": {
-          "name": "qwen/qwen4-max"
-        },
-        "radixark/daisyrose-27b": {
-          "name": "radixark/daisyrose-27b"
-        },
-        "recursive/flint-v1.0": {
-          "name": "recursive/flint-v1.0"
-        },
-        "reflection/beam-1.0-501b-a23b": {
-          "name": "reflection/beam-1.0-501b-a23b"
-        },
-        "ricursiveai/ripple-65b-preview": {
-          "name": "ricursiveai/ripple-65b-preview"
-        },
-        "sakana/fugu-max": {
-          "name": "sakana/fugu-max"
-        },
-        "sakana/fugu-ultra-v2": {
-          "name": "sakana/fugu-ultra-v2"
-        },
-        "scaledown/extract": {
-          "name": "scaledown/extract"
-        },
-        "scaledown/scaledown-extract-1": {
-          "name": "scaledown/scaledown-extract-1"
-        },
-        "scaledown/scaledown-summarize-1": {
-          "name": "scaledown/scaledown-summarize-1"
-        },
-        "scaledown/summarize": {
-          "name": "scaledown/summarize"
-        },
-        "stepfun/step-5-preview": {
-          "name": "stepfun/step-5-preview"
-        },
-        "tencent/hy-mt2-7b": {
-          "name": "tencent/hy-mt2-7b"
-        },
-        "tencent/hy-mt2-lite": {
-          "name": "tencent/hy-mt2-lite"
-        },
-        "tencent/hy-mt2-plus": {
-          "name": "tencent/hy-mt2-plus"
-        },
-        "tencent/hy-mt2-pro": {
-          "name": "tencent/hy-mt2-pro"
-        },
-        "tencent/hy4": {
-          "name": "tencent/hy4"
-        },
-        "tencent/hy4-flash": {
-          "name": "tencent/hy4-flash"
-        },
-        "tencent/hy4-preview": {
-          "name": "tencent/hy4-preview"
-        },
-        "thinkingmachines/inkling-2-mini": {
-          "name": "thinkingmachines/inkling-2-mini"
-        },
-        "thinkingmachines/inkling-2-small": {
-          "name": "thinkingmachines/inkling-2-small"
-        },
-        "unbiased/pareto-26.10": {
-          "name": "unbiased/pareto-26.10"
-        },
-        "unbiased/pareto-26.10-preview": {
-          "name": "unbiased/pareto-26.10-preview"
-        },
-        "unbiased/pareto-26.9": {
-          "name": "unbiased/pareto-26.9"
-        },
-        "upstage/solar-mini4": {
-          "name": "upstage/solar-mini4"
-        },
-        "x-ai/grok-4.20-non-reasoning": {
-          "name": "x-ai/grok-4.20-non-reasoning"
-        },
-        "x-ai/grok-4.20-non-reasoning-beta": {
-          "name": "x-ai/grok-4.20-non-reasoning-beta"
-        },
-        "x-ai/grok-4.20-reasoning": {
-          "name": "x-ai/grok-4.20-reasoning"
-        },
-        "x-ai/grok-4.20-reasoning-beta": {
-          "name": "x-ai/grok-4.20-reasoning-beta"
-        },
-        "x-ai/grok-4.7": {
-          "name": "x-ai/grok-4.7"
-        },
-        "xiaomi/mimo-v2.6-flash": {
-          "name": "xiaomi/mimo-v2.6-flash"
-        },
-        "xiaomi/mimo-v2.6-pro": {
-          "name": "xiaomi/mimo-v2.6-pro"
-        },
-        "xiaomi/mimo-v2.6-pro-ultraspeed": {
-          "name": "xiaomi/mimo-v2.6-pro-ultraspeed"
-        },
-        "z-ai/glm-4.7-flashx": {
-          "name": "z-ai/glm-4.7-flashx"
-        },
-        "z-ai/glm-5.2-fast": {
-          "name": "z-ai/glm-5.2-fast"
-        },
-        "z-ai/glm-5.3-fast": {
-          "name": "z-ai/glm-5.3-fast"
-        },
-        "z-ai/glm-5.3-flash": {
-          "name": "z-ai/glm-5.3-flash"
-        },
-        "z-ai/glm-5.3-flashx": {
-          "name": "z-ai/glm-5.3-flashx"
-        },
-        "z-ai/glm-5.3-prime": {
-          "name": "z-ai/glm-5.3-prime"
-        },
-        "~deepseek/deepseek-flash-latest": {
-          "name": "~deepseek/deepseek-flash-latest"
-        },
-        "~deepseek/deepseek-pro-latest": {
-          "name": "~deepseek/deepseek-pro-latest"
-        },
-        "~openai/gpt-astra-latest": {
-          "name": "~openai/gpt-astra-latest"
-        },
-        "~openai/gpt-luna-latest": {
-          "name": "~openai/gpt-luna-latest"
-        },
-        "~openai/gpt-sol-latest": {
-          "name": "~openai/gpt-sol-latest"
-        },
-        "~openai/gpt-terra-latest": {
-          "name": "~openai/gpt-terra-latest"
-        },
-        "~unbiased/pareto-latest": {
-          "name": "~unbiased/pareto-latest"
-        },
-        "~z-ai/glm-flash-latest": {
-          "name": "~z-ai/glm-flash-latest"
-        }
-      },
-      "whitelist": [
-        "kilo-auto/free",
-        "nvidia/nemotron-3-ultra-550b-a55b:free",
-        "openrouter/free",
-        "particle-ai/particle-1:free",
-        "nvidia/nemotron-3.5-super-vl:free",
-        "stealth/glyph-cluster",
-        "recursive/flint-v1.0:free",
-        "baidu/ernie-5.5-flash-preview:free",
-        "inclusionai/ling-3.2-flash:free",
-        "reflection/beam-free",
-        "humansand/ampersand-v0.1",
         "aion-labs/aion-3.5",
         "aion-labs/aion-3.5-mini",
         "amazon/nova-lite",
@@ -1460,6 +894,7 @@
         "google/gemini-4-carbon",
         "google/gemini-4-hydrogen",
         "google/gemini-4-neon",
+        "google/gemini-nano-banana-2.1",
         "google/gemini-omni-1.1-flash",
         "google/gemini-omni-1.2-flash",
         "google/gemini-omni-flash-preview",
@@ -1476,6 +911,8 @@
         "interfaze/interfaze-beta",
         "kt/midm-k-3.0-pro",
         "liquid/lfm-2.5-24b-a2b",
+        "liquid/lfm-3-1.7b",
+        "liquid/lfm-3-1.7b:free",
         "meituan/longcat-2.5",
         "meta/muse-ember",
         "meta/muse-spark-1.2-contributor",
@@ -1540,6 +977,7 @@
         "openai/gpt-6.2-sol",
         "openai/gpt-6.2-sol-fast",
         "openai/gpt-6.2-sol-pro",
+        "openai/gpt-oss-safeguard-120b",
         "openai/o3-fast",
         "paperinstruments/ultramarine-1-flash",
         "particle-ai/particle-1",
@@ -1594,6 +1032,7 @@
         "z-ai/glm-5.3-fast",
         "z-ai/glm-5.3-flash",
         "z-ai/glm-5.3-flashx",
+        "z-ai/glm-5.3-flashx-legal",
         "z-ai/glm-5.3-prime",
         "~deepseek/deepseek-flash-latest",
         "~deepseek/deepseek-pro-latest",
@@ -1602,7 +1041,58 @@
         "~openai/gpt-sol-latest",
         "~openai/gpt-terra-latest",
         "~unbiased/pareto-latest",
-        "~z-ai/glm-flash-latest"
+        "~z-ai/glm-flash-latest",
+        "nvidia/switchyard",
+        "openrouter/auto-code",
+        "typesafe/jev-router"
+      ],
+      "models": {
+        "kilo-auto/free": {
+          "name": "Kilo-Auto (Free)"
+        },
+        "openrouter/free": {
+          "name": "Free"
+        },
+        "nvidia/nemotron-3-ultra-550b-a55b:free": {
+          "name": "nemotron-3-ultra-550b-a55b:free"
+        },
+        "particle-ai/particle-1:free": {
+          "name": "particle-ai/particle-1:free"
+        },
+        "nvidia/nemotron-3.5-super-vl:free": {
+          "name": "nvidia/nemotron-3.5-super-vl:free"
+        },
+        "stealth/glyph-cluster": {
+          "name": "stealth/glyph-cluster"
+        },
+        "recursive/flint-v1.0:free": {
+          "name": "recursive/flint-v1.0:free"
+        },
+        "baidu/ernie-5.5-flash-preview:free": {
+          "name": "baidu/ernie-5.5-flash-preview:free"
+        },
+        "inclusionai/ling-3.2-flash:free": {
+          "name": "inclusionai/ling-3.2-flash:free"
+        },
+        "reflection/beam-free": {
+          "name": "reflection/beam-free"
+        },
+        "humansand/ampersand-v0.1": {
+          "name": "humansand/ampersand-v0.1"
+        }
+      },
+      "whitelist": [
+        "kilo-auto/free",
+        "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "openrouter/free",
+        "particle-ai/particle-1:free",
+        "nvidia/nemotron-3.5-super-vl:free",
+        "stealth/glyph-cluster",
+        "recursive/flint-v1.0:free",
+        "baidu/ernie-5.5-flash-preview:free",
+        "inclusionai/ling-3.2-flash:free",
+        "reflection/beam-free",
+        "humansand/ampersand-v0.1"
       ]
     },
     "nvidia": {
@@ -2223,18 +1713,27 @@
         "ring-2.6-1t-free",
         "trinity-large-preview-free",
         "bge-m3",
+        "claude-fable-5-2",
         "codestral-embed",
         "cohere-embed-v5-fast",
         "cohere-embed-v5-pro",
+        "gemini-4-carbon",
+        "gemini-4-hydrogen",
+        "gemini-4-neon",
         "gemini-decision-1",
         "gemini-embedding-001",
         "gemini-embedding-2",
         "gemini-nano-banana-2.1",
+        "gemini-omni-1.2-flash",
         "gpt-6-luna-decision",
+        "gpt-6.2-astra",
+        "gpt-6.2-sol",
         "gpt-image-2.5-sunburst",
         "gpt-live-1",
         "grok-imagine-image-2.0",
         "mistral-embed",
+        "muse-ember-1.0",
+        "muse-wonder-1.0",
         "qwen3-embedding-8b",
         "text-embedding-3-large",
         "text-embedding-3-small",
@@ -2286,33 +1785,6 @@
         },
         "tidepool-alpha-free": {
           "name": "tidepool-alpha-free"
-        },
-        "claude-fable-5-2": {
-          "name": "claude-fable-5-2"
-        },
-        "gemini-4-carbon": {
-          "name": "gemini-4-carbon"
-        },
-        "gemini-4-hydrogen": {
-          "name": "gemini-4-hydrogen"
-        },
-        "gemini-4-neon": {
-          "name": "gemini-4-neon"
-        },
-        "gemini-omni-1.2-flash": {
-          "name": "gemini-omni-1.2-flash"
-        },
-        "gpt-6.2-astra": {
-          "name": "gpt-6.2-astra"
-        },
-        "gpt-6.2-sol": {
-          "name": "gpt-6.2-sol"
-        },
-        "muse-ember-1.0": {
-          "name": "muse-ember-1.0"
-        },
-        "muse-wonder-1.0": {
-          "name": "muse-wonder-1.0"
         }
       },
       "whitelist": [
@@ -2327,16 +1799,7 @@
         "hy4-flash-free",
         "iceman-free",
         "longcat-2.5-free",
-        "tidepool-alpha-free",
-        "claude-fable-5-2",
-        "gemini-4-carbon",
-        "gemini-4-hydrogen",
-        "gemini-4-neon",
-        "gemini-omni-1.2-flash",
-        "gpt-6.2-astra",
-        "gpt-6.2-sol",
-        "muse-ember-1.0",
-        "muse-wonder-1.0"
+        "tidepool-alpha-free"
       ]
     },
     "openrouter": {
@@ -3161,7 +2624,34 @@
         "qwen3.8-27b",
         "qwen3.8-flash",
         "qwen3.8-max",
-        "glm-5.3-flashx-legal"
+        "claude-fable-5.2",
+        "claude-fable-5.2-fast",
+        "claude-haiku-5.5",
+        "deepseek-r1-0528",
+        "deepseek-v4.1-flash-1017",
+        "deepseek-v4.1-flash-1017-fast",
+        "deepseek-v4.1-flash-1017-ultrafast",
+        "gemini-4-argon",
+        "gemini-4-carbon",
+        "gemini-4-hydrogen",
+        "gemini-4-neon",
+        "glm-5.3-flashx-legal",
+        "gpt-6.1-terra",
+        "gpt-6.1-terra-fast",
+        "gpt-6.2-astra",
+        "gpt-6.2-astra-fast",
+        "gpt-6.2-sol",
+        "gpt-6.2-sol-fast",
+        "inkling-2-small",
+        "kimi-k3.1-pro",
+        "ling-3.1-flash",
+        "ling-3.1-flash-1019",
+        "minimax-m3.1-flash",
+        "mistral-large-2512",
+        "mistral-large-4",
+        "muse-ember",
+        "muse-wonder-1.0",
+        "qwen4-max"
       ],
       "models": {
         "deepseek-v4-flash:free": {
@@ -3175,87 +2665,6 @@
         },
         "mimo-v2.6-flash:free": {
           "name": "MiMo V2.6 Flash (Free)"
-        },
-        "claude-fable-5.2": {
-          "name": "claude-fable-5.2"
-        },
-        "claude-fable-5.2-fast": {
-          "name": "claude-fable-5.2-fast"
-        },
-        "claude-haiku-5.5": {
-          "name": "claude-haiku-5.5"
-        },
-        "deepseek-r1-0528": {
-          "name": "deepseek-r1-0528"
-        },
-        "deepseek-v4.1-flash-1017": {
-          "name": "deepseek-v4.1-flash-1017"
-        },
-        "deepseek-v4.1-flash-1017-fast": {
-          "name": "deepseek-v4.1-flash-1017-fast"
-        },
-        "deepseek-v4.1-flash-1017-ultrafast": {
-          "name": "deepseek-v4.1-flash-1017-ultrafast"
-        },
-        "gemini-4-argon": {
-          "name": "gemini-4-argon"
-        },
-        "gemini-4-carbon": {
-          "name": "gemini-4-carbon"
-        },
-        "gemini-4-hydrogen": {
-          "name": "gemini-4-hydrogen"
-        },
-        "gemini-4-neon": {
-          "name": "gemini-4-neon"
-        },
-        "gpt-6.1-terra": {
-          "name": "gpt-6.1-terra"
-        },
-        "gpt-6.1-terra-fast": {
-          "name": "gpt-6.1-terra-fast"
-        },
-        "gpt-6.2-astra": {
-          "name": "gpt-6.2-astra"
-        },
-        "gpt-6.2-astra-fast": {
-          "name": "gpt-6.2-astra-fast"
-        },
-        "gpt-6.2-sol": {
-          "name": "gpt-6.2-sol"
-        },
-        "gpt-6.2-sol-fast": {
-          "name": "gpt-6.2-sol-fast"
-        },
-        "inkling-2-small": {
-          "name": "inkling-2-small"
-        },
-        "kimi-k3.1-pro": {
-          "name": "kimi-k3.1-pro"
-        },
-        "ling-3.1-flash": {
-          "name": "ling-3.1-flash"
-        },
-        "ling-3.1-flash-1019": {
-          "name": "ling-3.1-flash-1019"
-        },
-        "minimax-m3.1-flash": {
-          "name": "minimax-m3.1-flash"
-        },
-        "mistral-large-2512": {
-          "name": "mistral-large-2512"
-        },
-        "mistral-large-4": {
-          "name": "mistral-large-4"
-        },
-        "muse-ember": {
-          "name": "muse-ember"
-        },
-        "muse-wonder-1.0": {
-          "name": "muse-wonder-1.0"
-        },
-        "qwen4-max": {
-          "name": "qwen4-max"
         }
       }
     },
