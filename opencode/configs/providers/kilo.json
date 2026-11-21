@@ -673,10 +673,10 @@
   ],
   "models": {
     "stealth/glyph-cluster": {
-      "name": "[44] Glyph Cluster"
+      "name": "[40] Glyph Cluster"
     },
     "reflection/beam-free": {
-      "name": "[45] Beam"
+      "name": "[10] Beam"
     }
   },
   "whitelist": [

@@ -7,19 +7,19 @@
   },
   "models": {
     "minimaxai/minimax-m3.1-flash": {
-      "name": "[48] MiniMax M3.1 Flash"
+      "name": "[43] MiniMax M3.1 Flash"
     },
     "mistralai/mistral-large-4-1t-a52b": {
-      "name": "[48] Mistral Large 4"
+      "name": "[35] Mistral Large 4"
     },
     "moonshotai/kimi-k3.1-pro": {
-      "name": "[62] Kimi K3.1 Pro"
+      "name": "[75] Kimi K3.1 Pro"
     },
     "stepfun-ai/step-5-preview": {
-      "name": "[49] Step 5 Preview"
+      "name": "[46] Step 5 Preview"
     },
     "z-ai/glm-5.3-flash": {
-      "name": "[46] GLM 5.3 Flash"
+      "name": "[41] GLM 5.3 Flash"
     }
   },
   "whitelist": [

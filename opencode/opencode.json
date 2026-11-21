@@ -180,10 +180,10 @@
     "kilo": {
       "models": {
         "stealth/glyph-cluster": {
-          "name": "[44] Glyph Cluster"
+          "name": "[40] Glyph Cluster"
         },
         "reflection/beam-free": {
-          "name": "[45] Beam"
+          "name": "[10] Beam"
         },
         "ai21/jamba-large-1.7": {
           "status": "deprecated"
@@ -2206,19 +2206,19 @@
       },
       "models": {
         "minimaxai/minimax-m3.1-flash": {
-          "name": "[48] MiniMax M3.1 Flash"
+          "name": "[43] MiniMax M3.1 Flash"
         },
         "mistralai/mistral-large-4-1t-a52b": {
-          "name": "[48] Mistral Large 4"
+          "name": "[35] Mistral Large 4"
         },
         "moonshotai/kimi-k3.1-pro": {
-          "name": "[62] Kimi K3.1 Pro"
+          "name": "[75] Kimi K3.1 Pro"
         },
         "stepfun-ai/step-5-preview": {
-          "name": "[49] Step 5 Preview"
+          "name": "[46] Step 5 Preview"
         },
         "z-ai/glm-5.3-flash": {
-          "name": "[46] GLM 5.3 Flash"
+          "name": "[41] GLM 5.3 Flash"
         },
         "01-ai/yi-large": {
           "status": "deprecated"
@@ -2765,40 +2765,40 @@
           "name": "[50] DeepSeek V4.1 Flash"
         },
         "deepseek-v4-pro:0813": {
-          "name": "[54] DeepSeek V4 Pro (0813)"
+          "name": "[40] DeepSeek V4 Pro (0813)"
         },
         "glm-5.3": {
-          "name": "[57] GLM 5.3"
+          "name": "[49] GLM 5.3"
         },
         "glm-5.3-flash": {
-          "name": "[46] GLM 5.3 Flash"
+          "name": "[41] GLM 5.3 Flash"
         },
         "minimax-m3": {
-          "name": "[52] MiniMax M3"
+          "name": "[38] MiniMax M3"
         },
         "beam": {
-          "name": "[45] Beam"
+          "name": "[10] Beam"
         },
         "inkling-2-small": {
-          "name": "[25] Inkling 2 Small"
+          "name": "[11] Inkling 2 Small"
         },
         "kimi-k3.1-pro": {
-          "name": "[62] Kimi K3.1 Pro"
+          "name": "[75] Kimi K3.1 Pro"
         },
         "mimo-v2.6-flash": {
-          "name": "[46] MiMo V2.6 Flash"
+          "name": "[38] MiMo V2.6 Flash"
         },
         "mimo-v2.6-pro": {
           "name": "[53] MiMo V2.6 Pro"
         },
         "minimax-m3.1-flash": {
-          "name": "[48] MiniMax M3.1 Flash"
+          "name": "[43] MiniMax M3.1 Flash"
         },
         "mistral-large-4": {
-          "name": "[48] Mistral Large 4"
+          "name": "[35] Mistral Large 4"
         },
         "muse-spark-open": {
-          "name": "[42] Muse Spark Open"
+          "name": "[33] Muse Spark Open"
         },
         "clef:27b": {
           "status": "deprecated"
@@ -3086,13 +3086,13 @@
     "opencode": {
       "models": {
         "big-pickle": {
-          "name": "[45] Big Pickle"
+          "name": "[40] Big Pickle"
         },
         "mimo-v2.6-flash-free": {
-          "name": "[46] MiMo V2.6 Flash"
+          "name": "[38] MiMo V2.6 Flash"
         },
         "beam-free": {
-          "name": "[45] Beam"
+          "name": "[10] Beam"
         },
         "deepseek-v4.1-flash-free": {
           "name": "[50] DeepSeek V4.1 Flash"
@@ -3110,16 +3110,16 @@
           "status": "deprecated"
         },
         "hy4-flash-free": {
-          "name": "[42] Hunyuan HY4 Flash"
+          "name": "[30] Hunyuan HY4 Flash"
         },
         "iceman-free": {
-          "name": "[44] Iceman"
+          "name": "[40] Iceman"
         },
         "longcat-2.5-free": {
-          "name": "[47] LongCat 2.5"
+          "name": "[45] LongCat 2.5"
         },
         "tidepool-alpha-free": {
-          "name": "[43] Tidepool Alpha"
+          "name": "[40] Tidepool Alpha"
         },
         "bge-m3": {
           "status": "deprecated"
@@ -3589,16 +3589,16 @@
       "name": "OpenRouter",
       "models": {
         "openrouter/free": {
-          "name": "[40] OpenRouter Free router"
+          "name": "[30] OpenRouter Free router"
         },
         "baidu/ernie-5.5-flash-preview:free": {
-          "name": "[42] ERNIE 5.5 Flash Preview"
+          "name": "[20] ERNIE 5.5 Flash Preview"
         },
         "inclusionai/ling-3.2-flash:free": {
-          "name": "[40] Ling 3.2 Flash"
+          "name": "[48] Ling 3.2 Flash"
         },
         "particle-ai/particle-1:free": {
-          "name": "[30] Particle 1"
+          "name": "[35] Particle 1"
         },
         "01-ai/yi-1.5-34b-chat": {
           "status": "deprecated"
@@ -6366,10 +6366,10 @@
           "name": "[50] DeepSeek V4.1 Flash"
         },
         "mimo-v2.5:free": {
-          "name": "[40] MiMo V2.5"
+          "name": "[25] MiMo V2.5"
         },
         "mimo-v2.6-flash:free": {
-          "name": "[46] MiMo V2.6 Flash"
+          "name": "[38] MiMo V2.6 Flash"
         },
         "claude-fable-5": {
           "status": "deprecated"
