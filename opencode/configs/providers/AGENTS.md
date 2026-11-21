@@ -44,15 +44,26 @@ must pass all of these tests:
    image, video, speech, translation, PII, safety-classifier, router, and
    decision-only models (for example `jev-*`, `*-decision`) go in the
    blacklist.
-3. **It is not substantially worse than Qwen3.7-Plus at agentic coding.** A
-   model below that bar is not useful for any work that goes through
-   OpenCode, whatever its size or price. Use the Vals.ai Terminal-Bench 2.1
-   board (vals.ai/benchmarks/terminal-bench-2-1) as the primary evidence: all
-   models there run in one harness, and Qwen 3.7 Plus scores 52.81 on it.
-   "Substantially worse" means more than about 5% below. When a model is not
-   on that board, compare on another shared benchmark (SWE-bench Pro, vendor
-   Terminal-Bench figures against Qwen's vendor figures) and say which one.
-   Size is only a weak signal: a 30B-A3B model scored 10.86 on that board.
+3. **It is not substantially worse than Qwen3.7-Plus.** A model below that
+   bar is not useful for any work that goes through OpenCode, whatever its
+   size or price. OpenCode agents do more than code: they discuss
+   mathematics, do research, summarize papers, organize and clean up files,
+   fix minor bugs, and file GitHub issues. So the comparison has two parts,
+   and a model must pass both:
+   - **Agentic operation** (tool use in a terminal, which every task needs).
+     Primary evidence: the Vals.ai Terminal-Bench 2.1 board
+     (vals.ai/benchmarks/terminal-bench-2-1). All models there run in one
+     harness, and Qwen 3.7 Plus scores 52.81. Other evidence: SWE-bench Pro,
+     or vendor Terminal-Bench figures against Qwen's vendor figures.
+   - **General reasoning and knowledge** (mathematics, research, reading).
+     Evidence: Artificial Analysis component evals (GPQA Diamond, HLE,
+     MMLU-Pro), LiveBench, or the Vals.ai general boards.
+
+   "Substantially worse" means more than about 5% below on the same
+   benchmark. Record which benchmark settled each verdict. A specialist model
+   is judged on general capability too: a coding model that is weak at
+   reasoning fails. Size is only a weak signal: a 30B-A3B model scored 10.86
+   on Terminal-Bench 2.1.
 4. **It is current.** Deprecated models, and obsolete generations such as
    `gpt-oss-120b`, go in the blacklist. A dated tag that duplicates a
    whitelisted id also goes in the blacklist.
