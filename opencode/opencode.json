@@ -927,50 +927,26 @@
         "nvidia/switchyard",
         "openrouter/auto-code",
         "typesafe/jev-router",
-        "humansand/ampersand-v0.1"
+        "humansand/ampersand-v0.1",
+        "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "openrouter/free",
+        "particle-ai/particle-1:free",
+        "nvidia/nemotron-3.5-super-vl:free",
+        "recursive/flint-v1.0:free",
+        "baidu/ernie-5.5-flash-preview:free",
+        "inclusionai/ling-3.2-flash:free",
+        "kilo-auto/free"
       ],
       "models": {
-        "kilo-auto/free": {
-          "name": "Kilo-Auto (Free)"
-        },
-        "openrouter/free": {
-          "name": "Free"
-        },
-        "nvidia/nemotron-3-ultra-550b-a55b:free": {
-          "name": "nemotron-3-ultra-550b-a55b:free"
-        },
-        "particle-ai/particle-1:free": {
-          "name": "particle-ai/particle-1:free"
-        },
-        "nvidia/nemotron-3.5-super-vl:free": {
-          "name": "nvidia/nemotron-3.5-super-vl:free"
-        },
         "stealth/glyph-cluster": {
           "name": "stealth/glyph-cluster"
-        },
-        "recursive/flint-v1.0:free": {
-          "name": "recursive/flint-v1.0:free"
-        },
-        "baidu/ernie-5.5-flash-preview:free": {
-          "name": "baidu/ernie-5.5-flash-preview:free"
-        },
-        "inclusionai/ling-3.2-flash:free": {
-          "name": "inclusionai/ling-3.2-flash:free"
         },
         "reflection/beam-free": {
           "name": "reflection/beam-free"
         }
       },
       "whitelist": [
-        "kilo-auto/free",
-        "nvidia/nemotron-3-ultra-550b-a55b:free",
-        "openrouter/free",
-        "particle-ai/particle-1:free",
-        "nvidia/nemotron-3.5-super-vl:free",
         "stealth/glyph-cluster",
-        "recursive/flint-v1.0:free",
-        "baidu/ernie-5.5-flash-preview:free",
-        "inclusionai/ling-3.2-flash:free",
         "reflection/beam-free"
       ]
     },

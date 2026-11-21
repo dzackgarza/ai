@@ -55,6 +55,16 @@ must pass all of these tests:
    behind both. Slow is not dead: NVIDIA NIM models are known to answer
    slowly.
 
+A gateway that forwards to another configured provider gets no copy of that
+provider's models. Kilo forwards to OpenRouter: its error bodies are
+OpenRouter's, with OpenRouter's BYOK link, and its catalog carries almost
+every OpenRouter id under the same name. So every Kilo id that is also in
+OpenRouter's catalog goes in the Kilo blacklist, and the model is triaged and
+used through `openrouter` directly. Kilo's routers that resolve to OpenRouter
+slugs (`kilo-auto/*`, which reports the slug in `x-kilo-resolved-model`) are
+blacklisted for the same reason. Only models that OpenRouter does not list can
+be in the Kilo whitelist.
+
 Tool-call support is assumed for current chat models of this size, so it
 needs no separate test.
 
