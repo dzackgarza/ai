@@ -98,6 +98,10 @@ If repo settings block direct pushes to `main`, change the settings if you have 
 access. If you don't, ask me to. A push restriction is not, by itself, a reason to
 start doing PRs.
 
+The commit- and push-hook directives that agents must read are version-controlled in
+`hooks/pre-commit.md` and `hooks/pre-push.md` in this repo. The global git hooks print
+these files. Edit the files here, never the hook scripts.
+
 ## Essential rules
 
 - **Never touch code without having perused CONTRIBUTING guidelines, repo rules, style requirements, etc.**
