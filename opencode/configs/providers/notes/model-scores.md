@@ -112,17 +112,9 @@ shows on most tasks.
 
 Each whitelisted model's display name in its provider fragment is
 `[<score>] <Model>`, for example `"name": "[75] Kimi K3.1 Pro"` in `models`
-of `nvidia.json`. The OpenCode model picker shows this name. The table
-below is the source. After a change to the table or to a whitelist, run
-from `configs/providers`:
-
-```bash
-python3 -I scripts/apply_model_scores.py
-```
-
-It writes every name from the table. It fails if a whitelisted model has
-no row, or a row names an id that is not whitelisted. Then rebuild the
-config and run `opencode reload`.
+of `nvidia.json`. The OpenCode model picker shows this name. When you
+change a score, edit the `name` of that model in every provider fragment
+in its row, with `jq`. Then rebuild the config and run `opencode reload`.
 
 ### When to update
 
