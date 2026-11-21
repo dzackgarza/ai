@@ -44,8 +44,15 @@ must pass all of these tests:
    image, video, speech, translation, PII, safety-classifier, router, and
    decision-only models (for example `jev-*`, `*-decision`) go in the
    blacklist.
-3. **It has at least about 35B parameters.** See
-   `notes/openrouter-model-vetting.md` for the evidence behind this limit.
+3. **It is not substantially worse than Qwen3.7-Plus at agentic coding.** A
+   model below that bar is not useful for any work that goes through
+   OpenCode, whatever its size or price. Use the Vals.ai Terminal-Bench 2.1
+   board (vals.ai/benchmarks/terminal-bench-2-1) as the primary evidence: all
+   models there run in one harness, and Qwen 3.7 Plus scores 52.81 on it.
+   "Substantially worse" means more than about 5% below. When a model is not
+   on that board, compare on another shared benchmark (SWE-bench Pro, vendor
+   Terminal-Bench figures against Qwen's vendor figures) and say which one.
+   Size is only a weak signal: a 30B-A3B model scored 10.86 on that board.
 4. **It is current.** Deprecated models, and obsolete generations such as
    `gpt-oss-120b`, go in the blacklist. A dated tag that duplicates a
    whitelisted id also goes in the blacklist.

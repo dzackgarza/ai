@@ -4,6 +4,8 @@
   "disabled_providers": [
     "bai",
     "cloudflare-ai-gateway",
+    "cloudflare-workers-ai",
+    "cohere",
     "github-copilot",
     "google",
     "groq",

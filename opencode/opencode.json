@@ -4,6 +4,8 @@
   "disabled_providers": [
     "bai",
     "cloudflare-ai-gateway",
+    "cloudflare-workers-ai",
+    "cohere",
     "github-copilot",
     "google",
     "groq",
@@ -173,85 +175,6 @@
         "gemini-3.1-flash-image",
         "tab_flash_lite_preview",
         "tab_jump_flash_lite_preview"
-      ]
-    },
-    "cloudflare-workers-ai": {
-      "name": "Cloudflare Workers AI",
-      "models": {
-        "@cf/meta/llama-3.3-70b-instruct-fp8-fast": {
-          "name": "llama-3.3-70b-instruct-fp8-fast"
-        }
-      },
-      "whitelist": [
-        "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
-      ],
-      "blacklist": [
-        "@cf/aisingapore/gemma-sea-lion-v4-27b-it",
-        "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
-        "@cf/google/gemma-4-26b-a4b-it",
-        "@cf/ibm-granite/granite-4.0-h-micro",
-        "@cf/meta/llama-3.1-8b-instruct-fp8",
-        "@cf/meta/llama-3.2-11b-vision-instruct",
-        "@cf/meta/llama-3.2-1b-instruct",
-        "@cf/meta/llama-3.2-3b-instruct",
-        "@cf/meta/llama-4-scout-17b-16e-instruct",
-        "@cf/meta/llama-guard-3-8b",
-        "@cf/mistralai/mistral-small-3.1-24b-instruct",
-        "@cf/openai/gpt-oss-20b",
-        "@cf/qwen/qwen2.5-coder-32b-instruct",
-        "@cf/qwen/qwen3-30b-a3b-fp8",
-        "@cf/qwen/qwen3.8-27b",
-        "@cf/qwen/qwq-32b",
-        "@cf/zai-org/glm-4.7-flash",
-        "@cf/cloudflare/clairic-flash",
-        "@cf/deepseek-ai/deepseek-v4-flash-0731",
-        "@cf/deepseek-ai/deepseek-v4-pro-0813",
-        "@cf/moonshotai/kimi-k2.6",
-        "@cf/moonshotai/kimi-k2.7-code",
-        "@cf/nvidia/nemotron-3-120b-a12b",
-        "@cf/zai-org/glm-5.2",
-        "@cf/zai-org/glm-5.3-flash",
-        "@cf/deepseek-ai/deepseek-v4.1-flash-1017",
-        "@cf/thinkingmachines/inkling-2-small",
-        "@cf/zai-org/glm-5.3",
-        "@cf/openai/gpt-oss-120b"
-      ]
-    },
-    "cohere": {
-      "name": "Cohere",
-      "models": {
-        "command-a-plus-05-2026": {
-          "name": "command-a-plus-05-2026"
-        },
-        "command-a-reasoning-08-2025": {
-          "name": "command-a-reasoning-08-2025"
-        },
-        "north-mini-code-1-0": {
-          "name": "north-mini-code-1-0"
-        }
-      },
-      "whitelist": [
-        "command-a-plus-05-2026",
-        "command-a-reasoning-08-2025",
-        "north-mini-code-1-0"
-      ],
-      "blacklist": [
-        "c4ai-aya-expanse-32b",
-        "c4ai-aya-expanse-8b",
-        "c4ai-aya-vision-32b",
-        "c4ai-aya-vision-8b",
-        "command-a-03-2025",
-        "command-a-translate-08-2025",
-        "command-a-vision-07-2025",
-        "command-r-08-2024",
-        "command-r-plus-08-2024",
-        "command-r7b-12-2024",
-        "command-r7b-arabic-02-2025",
-        "north-small-translate-09-2026",
-        "tiny-aya-earth",
-        "tiny-aya-fire",
-        "tiny-aya-global",
-        "tiny-aya-water"
       ]
     },
     "inkling": {
@@ -961,12 +884,6 @@
         "nvidia/nemotron-3-ultra-550b-a55b": {
           "name": "nemotron-3-ultra-550b-a55b"
         },
-        "google/gemma-4-31b-it": {
-          "name": "gemma-4-31b-it"
-        },
-        "nvidia/nemotron-3.5-lightning-30b-a3b": {
-          "name": "nemotron-3.5-lightning-30b-a3b"
-        },
         "minimaxai/minimax-m3.1-flash": {
           "name": "minimaxai/minimax-m3.1-flash"
         },
@@ -976,9 +893,6 @@
         "moonshotai/kimi-k3.1-pro": {
           "name": "moonshotai/kimi-k3.1-pro"
         },
-        "nvidia/nemotron-3.5-super-vl-120b-a12b": {
-          "name": "nvidia/nemotron-3.5-super-vl-120b-a12b"
-        },
         "stepfun-ai/step-5-preview": {
           "name": "stepfun-ai/step-5-preview"
         },
@@ -987,13 +901,10 @@
         }
       },
       "whitelist": [
-        "google/gemma-4-31b-it",
         "nvidia/nemotron-3-ultra-550b-a55b",
-        "nvidia/nemotron-3.5-lightning-30b-a3b",
         "minimaxai/minimax-m3.1-flash",
         "mistralai/mistral-large-4-1t-a52b",
         "moonshotai/kimi-k3.1-pro",
-        "nvidia/nemotron-3.5-super-vl-120b-a12b",
         "stepfun-ai/step-5-preview",
         "z-ai/glm-5.3-flash"
       ],
@@ -1147,7 +1058,10 @@
         "fastino/gliner2-pii",
         "nvidia/nemotron-3.5-bolt-e4b",
         "nvidia/nemotron-3.5-embed-1b",
-        "nvidia/nemotron-3.5-embed-8b"
+        "nvidia/nemotron-3.5-embed-8b",
+        "google/gemma-4-31b-it",
+        "nvidia/nemotron-3.5-lightning-30b-a3b",
+        "nvidia/nemotron-3.5-super-vl-120b-a12b"
       ]
     },
     "ollama-cloud": {
@@ -1434,14 +1348,14 @@
         "text-embedding-3-small",
         "voyage-4",
         "voyage-code-4",
-        "jev-1.13-free"
+        "jev-1.13-free",
+        "nemotron-3.5-lightning-free",
+        "nemotron-3.5-super-vl-free",
+        "flint-40b-free"
       ],
       "models": {
         "big-pickle": {
           "name": "Big Pickle"
-        },
-        "nemotron-3.5-lightning-free": {
-          "name": "nemotron-3.5-lightning-free"
         },
         "mimo-v2.6-flash-free": {
           "name": "MiMo-V2.6-Flash"
@@ -1452,9 +1366,6 @@
         "deepseek-v4.1-flash-free": {
           "name": "DeepSeek V4 Flash Free"
         },
-        "nemotron-3.5-super-vl-free": {
-          "name": "Nemotron 3.5 Super-VL Free"
-        },
         "claude-haiku-5-5": {
           "name": "Claude Haiku 5.5"
         },
@@ -1463,9 +1374,6 @@
         },
         "mistral-large-4": {
           "name": "Mistral Large 4"
-        },
-        "flint-40b-free": {
-          "name": "flint-40b-free"
         },
         "hy4-flash-free": {
           "name": "hy4-flash-free"
@@ -1485,9 +1393,6 @@
         "big-pickle",
         "deepseek-v4.1-flash-free",
         "mimo-v2.6-flash-free",
-        "nemotron-3.5-lightning-free",
-        "nemotron-3.5-super-vl-free",
-        "flint-40b-free",
         "hy4-flash-free",
         "iceman-free",
         "longcat-2.5-free",
@@ -1509,14 +1414,8 @@
         "inclusionai/ling-3.2-flash:free": {
           "name": "inclusionai/ling-3.2-flash:free"
         },
-        "nvidia/nemotron-3.5-super-vl:free": {
-          "name": "nvidia/nemotron-3.5-super-vl:free"
-        },
         "particle-ai/particle-1:free": {
           "name": "particle-ai/particle-1:free"
-        },
-        "recursive/flint-v1.0:free": {
-          "name": "recursive/flint-v1.0:free"
         }
       },
       "whitelist": [
@@ -1524,9 +1423,7 @@
         "openrouter/free",
         "baidu/ernie-5.5-flash-preview:free",
         "inclusionai/ling-3.2-flash:free",
-        "nvidia/nemotron-3.5-super-vl:free",
-        "particle-ai/particle-1:free",
-        "recursive/flint-v1.0:free"
+        "particle-ai/particle-1:free"
       ],
       "blacklist": [
         "01-ai/yi-1.5-34b-chat",
@@ -2246,7 +2143,9 @@
         "~moonshotai/kimi-latest",
         "~openai/gpt-latest",
         "~openai/gpt-mini-latest",
-        "liquid/lfm-3-1.7b:free"
+        "liquid/lfm-3-1.7b:free",
+        "nvidia/nemotron-3.5-super-vl:free",
+        "recursive/flint-v1.0:free"
       ]
     },
     "tokenharbor": {

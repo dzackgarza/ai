@@ -13,14 +13,8 @@
     "inclusionai/ling-3.2-flash:free": {
       "name": "inclusionai/ling-3.2-flash:free"
     },
-    "nvidia/nemotron-3.5-super-vl:free": {
-      "name": "nvidia/nemotron-3.5-super-vl:free"
-    },
     "particle-ai/particle-1:free": {
       "name": "particle-ai/particle-1:free"
-    },
-    "recursive/flint-v1.0:free": {
-      "name": "recursive/flint-v1.0:free"
     }
   },
   "whitelist": [
@@ -28,9 +22,7 @@
     "openrouter/free",
     "baidu/ernie-5.5-flash-preview:free",
     "inclusionai/ling-3.2-flash:free",
-    "nvidia/nemotron-3.5-super-vl:free",
-    "particle-ai/particle-1:free",
-    "recursive/flint-v1.0:free"
+    "particle-ai/particle-1:free"
   ],
   "blacklist": [
     "01-ai/yi-1.5-34b-chat",
@@ -750,6 +742,8 @@
     "~moonshotai/kimi-latest",
     "~openai/gpt-latest",
     "~openai/gpt-mini-latest",
-    "liquid/lfm-3-1.7b:free"
+    "liquid/lfm-3-1.7b:free",
+    "nvidia/nemotron-3.5-super-vl:free",
+    "recursive/flint-v1.0:free"
   ]
 }
