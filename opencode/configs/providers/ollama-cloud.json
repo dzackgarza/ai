@@ -31,7 +31,8 @@
     "rnj-1:8b",
     "clef:27b",
     "deepseek-v4.1-flash:1017",
-    "gpt-oss:120b"
+    "gpt-oss:120b",
+    "nemotron-3-ultra"
   ],
   "models": {
     "deepseek-v4.1-flash": {
@@ -54,9 +55,6 @@
     },
     "minimax-m3": {
       "name": "MiniMax M3"
-    },
-    "nemotron-3-ultra": {
-      "name": "Nemotron 3 Ultra"
     },
     "beam": {
       "name": "beam"
@@ -91,7 +89,6 @@
     "kimi-k2.7-code",
     "kimi-k3",
     "minimax-m3",
-    "nemotron-3-ultra",
     "beam",
     "inkling-2-small",
     "kimi-k3.1-pro",

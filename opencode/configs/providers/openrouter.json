@@ -1,9 +1,6 @@
 {
   "name": "OpenRouter",
   "models": {
-    "nvidia/nemotron-3-ultra-550b-a55b:free": {
-      "name": "Nemotron 3 Ultra 550B (free)"
-    },
     "openrouter/free": {
       "name": "Free Models Router"
     },
@@ -18,7 +15,6 @@
     }
   },
   "whitelist": [
-    "nvidia/nemotron-3-ultra-550b-a55b:free",
     "openrouter/free",
     "baidu/ernie-5.5-flash-preview:free",
     "inclusionai/ling-3.2-flash:free",
@@ -744,6 +740,7 @@
     "~openai/gpt-mini-latest",
     "liquid/lfm-3-1.7b:free",
     "nvidia/nemotron-3.5-super-vl:free",
-    "recursive/flint-v1.0:free"
+    "recursive/flint-v1.0:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free"
   ]
 }

@@ -881,9 +881,6 @@
         "apiKey": "{env:NVIDIA_API_KEY}"
       },
       "models": {
-        "nvidia/nemotron-3-ultra-550b-a55b": {
-          "name": "nemotron-3-ultra-550b-a55b"
-        },
         "minimaxai/minimax-m3.1-flash": {
           "name": "minimaxai/minimax-m3.1-flash"
         },
@@ -901,7 +898,6 @@
         }
       },
       "whitelist": [
-        "nvidia/nemotron-3-ultra-550b-a55b",
         "minimaxai/minimax-m3.1-flash",
         "mistralai/mistral-large-4-1t-a52b",
         "moonshotai/kimi-k3.1-pro",
@@ -1061,7 +1057,8 @@
         "nvidia/nemotron-3.5-embed-8b",
         "google/gemma-4-31b-it",
         "nvidia/nemotron-3.5-lightning-30b-a3b",
-        "nvidia/nemotron-3.5-super-vl-120b-a12b"
+        "nvidia/nemotron-3.5-super-vl-120b-a12b",
+        "nvidia/nemotron-3-ultra-550b-a55b"
       ]
     },
     "ollama-cloud": {
@@ -1097,7 +1094,8 @@
         "rnj-1:8b",
         "clef:27b",
         "deepseek-v4.1-flash:1017",
-        "gpt-oss:120b"
+        "gpt-oss:120b",
+        "nemotron-3-ultra"
       ],
       "models": {
         "deepseek-v4.1-flash": {
@@ -1120,9 +1118,6 @@
         },
         "minimax-m3": {
           "name": "MiniMax M3"
-        },
-        "nemotron-3-ultra": {
-          "name": "Nemotron 3 Ultra"
         },
         "beam": {
           "name": "beam"
@@ -1157,7 +1152,6 @@
         "kimi-k2.7-code",
         "kimi-k3",
         "minimax-m3",
-        "nemotron-3-ultra",
         "beam",
         "inkling-2-small",
         "kimi-k3.1-pro",
@@ -1402,9 +1396,6 @@
     "openrouter": {
       "name": "OpenRouter",
       "models": {
-        "nvidia/nemotron-3-ultra-550b-a55b:free": {
-          "name": "Nemotron 3 Ultra 550B (free)"
-        },
         "openrouter/free": {
           "name": "Free Models Router"
         },
@@ -1419,7 +1410,6 @@
         }
       },
       "whitelist": [
-        "nvidia/nemotron-3-ultra-550b-a55b:free",
         "openrouter/free",
         "baidu/ernie-5.5-flash-preview:free",
         "inclusionai/ling-3.2-flash:free",
@@ -2145,7 +2135,8 @@
         "~openai/gpt-mini-latest",
         "liquid/lfm-3-1.7b:free",
         "nvidia/nemotron-3.5-super-vl:free",
-        "recursive/flint-v1.0:free"
+        "recursive/flint-v1.0:free",
+        "nvidia/nemotron-3-ultra-550b-a55b:free"
       ]
     },
     "tokenharbor": {

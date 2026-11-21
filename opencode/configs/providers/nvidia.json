@@ -6,9 +6,6 @@
     "apiKey": "{env:NVIDIA_API_KEY}"
   },
   "models": {
-    "nvidia/nemotron-3-ultra-550b-a55b": {
-      "name": "nemotron-3-ultra-550b-a55b"
-    },
     "minimaxai/minimax-m3.1-flash": {
       "name": "minimaxai/minimax-m3.1-flash"
     },
@@ -26,7 +23,6 @@
     }
   },
   "whitelist": [
-    "nvidia/nemotron-3-ultra-550b-a55b",
     "minimaxai/minimax-m3.1-flash",
     "mistralai/mistral-large-4-1t-a52b",
     "moonshotai/kimi-k3.1-pro",
@@ -186,6 +182,7 @@
     "nvidia/nemotron-3.5-embed-8b",
     "google/gemma-4-31b-it",
     "nvidia/nemotron-3.5-lightning-30b-a3b",
-    "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "nvidia/nemotron-3-ultra-550b-a55b"
   ]
 }
