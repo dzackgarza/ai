@@ -4,7 +4,7 @@ description: 'Use when executing an approved atomic task tied to a card. Pass th
   task-card path, relevant files, non-goals, and verification command. Ask ''Execute
   this task card as a fixed contract: [path]''.'
 mode: subagent
-model: ollama-cloud/deepseek-v4-flash
+model: ollama-cloud/deepseek-v4.1-flash
 permission:
   question: deny
   doom_loop: deny

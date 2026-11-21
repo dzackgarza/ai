@@ -24,6 +24,18 @@
     },
     "@cf/deepseek-ai/deepseek-v4-pro-0813": {
       "name": "DeepSeek V4 Pro 0813"
+    },
+    "@cf/deepseek-ai/deepseek-v4.1-flash-1017": {
+      "name": "@cf/deepseek-ai/deepseek-v4.1-flash-1017"
+    },
+    "@cf/thinkingmachines/inkling-2-small": {
+      "name": "@cf/thinkingmachines/inkling-2-small"
+    },
+    "@cf/zai-org/glm-5.3": {
+      "name": "@cf/zai-org/glm-5.3"
+    },
+    "@cf/zai-org/glm-5.3-flash": {
+      "name": "@cf/zai-org/glm-5.3-flash"
     }
   },
   "whitelist": [
@@ -34,7 +46,11 @@
     "@cf/moonshotai/kimi-k2.7-code",
     "@cf/nvidia/nemotron-3-120b-a12b",
     "@cf/openai/gpt-oss-120b",
-    "@cf/zai-org/glm-5.2"
+    "@cf/zai-org/glm-5.2",
+    "@cf/deepseek-ai/deepseek-v4.1-flash-1017",
+    "@cf/thinkingmachines/inkling-2-small",
+    "@cf/zai-org/glm-5.3",
+    "@cf/zai-org/glm-5.3-flash"
   ],
   "blacklist": [
     "@cf/aisingapore/gemma-sea-lion-v4-27b-it",
@@ -53,6 +69,7 @@
     "@cf/qwen/qwen3-30b-a3b-fp8",
     "@cf/qwen/qwen3.8-27b",
     "@cf/qwen/qwq-32b",
-    "@cf/zai-org/glm-4.7-flash"
+    "@cf/zai-org/glm-4.7-flash",
+    "@cf/cloudflare/clairic-flash"
   ]
 }

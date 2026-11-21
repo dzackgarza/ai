@@ -1,32 +1,36 @@
 {
   "name": "OpenRouter",
   "models": {
-    "cohere/north-mini-code:free": {
-      "name": "Cohere North Mini Code (free)"
-    },
     "nvidia/nemotron-3-ultra-550b-a55b:free": {
       "name": "Nemotron 3 Ultra 550B (free)"
     },
     "openrouter/free": {
       "name": "Free Models Router"
     },
-    "poolside/laguna-s-2.1:free": {
-      "name": "laguna-s-2.1:free"
+    "baidu/ernie-5.5-flash-preview:free": {
+      "name": "baidu/ernie-5.5-flash-preview:free"
     },
-    "poolside/laguna-xs-2.1:free": {
-      "name": "laguna-xs-2.1:free"
+    "inclusionai/ling-3.2-flash:free": {
+      "name": "inclusionai/ling-3.2-flash:free"
     },
-    "stealth/space-bunny-alpha": {
-      "name": "Space Bunny Alpha"
+    "nvidia/nemotron-3.5-super-vl:free": {
+      "name": "nvidia/nemotron-3.5-super-vl:free"
+    },
+    "particle-ai/particle-1:free": {
+      "name": "particle-ai/particle-1:free"
+    },
+    "recursive/flint-v1.0:free": {
+      "name": "recursive/flint-v1.0:free"
     }
   },
   "whitelist": [
-    "cohere/north-mini-code:free",
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "openrouter/free",
-    "poolside/laguna-s-2.1:free",
-    "poolside/laguna-xs-2.1:free",
-    "stealth/space-bunny-alpha"
+    "baidu/ernie-5.5-flash-preview:free",
+    "inclusionai/ling-3.2-flash:free",
+    "nvidia/nemotron-3.5-super-vl:free",
+    "particle-ai/particle-1:free",
+    "recursive/flint-v1.0:free"
   ],
   "blacklist": [
     "01-ai/yi-1.5-34b-chat",
@@ -745,6 +749,7 @@
     "~google/gemini-pro-latest",
     "~moonshotai/kimi-latest",
     "~openai/gpt-latest",
-    "~openai/gpt-mini-latest"
+    "~openai/gpt-mini-latest",
+    "liquid/lfm-3-1.7b:free"
   ]
 }

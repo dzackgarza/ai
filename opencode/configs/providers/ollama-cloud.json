@@ -28,7 +28,9 @@
     "qwen3-vl:235b-instruct",
     "qwen3.5",
     "qwen3.5:397b",
-    "rnj-1:8b"
+    "rnj-1:8b",
+    "clef:27b",
+    "deepseek-v4.1-flash:1017"
   ],
   "models": {
     "deepseek-v4.1-flash": {
@@ -55,11 +57,32 @@
     "minimax-m3": {
       "name": "MiniMax M3"
     },
-    "mistral-large-3:675b": {
-      "name": "Mistral Large 3 675B"
-    },
     "nemotron-3-ultra": {
       "name": "Nemotron 3 Ultra"
+    },
+    "beam": {
+      "name": "beam"
+    },
+    "inkling-2-small": {
+      "name": "inkling-2-small"
+    },
+    "kimi-k3.1-pro": {
+      "name": "kimi-k3.1-pro"
+    },
+    "mimo-v2.6-flash": {
+      "name": "mimo-v2.6-flash"
+    },
+    "mimo-v2.6-pro": {
+      "name": "mimo-v2.6-pro"
+    },
+    "minimax-m3.1-flash": {
+      "name": "minimax-m3.1-flash"
+    },
+    "mistral-large-4": {
+      "name": "mistral-large-4"
+    },
+    "muse-spark-open": {
+      "name": "muse-spark-open"
     }
   },
   "whitelist": [
@@ -71,7 +94,14 @@
     "kimi-k2.7-code",
     "kimi-k3",
     "minimax-m3",
-    "mistral-large-3:675b",
-    "nemotron-3-ultra"
+    "nemotron-3-ultra",
+    "beam",
+    "inkling-2-small",
+    "kimi-k3.1-pro",
+    "mimo-v2.6-flash",
+    "mimo-v2.6-pro",
+    "minimax-m3.1-flash",
+    "mistral-large-4",
+    "muse-spark-open"
   ]
 }

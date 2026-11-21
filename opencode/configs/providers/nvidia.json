@@ -6,76 +6,44 @@
     "apiKey": "{env:NVIDIA_API_KEY}"
   },
   "models": {
-    "meta/codellama-70b": {
-      "name": "codellama-70b"
-    },
-    "meta/llama-3.3-70b-instruct": {
-      "name": "llama-3.3-70b-instruct"
-    },
-    "mistralai/mistral-nemotron": {
-      "name": "mistral-nemotron"
-    },
-    "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
-      "name": "llama-3.1-nemotron-ultra-253b-v1"
-    },
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
-      "name": "llama-3.3-nemotron-super-49b-v1.5"
-    },
-    "nvidia/nemotron-3-nano-30b-a3b": {
-      "name": "nemotron-3-nano-30b-a3b"
-    },
-    "nvidia/nemotron-4-340b-instruct": {
-      "name": "nemotron-4-340b-instruct"
-    },
-    "openai/gpt-oss-120b": {
-      "name": "gpt-oss-120b"
-    },
-    "minimaxai/minimax-m3": {
-      "name": "minimax-m3"
-    },
-    "moonshotai/kimi-k2.6": {
-      "name": "kimi-k2.6"
-    },
-    "nvidia/nemotron-3-super-120b-a12b": {
-      "name": "nemotron-3-super-120b-a12b"
-    },
     "nvidia/nemotron-3-ultra-550b-a55b": {
       "name": "nemotron-3-ultra-550b-a55b"
     },
     "google/gemma-4-31b-it": {
       "name": "gemma-4-31b-it"
     },
-    "deepseek-ai/deepseek-v4-flash-0731": {
-      "name": "deepseek-v4-flash-0731"
-    },
     "nvidia/nemotron-3.5-lightning-30b-a3b": {
       "name": "nemotron-3.5-lightning-30b-a3b"
     },
-    "thinkingmachines/inkling": {
-      "name": "inkling"
+    "minimaxai/minimax-m3.1-flash": {
+      "name": "minimaxai/minimax-m3.1-flash"
     },
-    "moonshotai/kimi-k3": {
-      "name": "Kimi K3"
+    "mistralai/mistral-large-4-1t-a52b": {
+      "name": "mistralai/mistral-large-4-1t-a52b"
+    },
+    "moonshotai/kimi-k3.1-pro": {
+      "name": "moonshotai/kimi-k3.1-pro"
+    },
+    "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+      "name": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    "stepfun-ai/step-5-preview": {
+      "name": "stepfun-ai/step-5-preview"
+    },
+    "z-ai/glm-5.3-flash": {
+      "name": "z-ai/glm-5.3-flash"
     }
   },
   "whitelist": [
-    "deepseek-ai/deepseek-v4-flash-0731",
     "google/gemma-4-31b-it",
-    "meta/codellama-70b",
-    "meta/llama-3.3-70b-instruct",
-    "minimaxai/minimax-m3",
-    "mistralai/mistral-nemotron",
-    "moonshotai/kimi-k2.6",
-    "moonshotai/kimi-k3",
-    "nvidia/llama-3.1-nemotron-ultra-253b-v1",
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "nvidia/nemotron-3-nano-30b-a3b",
-    "nvidia/nemotron-3-super-120b-a12b",
     "nvidia/nemotron-3-ultra-550b-a55b",
     "nvidia/nemotron-3.5-lightning-30b-a3b",
-    "nvidia/nemotron-4-340b-instruct",
-    "openai/gpt-oss-120b",
-    "thinkingmachines/inkling"
+    "minimaxai/minimax-m3.1-flash",
+    "mistralai/mistral-large-4-1t-a52b",
+    "moonshotai/kimi-k3.1-pro",
+    "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "stepfun-ai/step-5-preview",
+    "z-ai/glm-5.3-flash"
   ],
   "blacklist": [
     "01-ai/yi-large",
@@ -223,6 +191,10 @@
     "writer/palmyra-med-70b-32k",
     "z-ai/glm4.7",
     "z-ai/glm5",
-    "zyphra/zamba2-7b-instruct"
+    "zyphra/zamba2-7b-instruct",
+    "fastino/gliner2-pii",
+    "nvidia/nemotron-3.5-bolt-e4b",
+    "nvidia/nemotron-3.5-embed-1b",
+    "nvidia/nemotron-3.5-embed-8b"
   ]
 }
