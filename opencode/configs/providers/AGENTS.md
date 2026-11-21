@@ -100,7 +100,7 @@ Every provider that `opencode models` lists has a fragment here. A provider
 that OpenCode lists without a fragment shows its whole catalog. Examples:
 OpenCode finds `thinkingmachines` in models.dev, and
 `ollama` through the local Ollama daemon. When no model of such a provider
-passes the criteria, its fragment blacklists every listed id. Both
+passes the criteria, its fragment blacklists every listed id.
 `thinkingmachines` is paid per token. `ollama` serves only
 `:cloud` tags, which forward to Ollama Cloud, so its ids are triaged in
 `ollama-cloud`.
