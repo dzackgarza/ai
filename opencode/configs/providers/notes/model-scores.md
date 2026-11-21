@@ -4,43 +4,139 @@ These scores rank every whitelisted model by general reasoning and task
 performance on one 0–100 scale. Use them to choose a model for an agent and
 to order fallbacks.
 
-## Scale
+## Methodology
 
-- **Anchors:** the current frontier models of Anthropic and OpenAI, at
-  maximum effort, are 100. On 2026-11-21 these are Claude Fable 5.2 and
-  GPT-6.2 Astra. DeepSeek V4.1 Flash, the newest DeepSeek model, is
-  exactly 50. When a new frontier model is released, it becomes the 100
-  anchor, and the other scores go down.
-- **Primary evidence:** the Artificial Analysis (AA) Intelligence Index
-  v4.3.2 (frozen 2026-10-27,
-  [table](https://www.benchleader.com/benchmarks/aa_intelligence_index)).
-  AA runs every model in one harness, and the index covers both agentic
-  operation and general reasoning. On it, DeepSeek V4.1 Flash 1017 (max)
-  is 45.1. The frontier is about 63: Fable 5.2 is only on v5.0.1 (64.6),
-  and Opus 5.5 (max) scores 59.1 on v5.0.1 and 57.6 on v4.3.2, so Fable
-  5.2 converts to about 63 on v4.3.2.
-- **Map:** score = 50 + 2.79 × (AA − 45.1), rounded, at least 0. The map is
-  linear through the two anchors, and a model below the anchor continues
-  on the same line. One AA point is about 3 score points.
-- **Other evidence:** when a model has no v4.3.2 row, its score comes from
-  the evidence in its row. A vendor-reported benchmark counts for less than
-  an AA result. For example, Reflection reports 80.1 on Terminal-Bench 2.1
-  for Beam, but AA measured Beam at 30.
-- **No evidence:** stealth models have no public identity or benchmarks.
-  Their score is 40, a placeholder, until a live trial or a published
-  identity gives evidence.
-- **Noise:** a gap of 3 points or less is noise. A 10-point gap is a
-  difference you see on most tasks.
-- **Snapshot:** 2026-11-21. Score each new whitelisted model before an
-  agent uses it. When a model leaves the whitelist, delete its row.
+### What a score measures
 
-The same model can be served by more than one provider. It has one score.
+A score is the model's general reasoning and task performance, as one
+number from 0 to 100. It covers the whole range of OpenCode agent work:
+agentic operation in a terminal, coding, mathematics, research, reading
+papers, and file and issue work. It does not include speed, price, context
+length, or rate limits. A slow model (for example on NVIDIA NIM) keeps its
+score.
+
+### The anchors
+
+Two fixed points define the scale. The user set both.
+
+| Score | Anchor | Meaning |
+| ---: | --- | --- |
+| 100 | the newest Anthropic frontier model and the newest OpenAI frontier model, at maximum reasoning effort | on 2026-11-21: Claude Fable 5.2 (max) and GPT-6.2 Astra (max) |
+| 50 | the newest DeepSeek model | on 2026-11-21: DeepSeek V4.1 Flash (1017) |
+
+The anchors move. When Anthropic or OpenAI releases a new frontier model,
+or DeepSeek releases a new model, the anchor changes to that model, and
+every score is computed again from step 3 below. Scores are relative:
+when the frontier improves, the same open model gets a lower score.
+
+### The common scale
+
+Different benchmarks rank models differently, and vendors report numbers
+from their own harnesses. So every score starts from one independent board
+that runs all models in one harness and covers both agentic and general
+work: the **Artificial Analysis (AA) Intelligence Index**.
+
+- Version used on 2026-11-21: **v4.3.2**, frozen 2026-10-27, 657 model
+  configurations. Third-party mirror with the full table:
+  <https://www.benchleader.com/benchmarks/aa_intelligence_index>. The
+  current version is v5.0.1
+  (<https://www.benchleader.com/benchmarks/aa_intelligence_index_v5>).
+- v4.3.2 is used because the 50 anchor (DeepSeek V4.1 Flash) has a v4.3.2
+  row and no visible v5.0.1 row. Values from two AA versions are never
+  mixed in one formula: v5.0.1 is harder on open models (Kimi K3.1 Pro is
+  55.1 on v4.3.2 and 46.5 on v5.0.1).
+- Use the anchor model's highest configuration (for example `(max)`)
+  when the board lists several.
+
+### Steps to score a model
+
+1. **Find the anchor values on the chosen AA version.**
+   - `A50` = the AA value of the 50 anchor. On v4.3.2: DeepSeek V4.1
+     Flash 1017 (max) = 45.1.
+   - `A100` = the AA value of the 100 anchor. If the frontier model has
+     no row on that version, convert it through a model that has rows on
+     both versions. On 2026-11-21: Fable 5.2 (max) is 64.6 on v5.0.1 only.
+     Opus 5.5 (max) is 59.1 on v5.0.1 and 57.6 on v4.3.2. So Fable 5.2 on
+     v4.3.2 ≈ 64.6 × 57.6 / 59.1 ≈ 63. Record the conversion in the anchor
+     row of the table.
+2. **Compute the slope.** `k = 50 / (A100 − A50)`. On 2026-11-21:
+   50 / (63 − 45.1) ≈ 2.79.
+3. **Map each model that has a row on the same AA version.**
+   `score = 50 + k × (AA − A50)`, rounded to an integer, and at least 0.
+   The same line continues below the 50 anchor; do not compress the low
+   end. One AA point is about 3 score points, so small AA gaps become
+   large score gaps. Use the configuration the provider serves; if that is
+   unknown, use the highest configuration.
+4. **Bound a model that the visible table does not list.** If the board
+   shows only the top rows (the mirror shows 60), a model that is missing
+   scores below the last visible value. On 2026-11-21 that value was 41.8,
+   which maps to 41. Choose a value below that bound from the evidence in
+   step 5, and write "below 41.8 on AA v4.3.2" in the evidence cell.
+5. **Use other evidence when there is no AA row.** Use the strongest
+   evidence that exists, in this order, and name it in the evidence cell:
+   1. An AA value on another AA version, converted as in step 1. If only
+      a whole-number AA article value exists (for example "AA 30" in an
+      AA article), use it with that version noted.
+   2. The model's predecessor on the AA board, adjusted for the version
+      step. For example, Ling 3.2 Flash uses Ling 3.1 Flash (43.9 → 47)
+      and gets 48.
+   3. Independent boards: Vals.ai (Vals Index, Terminal-Bench 2.1),
+      Terminal-Bench 4.0, SWE-bench Pro. Compare with a model that has
+      both that board's value and a score here. For example, Terminal-
+      Bench 4.0: Sonnet 5.5 = 64.14.
+   4. Vendor-reported benchmarks. These count for the least. When an
+      independent result exists, it wins: Reflection reports Terminal-
+      Bench 2.1 80.1 for Beam, but AA measured 30, so Beam is 10.
+   5. Release facts: tier inside a series (Pro > base > Flash), generation,
+      and whether the published checkpoint is a base model. A base
+      checkpoint without instruction tuning (ERNIE 5.5 Flash on
+      2026-11-21) gets a low score.
+6. **Stealth and unknown models.** A model with no public identity and no
+   benchmarks (OpenCode Zen and Kilo stealth models such as Big Pickle,
+   Iceman, Tidepool Alpha, Glyph Cluster) gets the placeholder **40**, and
+   its evidence cell says "stealth placeholder". When the vendor is named,
+   or a benchmark appears, score it with steps 3 to 5.
+7. **Routers.** A router that picks a different model per call (for
+   example `openrouter/free`) gets about the score of the typical model it
+   routes to, and its evidence cell says so.
+8. **One score per model.** The same model on several providers has one
+   row, and the row lists every provider id that serves it.
+
+### Rounding and noise
+
+Round each score to an integer. A gap of 3 points or less between two
+models is noise; do not rank on it. A 10-point gap is a difference that
+shows on most tasks.
+
+### Display names
 
 Each whitelisted model's display name in its provider fragment is
-`[<score>] <Model>`, with the score and model name from this table, for
-example `"name": "[75] Kimi K3.1 Pro"` in `models` of `nvidia.json`. The
-OpenCode model picker shows this name. When a score or a whitelist changes,
-change the table and the fragment `name` together.
+`[<score>] <Model>`, for example `"name": "[75] Kimi K3.1 Pro"` in `models`
+of `nvidia.json`. The OpenCode model picker shows this name. The table
+below is the source. After a change to the table or to a whitelist, run
+from `configs/providers`:
+
+```bash
+python3 -I scripts/apply_model_scores.py
+```
+
+It writes every name from the table. It fails if a whitelisted model has
+no row, or a row names an id that is not whitelisted. Then rebuild the
+config and run `opencode reload`.
+
+### When to update
+
+- A model joins a whitelist: add or extend its row before an agent uses
+  it.
+- A model leaves every whitelist: delete its row. If it leaves one
+  provider, delete only that provider id from its row.
+- An anchor changes, or AA publishes a new version that contains the 50
+  anchor: compute every score again from step 1, and change the snapshot
+  date.
+- New evidence appears for a model scored by steps 4 to 6: score it
+  again.
+
+Snapshot: 2026-11-21.
 
 ## Scores
 
