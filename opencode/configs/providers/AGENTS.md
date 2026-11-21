@@ -83,6 +83,16 @@ slugs (`kilo-auto/*`, which reports the slug in `x-kilo-resolved-model`) are
 blacklisted for the same reason. Only models that OpenRouter does not list can
 be in the Kilo whitelist.
 
+OpenCode 2 ignores the provider fields `whitelist` and `blacklist`, and it
+has no wildcard model entry. `scripts/build_config.py` therefore compiles
+them: every models.dev id of the provider outside the whitelist, and every
+blacklisted id, gets `status: "deprecated"` in the generated
+`opencode.json`. OpenCode 2 reads that as `disabled: true`, so the model is
+hidden and `opencode run -m` fails with "Model unavailable". A model that
+models.dev adds after the last build is visible until the next build. Do
+not write a native V2 `providers.<id>` entry: it replaces the model map of a
+custom provider such as `tokenharbor`.
+
 Tool-call support is assumed for current chat models of this size, so it
 needs no separate test.
 
