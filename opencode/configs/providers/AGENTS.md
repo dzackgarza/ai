@@ -25,7 +25,7 @@ just providers-debug nvidia        # single provider, warn-only (no exit 1)
 ```
 
 `providers-validate` checks directly-queryable providers (any config with
-`options.baseURL`, e.g. NVIDIA NIM, VectorEngine, Antigravity) against their
+`options.baseURL`, e.g. NVIDIA NIM, Antigravity) against their
 own live `/models` endpoint — authoritative over the third-party models.dev
 mirror. Every other provider is checked against models.dev. Either check
 fails the run if a whitelisted model has rotated off the live catalog or a
