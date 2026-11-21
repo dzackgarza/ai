@@ -22,6 +22,12 @@ results. Use them to choose a model for an agent and to order fallbacks.
 
 The same model can be served by more than one provider. It has one score.
 
+Each whitelisted model's display name in its provider fragment is
+`[<score>] <Model>`, with the score and model name from this table, for
+example `"name": "[62] Kimi K3.1 Pro"` in `models` of `nvidia.json`. The
+OpenCode model picker shows this name. When a score or a whitelist changes,
+change the table and the fragment `name` together.
+
 | Score | Model | Provider ids | Note |
 | ---: | --- | --- | --- |
 | 100 | Frontier Anthropic and OpenAI | not whitelisted | anchor: newest Fable and newest Astra, maximum effort |

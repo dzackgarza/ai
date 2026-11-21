@@ -132,16 +132,16 @@
   ],
   "models": {
     "big-pickle": {
-      "name": "Big Pickle"
+      "name": "[45] Big Pickle"
     },
     "mimo-v2.6-flash-free": {
-      "name": "MiMo-V2.6-Flash"
+      "name": "[46] MiMo V2.6 Flash"
     },
     "beam-free": {
-      "name": "Beam Free"
+      "name": "[45] Beam"
     },
     "deepseek-v4.1-flash-free": {
-      "name": "DeepSeek V4 Flash Free"
+      "name": "[50] DeepSeek V4.1 Flash"
     },
     "claude-haiku-5-5": {
       "name": "Claude Haiku 5.5"
@@ -153,16 +153,16 @@
       "name": "Mistral Large 4"
     },
     "hy4-flash-free": {
-      "name": "hy4-flash-free"
+      "name": "[42] Hunyuan HY4 Flash"
     },
     "iceman-free": {
-      "name": "iceman-free"
+      "name": "[44] Iceman"
     },
     "longcat-2.5-free": {
-      "name": "longcat-2.5-free"
+      "name": "[47] LongCat 2.5"
     },
     "tidepool-alpha-free": {
-      "name": "tidepool-alpha-free"
+      "name": "[43] Tidepool Alpha"
     }
   },
   "whitelist": [

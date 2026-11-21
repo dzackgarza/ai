@@ -2,16 +2,16 @@
   "name": "OpenRouter",
   "models": {
     "openrouter/free": {
-      "name": "Free Models Router"
+      "name": "[40] OpenRouter Free router"
     },
     "baidu/ernie-5.5-flash-preview:free": {
-      "name": "baidu/ernie-5.5-flash-preview:free"
+      "name": "[42] ERNIE 5.5 Flash Preview"
     },
     "inclusionai/ling-3.2-flash:free": {
-      "name": "inclusionai/ling-3.2-flash:free"
+      "name": "[40] Ling 3.2 Flash"
     },
     "particle-ai/particle-1:free": {
-      "name": "particle-ai/particle-1:free"
+      "name": "[30] Particle 1"
     }
   },
   "whitelist": [
