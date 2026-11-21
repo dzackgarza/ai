@@ -472,6 +472,22 @@ delete before deleting it; leave live process state, tmux sockets and state, act
 and my work alone. Follow the deletion rules below. Centralize and share caches wherever
 you can.
 
+Workers clean up after themselves. A clone, worktree or scratch checkout that a worker makes
+is the worker's to remove when its work has landed: commit and push, check that nothing is
+unpushed, then trash the directory and run `git worktree prune` for a worktree. Reuse one
+checkout per repository rather than making a fresh clone for each task or publish. On
+2026-11-20, 58 clean clones of sage-indefinite-port (`/tmp/sage-indefinite-port-publish-*`,
+about 85M each, 4.9G in all) were left in `/tmp` and took the disk to 97%. Any session that
+checks disk use also counts clones and worktrees, for example:
+
+```bash
+find / -xdev -name .git -prune -printf '%h\n' 2>/dev/null | sed -E 's/-[^/]*$//' | sort | uniq -c | sort -rn | head
+git -C <repo> worktree list
+```
+
+More than a few copies of one repository is a leak. Find the tool, recipe or agent that makes
+them and repair it at its owner, then trash the copies that are clean and fully pushed.
+
 Every useful mathematical environment should end up in my Sage container, so the research
 can be reproduced on another machine. Maintain the container's environment definitions and
 verify the actual mathematical workflow *in* the container. (This consolidation is a
