@@ -47,7 +47,7 @@ uvx --from aristotlelib@latest aristotle list --status IN_PROGRESS COMPLETE
 ### 3. Download Results
 
 ```bash
-uvx --from aristotlelib@latest aristotle result <project-id> --destination output.tar.gz
+uvx --from aristotlelib@latest aristotle download <project-id>
 ```
 
 ## Project Requirements
@@ -94,11 +94,16 @@ header comments work.
 
 ### Out of Budget
 
-- Download partial results: `aristotle result <id> --destination partial.tar.gz`
+- Download partial results: `aristotle download <id>`
 
-- Resume by submitting partial output as new project
+- Resume with `aristotle continue <id> "<instruction>"` (a new run spends credits)
 
 ## Common Traps
+
+0. **An old client gets HTTP 404** — `aristotlelib` 1.x calls a project endpoint that the
+   server no longer serves. Use 3.4.0 or later (`uv tool upgrade aristotlelib`). Free
+   credits allow one active project per organization.
+
 
 1. **Comments inside proofs ignored** — Hints must be in header comments (`/-- ... -/`),
    not inside `by ...` blocks
@@ -151,14 +156,14 @@ aristotle submit "prompt" --wait
 # Submit with directory
 aristotle submit "prompt" --project-dir ./dir --wait
 
-# Formalize a document
-aristotle formalize paper.tex --wait
-
 # List recent projects
 aristotle list --limit 20
 
 # Get result
-aristotle result <id> --destination out.tar.gz
+aristotle download <id>
+
+# Credit balance
+aristotle balance
 
 # Cancel
 aristotle cancel <id>
