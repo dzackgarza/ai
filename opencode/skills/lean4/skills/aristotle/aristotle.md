@@ -100,6 +100,13 @@ header comments work.
 
 ## Common Traps
 
+00. **Aristotle refuses Lean (since at least 2026-11-21).** With `aristotlelib` 3.4.0, a Lean
+    project run ends COMPLETE with "Lean formalization projects aren't supported right now ...
+    Lean support will return in the coming months". A prompt-only run ends with "No Verilog, C or
+    Rust source files were uploaded". Neither spends credits. Read the run's
+    `ARISTOTLE_SUMMARY.md` (or `output_summary` in `aristotle show ID --json`) before you trust
+    a COMPLETE status: COMPLETE does not mean that a proof came back.
+
 0. **An old client gets HTTP 404** — `aristotlelib` 1.x calls a project endpoint that the
    server no longer serves. Use 3.4.0 or later (`uv tool upgrade aristotlelib`). Free
    credits allow one active project per organization.
@@ -115,11 +122,14 @@ header comments work.
 
 ## Decision Procedures
 
-### When to use `--wait` vs polling
+### Waiting on a run
 
-- Use `--wait` for immediate feedback on small projects
-
-- Skip `--wait` and poll with `aristotle list` for long-running proofs
+A run takes hours. Do not hold a turn on `--wait` and do not poll with `sleep`. Submit without
+`--wait`, then start `aristotle show ID --non-interactive --json --destination FILE` as a
+background command. It exits when the run ends and saves the result archive, and in an agent
+harness its exit wakes the session. `aristotle list` shows which projects still run. A run cut
+off OUT_OF_BUDGET keeps its partial result: `aristotle download ID`; `aristotle continue ID
+Continue` resumes it once credits exist.
 
 ### When to provide context
 
