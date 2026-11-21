@@ -14,7 +14,7 @@ Use this skill for PDF-first work on papers and reports. The default path is Doc
 - Extract figures or tables only when the user asks for them or when the answer depends on them.
 - For tables, prefer the cleaned Markdown for quick review, but inspect the crop image when numeric fidelity matters.
 - If values or labels look suspicious, cite the crop or page artifact rather than trusting the structured export.
-- If Docling fails, fall back to `pdftotext -layout` and continue with a degraded-quality warning.
+- If Docling fails, use the [[reading-pdfs/ocr/ocr|OCR leaf]] (MinerU, then Mistral). Never fall back to `pdftotext` or the PDF's own text layer: on mathematical text they lose formulas and reading order, and the loss does not show in the output.
 
 ## Quick Start
 

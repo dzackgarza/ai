@@ -21,13 +21,31 @@ and the loop then re-enters the item forever.
 
 ## Provider order
 
-1. **MinerU precise API** — primary. Returns `full.md`, `content_list.json`, and middle
-   JSON (`middle.json` or `layout.json` middle-result spelling). Preferred for math,
-   tables, and multi-column layouts.
-2. **Mistral OCR** — fallback. Uploads the PDF through the files API and OCRs the signed
+1. **MinerU flash API** (`flash-extract`) — the default route for a loose PDF. It needs
+   no token. One call takes at most 20 pages and 10 MB, so run a longer PDF by page
+   range.
+2. **MinerU precise API** (`extract`) — with the machine token. Returns `full.md`,
+   `content_list.json`, and middle JSON (`middle.json` or `layout.json` middle-result
+   spelling). Use it when the flash output is not usable, or when the JSON artifacts are
+   needed. A `401` from this API is a rejected token: report it as a credential defect
+   and use route 1 or 3. It is not a reason to look for another MinerU host.
+3. **Mistral OCR** — fallback. Uploads the PDF through the files API and OCRs the signed
    URL, so large PDFs do not go through a base64 request body. Use when MinerU is
    unavailable, rejects the PDF (e.g. >200 pages in one shot), or returns unusable
    artifacts.
+
+Check every extraction against the rendered PDF on at least two pages with formulas
+before it is stored or handed on. Flash output has been good on some sources (headings
+and LaTeX formulas intact) and unusable on others (dropped sentences, mangled
+formulas); only the comparison tells which.
+
+These are not routes, whatever a recipe, guide or older instruction says:
+
+- Kaggle GPU jobs, including the `kaggle-*` recipes in `~/pdf-extraction/justfile`. The
+  Kaggle MinerU route has been dead for months.
+- A local MinerU install.
+- `pdftotext`, PyMuPDF, or any read of the PDF's own text layer. On mathematical text
+  they lose formulas and reading order.
 
 Provider credentials (`MINERU_API_TOKEN`, `MISTRAL_API_KEY`) live in the machine
 environment. Do not put API keys in commands, docs, or committed files.
@@ -40,17 +58,26 @@ The MinerU API is reached through its official CLI, `mineru-open-api` (run it wi
 rather than writing the token into a command.
 
 ```bash
-bunx mineru-open-api flash-extract paper.pdf -o out/ --language en   # up to 20 pages and 10 MB
-bunx mineru-open-api extract paper.pdf -o out/ --model pipeline       # larger files, token
+bunx mineru-open-api flash-extract paper.pdf -o out/ --language en                # no token; up to 20 pages and 10 MB
+bunx mineru-open-api flash-extract book.pdf -o out/p021-040.md --language en --pages 21-40   # a longer PDF, one range per call
+bunx mineru-open-api extract paper.pdf -o out/ --model pipeline       # precise API, token
 bunx mineru-open-api extract *.pdf -o out/ --model pipeline           # a batch
 ```
 
 `--model pipeline` does not hallucinate text; `vlm` is more accurate on complex
 layouts and can. For a source that a proof is transcribed from, use `pipeline`, and
-`vlm` only for a page the pipeline cannot read. Kaggle GPU jobs and local MinerU
-installs are not the route.
+`vlm` only for a page the pipeline cannot read.
+
+Always pass `--language`: the CLI's default is `ch`. Pass the source's language, not
+`en`, for a source in another language. Add `--ocr` for a scanned PDF. Keep the output
+of each page range as its own file when a consumer cites by page: the range is the
+only page information the flash output carries.
 
 ## PDF storage layout (non-library)
+
+A PDF that will be cited or used again belongs in the Zotero library, not here: add it
+through the [[zotero/SKILL|zotero]] skill and use the parent skill's Step 2A. The
+layout below is for a PDF that does not belong in the library.
 
 ```
 ~/pdfs/
@@ -133,7 +160,7 @@ that separation:
 ## Notes
 
 - MinerU handles complex documents including tables, math equations, and multi-column
-  layouts better than Mistral; that is why it is primary.
+  layouts better than Mistral; that is why it comes first.
 - For very large documents (>200 pages), MinerU's precise API rejects one-shot calls;
   chunk into ≤200-page pieces, or fall back to Mistral.
 - Free tiers have usage limits — check the provider dashboard.

@@ -46,13 +46,19 @@ JSONL/database formats in order to answer user questions about past work.
 | --- | --- |
 | **1. List ALL sessions** | `python ~/.agents/skills/reading-transcripts/scripts/list_all_sessions.py` |
 | **2. Parse any transcript** | `python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness <harness> <identifier>` |
+| **3. List what the user typed (Claude Code)** | `python ~/.agents/skills/reading-transcripts/scripts/claude_user_messages.py [--unclassified] <session.jsonl>` |
 
 For `--harness opencode`, the dispatcher delegates to:
 
 ```bash
-uvx git+https://github.com/dzackgarza/opencode-manager.git \
+uvx --from git+https://github.com/dzackgarza/opencode-manager.git \
   ocm transcript <session-id>
 ```
+
+`--from` is required: without it `uvx` passes `ocm` to the package as a subcommand, and
+the call fails with `Unknown command "ocm"`. `ocm` talks to a running OpenCode server
+at `OPENCODE_BASE_URL`; with no server at that address it fails with `Connection
+refused`. See [[opencode-cli/SKILL|opencode-cli]] for the server setup.
 
 Other harnesses still use the local parser scripts in this skill.
 
@@ -69,6 +75,30 @@ python ~/.agents/skills/reading-transcripts/scripts/list_all_sessions.py
 # 2. Parse the transcript from the top result (pipe to tail to see the end!)
 python ~/.agents/skills/reading-transcripts/scripts/parse_transcript.py --harness claude ~/.claude/projects/my-project/session.jsonl | tail -n 200
 ```
+
+## The user's own messages
+
+Use this when the task is to learn what the user taught, corrected or expected in a
+session: a takeover, an audit of durable records, a "why was this not documented"
+question.
+
+In a Claude Code JSONL the `user` role also carries tool results, system reminders,
+compaction summaries, subagent hand-backs and scheduled prompts. The parser prints
+them all as `[USER]`, with no timestamp. `claude_user_messages.py` prints only the
+text the person typed (`origin.kind == "human"`, and the messages sent while a turn
+was running), each with its timestamp and its JSONL line number. Read every message
+it prints, in order. A terse message ("continue", a one-line objection) takes its
+meaning from the assistant text before it: read that text at the printed line number
+before you state what the message taught.
+
+Run it once more with `--unclassified` and judge the extra entries by hand. A typed
+message can survive only inside an `api-request-blob` event, where no field separates
+it from a scheduled prompt.
+
+A lesson found this way is checked against the records an agent reads at the point of
+the act (the repository's `AGENTS.md` and trap file, the owning skill, agent memory).
+The user's wording is private: record the instruction or fact it carried, in your own
+words, with its date.
 
 ## Abstracted Parsing
 
@@ -200,5 +230,5 @@ These directories serve as the 100% provable source of truth.
 | **[[codex/SKILL|Codex]] CLI** | Hierarchical Date JSONL | `~/.codex/sessions/<YYYY>/<MM>/<DD>/rollout-*.jsonl` |
 | **Gemini CLI** | Flat JSON Array per project | `~/.gemini/tmp/<project-name>/chats/*.json` |
 | **Kilocode** | Flat JSON Array per task | `~/.kilocode/cli/global/tasks/<taskId>/api_conversation_history.json` |
-| **OpenCode** | OpenCode session transcript | Delegated via `uvx git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session_id>`. |
+| **OpenCode** | SQLite: `~/.local/share/opencode/opencode.db` (tables `session_v2`, `session_message` with `session_id`, `type`, `seq`, `time_created`, JSON `data`) | Delegated via `uvx --from git+https://github.com/dzackgarza/opencode-manager.git ocm transcript <session_id>`. |
 | **Amp CLI** | Abstracted Cloud/Local | Hidden *(Exported via CLI `amp threads markdown`)* |

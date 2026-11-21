@@ -12,7 +12,12 @@ skip it and do not assume the answer — run the check.
 The live Zotero library on this workstation is reached through the running Zotero
 desktop's local API (`http://127.0.0.1:23119`). Every read and every write to the
 library goes through the [[zotero/SKILL|zotero]] skill's `lib/zotero.py` client. Do
-not call cloud APIs, the translation server, or any external proxy.
+not call the translation server or an external proxy.
+
+The library is also synced online. When the local API does not answer, or answers with
+no item for the source, search the cloud Web API before you report the source as
+absent: the [[zotero/SKILL|zotero]] skill's "Cloud Web API" section has the read route.
+A source that the local API does not show is not a missing source.
 
 Probe health, then resolve the PDF against the library:
 
@@ -51,6 +56,16 @@ Completion = a live Zotero `*_extracted.md` child attachment for the item, not a
 checked box or a successful provider call. If the item already has a `*_extracted.md`
 child, read that — do not re-extract.
 
+An existing `*_extracted.md` is the owner's artifact and is read-only. Never extract
+the item again, whole textbooks included. Never replace, re-render or edit the
+attachment, for example to insert page markers or page offsets. A consumer that needs
+a different form (page markers, a slice, a translation) gets a derived copy outside
+Zotero; the attachment stays as it is.
+
+Hand a consumer (a worker agent, a remote project) the extraction text, not the PDF.
+The PDF stays in the Zotero library; no loose copy of it is kept in a project or a
+scratch directory.
+
 If the library item has no PDF yet, that is an **acquisition** problem owned by the
 `zotero-library` repo's `PDF_ACQUISITION.md` (`just find-pdf`, `just check-lead`,
 `work/<KEY>/pdf.md` ledger), not by this skill. Load the [[zotero/SKILL|zotero]] skill
@@ -67,6 +82,15 @@ For a loose / non-library PDF (e.g. under `~/pdfs/`), select one leaf procedure:
 
 Do not load both leaves unless the request requires both outputs. Read the selected
 leaf before conversion or extraction.
+
+Make an extraction once, in the session that owns the task. Store it durably, then
+give every consumer that stored copy. A session scratchpad is not a store. Do not send
+a worker agent or a subagent to extract a source for itself: workers that extract on
+their own have used `pdftotext`, the wrong language, and truncated output, and each
+recorded the result as correct.
+
+A PDF that will be cited or used again belongs in the Zotero library. Add it there
+through the [[zotero/SKILL|zotero]] skill and continue with Step 2A.
 
 ## Why the check is mandatory
 
