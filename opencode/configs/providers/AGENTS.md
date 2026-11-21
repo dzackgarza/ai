@@ -98,10 +98,10 @@ needs no separate test.
 
 Every provider that `opencode models` lists has a fragment here. A provider
 that OpenCode lists without a fragment shows its whole catalog. Examples:
-OpenCode finds `deepseek` and `thinkingmachines` in models.dev, and
+OpenCode finds `thinkingmachines` in models.dev, and
 `ollama` through the local Ollama daemon. When no model of such a provider
 passes the criteria, its fragment blacklists every listed id. Both
-`deepseek` and `thinkingmachines` are paid per token. `ollama` serves only
+`thinkingmachines` is paid per token. `ollama` serves only
 `:cloud` tags, which forward to Ollama Cloud, so its ids are triaged in
 `ollama-cloud`.
 

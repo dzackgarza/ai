@@ -6,6 +6,7 @@
     "cloudflare-ai-gateway",
     "cloudflare-workers-ai",
     "cohere",
+    "deepseek",
     "github-copilot",
     "google",
     "groq",
@@ -206,22 +207,6 @@
           "status": "deprecated"
         },
         "tab_jump_flash_lite_preview": {
-          "status": "deprecated"
-        }
-      }
-    },
-    "deepseek": {
-      "models": {
-        "deepseek-flash": {
-          "status": "deprecated"
-        },
-        "deepseek-v4-flash": {
-          "status": "deprecated"
-        },
-        "deepseek-v4-flash-vision-exp": {
-          "status": "deprecated"
-        },
-        "deepseek-v4-pro": {
           "status": "deprecated"
         }
       }

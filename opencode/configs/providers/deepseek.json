@@ -1,9 +1,0 @@
-{
-  "whitelist": [],
-  "blacklist": [
-    "deepseek-flash",
-    "deepseek-v4-flash",
-    "deepseek-v4-flash-vision-exp",
-    "deepseek-v4-pro"
-  ]
-}

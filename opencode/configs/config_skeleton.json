@@ -6,6 +6,7 @@
     "cloudflare-ai-gateway",
     "cloudflare-workers-ai",
     "cohere",
+    "deepseek",
     "github-copilot",
     "google",
     "groq",
