@@ -67,7 +67,14 @@ must pass all of these tests:
 4. **It is current.** Deprecated models, and obsolete generations such as
    `gpt-oss-120b`, go in the blacklist. A dated tag that duplicates a
    whitelisted id also goes in the blacklist.
-5. **It answers a live call through `opencode run -m <provider>/<model>`.**
+5. **It is the strongest model of its series and tier on that provider.**
+   When one provider serves two or more models of one series (for example
+   Kimi K2.x and Kimi K3.x), only the most powerful one stays. A Pro tier
+   counts as stronger than the base tier of the same series. A Flash (fast,
+   light) variant is a separate tier: a provider keeps both the strongest
+   Flash model and the strongest full model of a series. Compare within one
+   provider only; the same series on another provider is judged there.
+6. **It answers a live call through `opencode run -m <provider>/<model>`.**
    The validator's catalog diff proves only that the id is listed. Providers
    deprecate models before their catalogs drop them, and models.dev lags
    behind both. Slow is not dead: NVIDIA NIM models are known to answer

@@ -92,12 +92,10 @@
     "mistral-large-4",
     "muse-ember",
     "muse-wonder-1.0",
-    "qwen4-max"
+    "qwen4-max",
+    "deepseek-v4-flash:free"
   ],
   "models": {
-    "deepseek-v4-flash:free": {
-      "name": "DeepSeek V4 Flash (Free)"
-    },
     "deepseek-v4.1-flash:free": {
       "name": "DeepSeek V4.1 Flash (Free)"
     },

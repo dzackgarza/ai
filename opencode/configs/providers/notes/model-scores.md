@@ -26,7 +26,6 @@ The same model can be served by more than one provider. It has one score.
 | ---: | --- | --- | --- |
 | 100 | Frontier Anthropic and OpenAI | not whitelisted | anchor: newest Fable and newest Astra, maximum effort |
 | 62 | Kimi K3.1 Pro | `nvidia/moonshotai/kimi-k3.1-pro`, `ollama-cloud/kimi-k3.1-pro` | strongest reasoning here; NVIDIA serves it slowly |
-| 58 | Kimi K3 | `ollama-cloud/kimi-k3` | |
 | 57 | GLM 5.3 | `ollama-cloud/glm-5.3` | strong agentic operation |
 | 54 | DeepSeek V4 Pro (0813) | `ollama-cloud/deepseek-v4-pro:0813` | older generation, Pro tier |
 | 53 | MiMo V2.6 Pro | `ollama-cloud/mimo-v2.6-pro` | |
@@ -35,11 +34,9 @@ The same model can be served by more than one provider. It has one score.
 | 49 | Step 5 Preview | `nvidia/stepfun-ai/step-5-preview` | preview release |
 | 48 | MiniMax M3.1 Flash | `nvidia/minimaxai/minimax-m3.1-flash`, `ollama-cloud/minimax-m3.1-flash` | |
 | 48 | Mistral Large 4 | `nvidia/mistralai/mistral-large-4-1t-a52b`, `ollama-cloud/mistral-large-4` | good general knowledge, weaker agentic operation |
-| 47 | Kimi K2.7 Code | `ollama-cloud/kimi-k2.7-code` | coding specialist, older generation |
 | 47 | LongCat 2.5 | `opencode/longcat-2.5-free` | |
 | 46 | GLM 5.3 Flash | `nvidia/z-ai/glm-5.3-flash`, `ollama-cloud/glm-5.3-flash` | |
 | 46 | MiMo V2.6 Flash | `ollama-cloud/mimo-v2.6-flash`, `opencode/mimo-v2.6-flash-free`, `tokenharbor/mimo-v2.6-flash:free` | |
-| 45 | DeepSeek V4 Flash | `tokenharbor/deepseek-v4-flash:free` | superseded by V4.1 Flash |
 | 45 | Beam | `ollama-cloud/beam`, `opencode/beam-free`, `kilo/reflection/beam-free` | thin evidence |
 | 45 | Big Pickle | `opencode/big-pickle` | stealth; the compaction agent uses it |
 | 44 | Glyph Cluster | `kilo/stealth/glyph-cluster` | stealth |
