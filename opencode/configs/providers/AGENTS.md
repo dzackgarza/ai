@@ -128,3 +128,5 @@ deleting the fragment alone is not enough.
 - Google Antigravity routing details: `notes/google-provider.md`
 
 - OpenRouter vetting notes: `notes/openrouter-model-vetting.md`
+
+- Whitelisted model scores: `notes/model-scores.md`
