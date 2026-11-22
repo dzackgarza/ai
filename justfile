@@ -29,6 +29,9 @@ dotfiles_dir := repo / "dotfiles"
 
 agents_md := repo / "AGENTS.global.md"
 skills_dir := opencode_dir / "skills"
+skill_cli_dir := opencode_dir / "scripts" / "skill"
+skill_config_dir := home / ".config" / "skill"
+skill_config := skill_config_dir / "config.toml"
 
 # Tool configs
 
@@ -58,6 +61,11 @@ default:
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md AGENTS.global.md
     @just --justfile {{ justfile() }} check-skill-wikilinks
+    @just --justfile {{ justfile() }} _test-skill-cli
+
+[private]
+_test-skill-cli:
+    @uv run --project {{ skill_cli_dir }} --with pytest pytest -q {{ skill_cli_dir }}/tests/test_cli.py
 
 # Reformat Markdown and structured configuration before commit.
 test-commit: build
@@ -144,6 +152,7 @@ install:
     ln -snf "{{ skills_dir }}" "{{ gemini_home }}/skills"
 
     just --justfile {{ repo }}/justfile _update-shell-rc
+    just --justfile {{ repo }}/justfile _install-skill-cli
     just --justfile {{ repo }}/justfile install-plugins
 
     echo "✓ Environment installed"
@@ -156,6 +165,16 @@ install:
     echo "System prompts (actual):"
     [ -f ~/.bashrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.bashrc | tail -n 1
     [ -f ~/.zshrc ] && grep "export GEMINI_SYSTEM_MD=" ~/.zshrc | tail -n 1
+
+[private]
+_install-skill-cli:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p "{{ skill_config_dir }}"
+    if [[ ! -f "{{ skill_config }}" ]]; then
+        cp "{{ skill_cli_dir }}/config.toml" "{{ skill_config }}"
+    fi
+    uv tool install --force "{{ skill_cli_dir }}"
 
 # Install the current OpenCode plugin packages with Bun.
 install-plugins:

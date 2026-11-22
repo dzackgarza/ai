@@ -86,6 +86,14 @@ kilo
 
 - Skills: `~/ai/opencode/skills/`
 
+### Skill CLI
+
+Run `skill list` to display the configured skill tree. Run `skill get NAME` to print the
+absolute path for a top-level skill or subskill. Exact names, qualified paths, fuzzy
+suggestions, and configuration are documented in the
+[Skill CLI README](opencode/scripts/skill/README.md). `just install` installs the command
+and creates its XDG configuration file.
+
 ### Verified Details
 
 **Codex CLI** ([source](https://developers.openai.com/codex/guides/agents-md/)):

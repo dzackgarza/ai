@@ -1,0 +1,5 @@
+skills_dir = "/home/dzack/ai/opencode/skills"
+
+[fuzzy]
+minimum_score = 60.0
+limit = 5
