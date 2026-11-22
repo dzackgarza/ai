@@ -135,15 +135,15 @@ Snapshot: 2026-11-21.
 | Score | Model | Provider ids | Evidence |
 | ---: | --- | --- | --- |
 | 100 | Frontier Anthropic and OpenAI | not whitelisted | anchor: Fable 5.2 (AA v5.0.1 64.6), GPT-6.2 Astra (62.1), maximum effort |
-| 75 | Kimi K3.1 Pro | `nvidia/moonshotai/kimi-k3.1-pro`, `ollama-cloud/kimi-k3.1-pro` | AA v4.3.2 55.1 (map: 78); AA v5.0.1 46.5, with the anchor below 36.6 (map: at least 68). NVIDIA serves it slowly |
+| 75 | Kimi K3.1 Pro | `nvidia/moonshotai/kimi-k3.1-pro`, `ollama-cloud/kimi-k3.1-pro`, `openmathos/moonshotai/kimi-k3.1-pro` | AA v4.3.2 55.1 (map: 78); AA v5.0.1 46.5, with the anchor below 36.6 (map: at least 68). NVIDIA serves it slowly |
 | 53 | MiMo V2.6 Pro | `ollama-cloud/mimo-v2.6-pro` | AA v4.3.2 46.3 |
-| 50 | DeepSeek V4.1 Flash | `ollama-cloud/deepseek-v4.1-flash`, `opencode/deepseek-v4.1-flash-free`, `tokenharbor/deepseek-v4.1-flash:free` | anchor: AA v4.3.2 45.1 |
-| 49 | GLM 5.3 | `ollama-cloud/glm-5.3` | AA v4.3.2 44.8 |
+| 50 | DeepSeek V4.1 Flash | `ollama-cloud/deepseek-v4.1-flash`, `opencode/deepseek-v4.1-flash-free`, `openmathos/deepseek/deepseek-v4.1-flash`, `tokenharbor/deepseek-v4.1-flash:free` | anchor: AA v4.3.2 45.1 |
+| 49 | GLM 5.3 | `ollama-cloud/glm-5.3`, `openmathos/z-ai/glm-5.3` | AA v4.3.2 44.8 |
 | 48 | Ling 3.2 Flash | `openrouter/inclusionai/ling-3.2-flash:free` | predecessor Ling 3.1 Flash: AA v4.3.2 43.9 (map: 47) |
 | 46 | Step 5 Preview | `nvidia/stepfun-ai/step-5-preview` | AA v4.3.2 43.7 |
 | 45 | LongCat 2.5 | `opencode/longcat-2.5-free` | no AA row. Vendor: Terminal-Bench 4.0 38.5 (Sonnet 5.5: 64.14), Terminal-Bench 2.1 88.4, DeepSWE 64.6. Predecessor LongCat 2.0: AA 33 |
 | 43 | MiniMax M3.1 Flash | `nvidia/minimaxai/minimax-m3.1-flash`, `ollama-cloud/minimax-m3.1-flash` | AA v4.3.2 42.7 |
-| 41 | GLM 5.3 Flash | `nvidia/z-ai/glm-5.3-flash`, `ollama-cloud/glm-5.3-flash` | AA v4.3.2 41.8 |
+| 41 | GLM 5.3 Flash | `nvidia/z-ai/glm-5.3-flash`, `ollama-cloud/glm-5.3-flash`, `openmathos/z-ai/glm-5.3-flash` | AA v4.3.2 41.8 |
 | 40 | DeepSeek V4 Pro (0813) | `ollama-cloud/deepseek-v4-pro:0813` | not in the top 60 of AA v4.3.2 (below 41.8); an older generation than the anchor |
 | 40 | Big Pickle | `opencode/big-pickle` | stealth placeholder; the compaction agent uses it |
 | 40 | Glyph Cluster | `kilo/stealth/glyph-cluster` | stealth placeholder |
@@ -151,12 +151,12 @@ Snapshot: 2026-11-21.
 | 40 | Tidepool Alpha | `opencode/tidepool-alpha-free` | stealth placeholder |
 | 38 | MiniMax M3 | `ollama-cloud/minimax-m3` | below 41.8 on AA v4.3.2; predecessor of M3.1 Flash (43) |
 | 38 | MiMo V2.6 Flash | `ollama-cloud/mimo-v2.6-flash`, `opencode/mimo-v2.6-flash-free`, `tokenharbor/mimo-v2.6-flash:free` | below 41.8 on AA v4.3.2; Flash tier of MiMo V2.6 Pro (53) |
-| 35 | Mistral Large 4 | `nvidia/mistralai/mistral-large-4-1t-a52b`, `ollama-cloud/mistral-large-4` | below 41.8 on AA v4.3.2 |
+| 35 | Mistral Large 4 | `nvidia/mistralai/mistral-large-4-1t-a52b`, `ollama-cloud/mistral-large-4`, `openmathos/mistralai/mistral-large-4-0` | below 41.8 on AA v4.3.2 |
 | 35 | Particle 1 | `openrouter/particle-ai/particle-1:free` | no AA row. LLM Stats lists GPQA 90.4, MMLU 86.1, without a source |
-| 33 | Muse Spark Open | `ollama-cloud/muse-spark-open` | AA v4.3 39 |
+| 33 | Muse Spark Open | `ollama-cloud/muse-spark-open`, `openmathos/meta/muse-spark-open` | AA v4.3 39 |
 | 30 | Hunyuan HY4 Flash | `opencode/hy4-flash-free` | no AA row. Vals Index 50.78 (rank 33 of 39). Vendor: Terminal-Bench 4.0 19.2 |
 | 30 | OpenRouter Free router | `openrouter/openrouter/free` | routes to a different free model per call |
 | 25 | MiMo V2.5 | `tokenharbor/mimo-v2.5:free` | previous generation of MiMo V2.6 |
 | 20 | ERNIE 5.5 Flash Preview | `openrouter/baidu/ernie-5.5-flash-preview:free` | no benchmarks found; the only published ERNIE 5.5 Flash checkpoint is a base model |
-| 11 | Inkling 2 Small | `ollama-cloud/inkling-2-small` | AA 31; Terminal-Bench 4.0 12.63 (Sonnet 5.5: 64.14) |
+| 11 | Inkling 2 Small | `ollama-cloud/inkling-2-small`, `openmathos/thinkingmachines/inkling-2-small` | AA 31; Terminal-Bench 4.0 12.63 (Sonnet 5.5: 64.14) |
 | 10 | Beam | `ollama-cloud/beam`, `opencode/beam-free`, `kilo/reflection/beam-free` | AA v4.3 30 (map: 8); AA hallucination rate 47%. Vendor claims (Terminal-Bench 2.1 80.1, SWE-bench Pro 66.1) are not confirmed |

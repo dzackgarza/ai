@@ -1,0 +1,43 @@
+{
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "Open Math OS",
+  "options": {
+    "baseURL": "https://os.openmathmodel.org/v1",
+    "apiKey": "{env:OPENMATH_OS_API_KEY}"
+  },
+  "models": {
+    "deepseek/deepseek-v4.1-flash": {
+      "name": "[50] DeepSeek V4.1 Flash"
+    },
+    "meta/muse-spark-open": {
+      "name": "[33] Muse Spark Open"
+    },
+    "mistralai/mistral-large-4-0": {
+      "name": "[35] Mistral Large 4"
+    },
+    "moonshotai/kimi-k3.1-pro": {
+      "name": "[75] Kimi K3.1 Pro"
+    },
+    "thinkingmachines/inkling-2-small": {
+      "name": "[11] Inkling 2 Small"
+    },
+    "z-ai/glm-5.3": {
+      "name": "[49] GLM 5.3"
+    },
+    "z-ai/glm-5.3-flash": {
+      "name": "[41] GLM 5.3 Flash"
+    }
+  },
+  "whitelist": [
+    "deepseek/deepseek-v4.1-flash",
+    "meta/muse-spark-open",
+    "mistralai/mistral-large-4-0",
+    "moonshotai/kimi-k3.1-pro",
+    "thinkingmachines/inkling-2-small",
+    "z-ai/glm-5.3",
+    "z-ai/glm-5.3-flash"
+  ],
+  "blacklist": [
+    "nvidia/nemotron-3-super-120b-a12b"
+  ]
+}
