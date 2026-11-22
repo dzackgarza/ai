@@ -11,4 +11,4 @@ metadata:
 
 > **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
 > Load [[git-guidelines/SKILL|git-guidelines]] and reference `auth.md`:
-> [git-guidelines/auth.md](file:///home/dzack/ai/opencode/skills/git-guidelines/auth.md)
+> [[git-guidelines/auth|git-guidelines/auth]]

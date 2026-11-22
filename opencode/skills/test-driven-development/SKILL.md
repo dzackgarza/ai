@@ -448,7 +448,7 @@ Never fix bugs without a test.
   Catalogs field-observed testing failures: checker removal, test expectation
   modification, and plausible fixture injection.
 
-- **[[policy-index/SKILL|policy-index]] → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md). For the catalog of assertion constraints, see the central [Banned Test Shapes Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/test-proof-rules.md).
+- **[[policy-index/SKILL|policy-index]] → Bridge-Burning Policies** — The test-driven development workflow must strictly adhere to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md`. These are hard rules prohibiting mocks, runtime defaults, fallbacks, and helper-level boundary proof substitution. For a detailed list of testing red flags to avoid, see [[policy-index/references/red-flags|Bridge-Burning Red Flags Catalog]]. For the catalog of assertion constraints, see the central [[policy-index/references/test-proof-rules|Banned Test Shapes Catalog]].
 
 ## Final Rule
 

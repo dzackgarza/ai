@@ -11,4 +11,4 @@ metadata:
 
 > **REDIRECT**: This skill has been consolidated into [[git-guidelines/SKILL|git-guidelines]].
 > Load [[git-guidelines/SKILL|git-guidelines]] and reference `issues.md`:
-> [git-guidelines/issues.md](file:///home/dzack/ai/opencode/skills/git-guidelines/issues.md)
+> [[git-guidelines/issues|git-guidelines/issues]]

@@ -16,7 +16,7 @@ hierarchy (see `quality-control`), the higher-ranked skill wins. In particular:
 - The fail-loud policy means special cases and default objects are allowed only as
   explicit domain semantics, not as defensive soft defaults.
 
-- **Bridge-Burning Policies** (see [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry)) are HARD, non-negotiable rules that eliminate validation-evasion pathways (such as runtime defaults, mocks, and fallbacks) and must be strictly followed.
+- **Bridge-Burning Policies** (see [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]]) are HARD, non-negotiable rules that eliminate validation-evasion pathways (such as runtime defaults, mocks, and fallbacks) and must be strictly followed.
 
 Every name reveals intent.
 Every function tells a story.
@@ -363,4 +363,4 @@ Leave it better than you found it.
 
 - **thermo-nuclear-code-quality-review** — For aggressive simplification that goes beyond "clean code" into restructuring, load thermo-nuclear alongside this skill.
 
-- **policy-index → Bridge-Burning Policies** — Modern development requires adhering strictly to the [Bridge-Burning Policies](file:///home/dzack/ai/opencode/skills/policy-index/SKILL.md#policy-registry) defined in `policy-index/SKILL.md`. These represent non-negotiable constraints to prevent agent evasion (such as runtime defaults, fallbacks, and mocks). For a detailed catalog of code constructs that violate these policies, see the [Bridge-Burning Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/red-flags.md) and the [Runtime Control-Flow Red Flags Catalog](file:///home/dzack/ai/opencode/skills/policy-index/references/runtime-control-flow.md).
+- **policy-index → Bridge-Burning Policies** — Modern development requires adhering strictly to the [[policy-index/SKILL#policy-registry|Bridge-Burning Policies]] defined in `policy-index/SKILL.md`. These represent non-negotiable constraints to prevent agent evasion (such as runtime defaults, fallbacks, and mocks). For a detailed catalog of code constructs that violate these policies, see the [[policy-index/references/red-flags|Bridge-Burning Red Flags Catalog]] and the [[policy-index/references/runtime-control-flow|Runtime Control-Flow Red Flags Catalog]].
