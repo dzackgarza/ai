@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -37,6 +38,7 @@ def run_skill(config: Path, *arguments: str) -> subprocess.CompletedProcess[str]
         check=False,
         capture_output=True,
         text=True,
+        env=os.environ | {"COLUMNS": "80"},
     )
 
 
@@ -115,6 +117,35 @@ def test_list_shows_the_skill_tree_and_optional_descriptions(tmp_path: Path) -> 
     assert "Prove mathematical results." not in plain.stdout
     assert "Prove mathematical results." in described.stdout
     assert "Represent mathematical objects in code." in described.stdout
+
+
+def test_list_truncates_long_descriptions_to_one_terminal_line(tmp_path: Path) -> None:
+    """Long and multiline descriptions preserve a scannable one-row tree."""
+    _, config = make_vault(tmp_path)
+    skill_dir = config.parent / "skills" / "mathematical-writing"
+    skill_dir.mkdir()
+    (skill_dir / "SKILL.md").write_text(
+        "---\n"
+        "name: mathematical-writing\n"
+        "description: |-\n"
+        "  Review mathematical writing for clear claims, explicit definitions,\n"
+        "  correct notation, and proofs supported by evidence.\n"
+        "---\n\n"
+        "# Mathematical writing\n"
+    )
+
+    result = run_skill(config, "list", "--descriptions")
+
+    lines = result.stdout.splitlines()
+    entries = [line for line in lines if line.startswith("mathematical-writing")]
+    assert result.returncode == 0
+    assert len(entries) == 1
+    assert entries[0].startswith(
+        "mathematical-writing — Review mathematical writing for clear claims,"
+    )
+    assert entries[0].endswith("…")
+    assert len(entries[0]) <= 80
+    assert all(line.strip() for line in lines)
 
 
 def test_get_returns_an_absolute_path_for_top_level_and_nested_skills(
