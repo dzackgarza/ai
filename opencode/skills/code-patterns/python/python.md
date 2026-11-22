@@ -64,5 +64,5 @@ Load after [[code-patterns/SKILL|code-patterns]] for Python-specific rules.
 
 Read only when needed:
 
-- `references/python-patterns.md` — original detailed Python pattern source.
-- `references/project-structure.md` — original Python project-structure guide.
+- `references/python-patterns.md` — detailed Python pattern reference.
+- `references/project-structure.md` — Python project-structure reference.

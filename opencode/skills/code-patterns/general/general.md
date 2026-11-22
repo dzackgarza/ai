@@ -77,7 +77,7 @@ Read only the relevant reference:
 - `references/comments.md` — when comments are useful and when they are residue.
 - `references/classes.md` — cohesion, SRP, DIP, and class boundaries.
 - `references/objects-and-data.md` — object/data-structure tradeoffs and Law of Demeter.
-- `references/error-handling.md` — legacy [[code-patterns/legacy/clean-code/clean-code|clean-code]] error-handling guidance, subordinate
-  to fail-loud policy and language subskills.
+- `references/error-handling.md` — error-handling guidance, subordinate to fail-loud
+  policy and language subskills.
 - `references/tests.md` — readability of tests, subordinate to [[test-guidelines/SKILL|test-guidelines]].
 - `references/smells-and-heuristics.md` — detailed smell catalog for review sweeps.
