@@ -3,7 +3,7 @@
 > This guide is specific to Claude Code’s plugin system.
 > Non-Claude hosts don’t have V3 artifacts to migrate.
 
-This guide helps you upgrade from the legacy 3-plugin system (v3.x) to the unified v4
+This guide helps you upgrade from the v3 three-plugin layout to the unified v4
 plugin.
 
 ## What Changed
@@ -143,22 +143,6 @@ hard-blocked regardless of policy.
 
 The v3 `lean4-memories` plugin is not included in v4. It was unreliable and has been
 removed. The proving workflow provides better guidance without the memory overhead.
-
-## Legacy Access
-
-If you need the old 3-plugin version:
-
-### Pin to Legacy Tag
-
-```bash
-/plugin marketplace add cameronfreer/lean4-skills@v3.4.2-legacy
-```
-
-### Or Use Legacy Branch
-
-```bash
-/plugin marketplace add cameronfreer/lean4-skills#legacy-marketplace
-```
 
 ## Troubleshooting
 

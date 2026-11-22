@@ -417,20 +417,16 @@ For complex tasks, create verifiable intermediate formats:
 
 **Policy ID: `AGENT016`**
 
-Use “old patterns” sections for deprecated approaches:
+State the current method only:
 
 ```markdown
 ## Current method
 
 Use the v2 API endpoint: `api.example.com/v2/messages`
-
-## Old patterns
-
-<details>
-<summary>Legacy v1 API (deprecated 2025-08)</summary>
-The v1 API used: `api.example.com/v1/messages`
-</details>
 ```
+
+Do not add “old patterns” or “legacy” sections. The skill describes the current system;
+an agent that follows it never needs a retired one.
 
 * * *
 

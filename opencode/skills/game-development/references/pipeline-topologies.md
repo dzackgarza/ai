@@ -35,13 +35,13 @@ it looks like built as a dependency graph at studio scale.
 | --- | --- | --- | --- |
 | Pixel art, sprites, frame animation | Aseprite | PNG sheet plus JSON frame data, via its CLI | 2D engines, web runtimes |
 | Tile maps, 2D level layout | Tiled | `.tmx` / `.tmj`, or an exported JSON | engine tilemap loaders |
-| 3D models, rigs, skeletal animation | Blender | glTF/GLB, FBX; Alembic for baked caches | engines, web runtimes |
+| 3D models, rigs, skeletal animation | Blender | glTF/GLB, USD; Alembic for baked caches | engines, web runtimes |
 | Multi-department scene assembly | OpenUSD tooling | USD layers | engines with USD import |
 | Scene assembly, lighting, gameplay | the engine itself (Unreal, Godot, Three.js) | the build | players |
 
 The format column is where the current engine documentation must be checked, because it
-moves: Unreal's Interchange Framework handles glTF and USD alongside the legacy FBX
-importer; Godot 4 treats glTF as the default and can import `.blend` directly when Blender
+moves: Unreal's Interchange Framework handles glTF and USD; Godot 4 treats glTF as the
+default and can import `.blend` directly when Blender
 is installed; Three.js and other web runtimes are glTF-first. Read the engine's own import
 documentation before committing to a format — this table is a starting point, not a
 citation.

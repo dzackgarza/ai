@@ -189,9 +189,8 @@ button {
 
 ## AGS Version Contract
 
-**Always target AGS v2 / Astal / Gnim / Gtk4.** The legacy AGS v1 API is officially
-deprecated; the legacy docs redirect to v2. Never use v1 patterns unless the project
-explicitly pins AGS v1.
+**Always target AGS v2 / Astal / Gnim / Gtk4.** AGS v1 is deprecated and its docs redirect
+to v2. Never use v1 patterns; migrate an existing v1 project to v2.
 
 Allowed imports:
 ```

@@ -12,8 +12,9 @@ Load after [[code-patterns/SKILL|code-patterns]] for Python-specific rules.
 ## Non-Negotiables
 
 - Start every Python file with `from __future__ import annotations`.
-- Target the latest Python used by the project. Do not add version guards or compatibility
-  branches unless the user explicitly asks for multi-version support.
+- Target the latest Python release. An older interpreter in an existing project is a
+  defect, not a compatibility target. Do not add version guards, compatibility branches,
+  or multi-version support.
 - Type every owned function signature. Avoid `Any`; use a typed boundary for untyped
   third-party libraries.
 - Do not use `# type: ignore` comments in owned code. Resolve underlying signature mismatches instead.

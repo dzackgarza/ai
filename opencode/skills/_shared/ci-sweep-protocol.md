@@ -240,7 +240,7 @@ The following are NOT valid findings. If the agent produces them, they will be r
 
 7. **Bespoke-software portability complaints.** "Config file has hardcoded `/home/dzack/` paths" or "a local agent-tool config won't work on another machine" — this is single-user, pre-launch, bespoke software. Machine-specific config files are not defects. Do not report hardcoded home-directory paths, absolute local paths, or non-portable tool configs as portability issues. They are intentional.
 
-8. **Version range / dependency freshness complaints.** "pyproject.toml requires Python >=3.14" or "uses an alpha/beta" — this software targets the owner's latest environment. The convention is latest unless pinning is strictly required. Do not suggest broadening version ranges, relaxing constraints, or using older stable releases for hypothetical compatibility.
+8. **Version range / dependency freshness complaints.** "pyproject.toml requires Python >=3.14" or "uses an alpha/beta" — this software targets the owner's latest environment. The convention is the latest release. Do not suggest broadening version ranges, relaxing constraints, pinning older releases, or using older stable releases for hypothetical compatibility.
 
 9. **Trivial config-drift findings without product impact.** "File X has a hard-coded path" is noise if the file is a template or a CI runner that only runs in a controlled environment. Every finding must identify a concrete defect or decay risk in the *project's product code*.
 
