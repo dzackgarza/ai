@@ -30,7 +30,7 @@ cross-language rules, then load the language subskill when one exists.
    hard bridge-burning constraints.
 3. Language subskill for language-specific rules.
 4. This skill's cross-language style guidance.
-5. Reference files under `references/` for detailed examples.
+5. Reference files under `../references/` for detailed examples.
 
 If a reference suggests a soft fallback, mock proof, runtime default, broad catch, special
 case object, compatibility shim, or helper-level proof, the bridge-burning policy wins.
@@ -40,7 +40,7 @@ Do not negotiate this locally.
 
 - Before deciding where a behavior lives, what a number means, what a document is for,
   or how general a formulation should be, read the field's own treatment of it.
-  `references/situation-to-source.md` routes each of these situations to the
+  `../references/situation-to-source.md` routes each of these situations to the
   authoritative text — Parnas on decomposition, Ousterhout on deep modules, Austin on
   measurement dysfunction, Diátaxis on document purpose — and records only the house
   deviations from them.
@@ -70,14 +70,14 @@ Do not negotiate this locally.
 
 Read only the relevant reference:
 
-- `references/situation-to-source.md` — situations with known-bad priors, each routed to
+- `../references/situation-to-source.md` — situations with known-bad priors, each routed to
   the authoritative literature, plus the house deviations from it.
-- `references/names.md` — naming and intention-revealing symbols.
-- `references/functions.md` — function size, arguments, side effects, command/query split.
-- `references/comments.md` — when comments are useful and when they are residue.
-- `references/classes.md` — cohesion, SRP, DIP, and class boundaries.
-- `references/objects-and-data.md` — object/data-structure tradeoffs and Law of Demeter.
-- `references/error-handling.md` — error-handling guidance, subordinate to fail-loud
+- `../references/names.md` — naming and intention-revealing symbols.
+- `../references/functions.md` — function size, arguments, side effects, command/query split.
+- `../references/comments.md` — when comments are useful and when they are residue.
+- `../references/classes.md` — cohesion, SRP, DIP, and class boundaries.
+- `../references/objects-and-data.md` — object/data-structure tradeoffs and Law of Demeter.
+- `../references/error-handling.md` — error-handling guidance, subordinate to fail-loud
   policy and language subskills.
-- `references/tests.md` — readability of tests, subordinate to [[test-guidelines/SKILL|test-guidelines]].
-- `references/smells-and-heuristics.md` — detailed smell catalog for review sweeps.
+- `../references/tests.md` — readability of tests, subordinate to [[test-guidelines/SKILL|test-guidelines]].
+- `../references/smells-and-heuristics.md` — detailed smell catalog for review sweeps.
