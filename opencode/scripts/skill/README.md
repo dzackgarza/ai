@@ -32,9 +32,11 @@ skill get objects-in-code
 skill get mathematics/objects-in-code
 ```
 
-`list` shows top-level skills and their nested subskills. `get` prints only the absolute
-path on standard output. It accepts an exact frontmatter `name` when that name is unique.
-It also accepts a qualified identifier derived from the file's path.
+`list` shows top-level skills and their nested subskills. `--descriptions` keeps each
+skill on one terminal line and truncates overflowing descriptions with an ellipsis.
+`get` prints only the absolute path on standard output. It accepts an exact frontmatter
+`name` when that name is unique. It also accepts a qualified identifier derived from the
+file's path.
 
 Every Markdown file with `name` and `description` frontmatter is addressable. Plain
 reference files without a `name` remain excluded. Directory symlinks are supported.

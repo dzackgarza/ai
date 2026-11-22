@@ -29,7 +29,10 @@ def skill_label(skill: Skill, display_name: str, descriptions: bool) -> Text:
     """Format one skill name and its optional description."""
     label = Text(display_name)
     if descriptions:
-        label.append(f" — {skill.description}", style="dim")
+        description = " ".join(skill.description.split())
+        label.append(f" — {description}", style="dim")
+        label.no_wrap = True
+        label.overflow = "ellipsis"
     return label
 
 
@@ -84,7 +87,7 @@ def list_command(
     """List top-level skills and nested subskills by name.
 
     Args:
-        descriptions: Include each skill's frontmatter description.
+        descriptions: Include descriptions, truncated to the terminal width.
         config: Settings file (default: ~/.config/skill/config.toml).
         skills_dir: Override only the configured skills directory.
     """
