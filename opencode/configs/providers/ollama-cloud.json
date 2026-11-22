@@ -75,6 +75,9 @@
     },
     "muse-spark-open": {
       "name": "[33] Muse Spark Open"
+    },
+    "hy4": {
+      "name": "[40] Hunyuan HY4"
     }
   },
   "whitelist": [
@@ -90,6 +93,7 @@
     "mimo-v2.6-pro",
     "minimax-m3.1-flash",
     "mistral-large-4",
-    "muse-spark-open"
+    "muse-spark-open",
+    "hy4"
   ]
 }

@@ -2800,6 +2800,9 @@
         "muse-spark-open": {
           "name": "[33] Muse Spark Open"
         },
+        "hy4": {
+          "name": "[40] Hunyuan HY4"
+        },
         "clef:27b": {
           "status": "deprecated"
         },
@@ -3377,6 +3380,9 @@
           "status": "deprecated"
         },
         "gpt-live-1": {
+          "status": "deprecated"
+        },
+        "gpt-live-1.1": {
           "status": "deprecated"
         },
         "grok-4.5": {

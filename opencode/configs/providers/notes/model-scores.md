@@ -144,6 +144,7 @@ Snapshot: 2026-11-21.
 | 45 | LongCat 2.5 | `opencode/longcat-2.5-free` | no AA row. Vendor: Terminal-Bench 4.0 38.5 (Sonnet 5.5: 64.14), Terminal-Bench 2.1 88.4, DeepSWE 64.6. Predecessor LongCat 2.0: AA 33 |
 | 43 | MiniMax M3.1 Flash | `nvidia/minimaxai/minimax-m3.1-flash`, `ollama-cloud/minimax-m3.1-flash` | AA v4.3.2 42.7 |
 | 41 | GLM 5.3 Flash | `nvidia/z-ai/glm-5.3-flash`, `ollama-cloud/glm-5.3-flash`, `openmathos/z-ai/glm-5.3-flash` | AA v4.3.2 41.8 |
+| 40 | Hunyuan HY4 | `ollama-cloud/hy4` | no AA v4.3.2 row. AA v5.0.1 35, bridged to v4.3.2 through Kimi K3.1 Pro (55.1/46.5) gives 41.5; Vals Index 59.4% (#4). Full tier of the series whose Flash tier scores 30 |
 | 40 | DeepSeek V4 Pro (0813) | `ollama-cloud/deepseek-v4-pro:0813` | not in the top 60 of AA v4.3.2 (below 41.8); an older generation than the anchor |
 | 40 | Big Pickle | `opencode/big-pickle` | stealth placeholder; the compaction agent uses it |
 | 40 | Glyph Cluster | `kilo/stealth/glyph-cluster` | stealth placeholder |
