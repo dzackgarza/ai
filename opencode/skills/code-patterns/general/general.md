@@ -70,6 +70,8 @@ Do not negotiate this locally.
 
 Read only the relevant reference:
 
+- `../references/clean-code-overview.md` — condensed overview of the chapter guidance
+  with quick references.
 - `../references/situation-to-source.md` — situations with known-bad priors, each routed to
   the authoritative literature, plus the house deviations from it.
 - `../references/names.md` — naming and intention-revealing symbols.
