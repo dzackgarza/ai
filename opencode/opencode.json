@@ -139,7 +139,7 @@
   },
   "default_agent": "Interactive",
   "compaction": {
-    "reserved": 20000
+    "reserved": 10000
   },
   "plugin": [
     "file:///home/dzack/ai/opencode/node_modules/cc-safety-net/dist",
@@ -3560,6 +3560,9 @@
           "status": "deprecated"
         },
         "qwen3.8-max": {
+          "status": "deprecated"
+        },
+        "qwen4-max-free": {
           "status": "deprecated"
         },
         "ring-2.6-1t-free": {
