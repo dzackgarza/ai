@@ -791,6 +791,14 @@ If no palette exists:
 
 Do not invent lots of colors from scratch.
 
+### Colour that carries information
+
+Start with the comparison the reader must make. For unordered classes or states, choose a qualitative palette. For ordered magnitudes, use a sequential scale with an evident lightness order. Use a diverging scale when the two directions from a meaningful reference value matter. Consult a scale designed for that task at the required number of classes. Respect established meanings in the field. [ColorBrewer](https://colorbrewer2.org/)
+
+Inspect the marks the reader actually compares. Put every category side by side at publication or interface size, including rare states. If the main example omits a state, use another valid example or a temporary specimen rendered by the same component. Check thin strokes, small glyphs, adjoining fills, and any selection or background that changes their appearance. For continuous scales inspect the ordering, endpoints, and reference value.
+
+Check three separate things: contrast against the surface, agreement with the key, and the ability to distinguish the encoded values from one another. Dark red and burnt orange can both read clearly on paper and match their swatches while looking alike on fine lines. Inspect the full set under common colour-vision deficiencies. Where hue carries a necessary distinction, give the marks a second cue that works at that size, such as line pattern, symbol shape, or direct notation. Read the figure using that cue alone. A legend explains the encoding; the distinction must be visible where the reader uses it. [W3C guidance on use of colour](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)
+
 ## Layout and Composition
 
 Design with rhythm:

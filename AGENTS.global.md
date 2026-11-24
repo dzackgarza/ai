@@ -562,6 +562,7 @@ references are progressive disclosure, not new triggers.
 | the Zotero library | `zotero` |
 | a game engine, level, asset pipeline, or Blender export | `game-development` |
 | creating or revising the appearance or interaction of a page, widget, or graphical interface, including a complaint about how it looks | `design-taste-frontend` and `design` before choosing the layout or styling; apply them to the actual interface in the same change |
+| colour identifies a class, state, series, or quantity in a plot, diagram, map, table, or control | Read **Colour that carries information** in the `design` skill before choosing colours or judging the result. Route by what the reader must distinguish, in every medium. |
 | a layout that changes with viewport or embedding width | `responsive-design`; inspect the real content at wide and narrow widths |
 | a web page, GUI, or visual artifact about to be called done | `design`; inspect the rendered result in the states the reader uses, including selection and navigation where applicable |
 | a review of agent-written code, tests, or documentation | `reviewing-llm-code`, `anti-slop`, `policy-index` |

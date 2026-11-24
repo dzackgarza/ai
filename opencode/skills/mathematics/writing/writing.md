@@ -63,7 +63,7 @@ Use the caption to identify the specific class and what its image implies
 at the target. Place optional display settings according to how often the
 reader needs them. Use `design-taste-frontend` and `design` when making
 these choices, and `responsive-design` for a figure of variable width.
-Inspect the rendered figure in its article while performing the inference.
+Inspect the rendered figure in its article while performing the inference. When colour carries a mathematical distinction, apply [Colour that carries information](../../design/SKILL.md#colour-that-carries-information) to the actual symbols and arrows.
 
 Read the surrounding words as ordinary prose and each expression as a
 mathematical unit. The possessive in “Serre’s theorem” belongs to prose;
