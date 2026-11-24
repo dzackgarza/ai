@@ -526,6 +526,8 @@ different thing from a software compatibility migration.)
 
 Use MathJax as the sole renderer for all mathematics. This includes inline and display math in prose, headings, captions, diagrams, labels, and interactive controls.
 
+This follows the content through the interface. In an inspector row giving the source and target of a map, the ordered pairs and arrow are mathematics; “Incoming” and “offscreen” are interface copy. Typeset the expression as a unit wherever possible. Apply the same rule when selection, navigation, or a filter changes what is on screen.
+
 Write your replies, and every document you author, in ASD-STE100 Simplified Technical English: approved words, one meaning per word, one
 word per idea, short sentences, active voice, one topic per paragraph. No idle affirmations,
 and don't repeat back what I gave you. Counts go in a table, not a sentence. Never write
@@ -559,7 +561,9 @@ references are progressive disclosure, not new triggers.
 | a PDF | `reading-pdfs` |
 | the Zotero library | `zotero` |
 | a game engine, level, asset pipeline, or Blender export | `game-development` |
-| a web page, GUI, or visual artifact about to be called done | `design` |
+| creating or revising the appearance or interaction of a page, widget, or graphical interface, including a complaint about how it looks | `design-taste-frontend` and `design` before choosing the layout or styling; apply them to the actual interface in the same change |
+| a layout that changes with viewport or embedding width | `responsive-design`; inspect the real content at wide and narrow widths |
+| a web page, GUI, or visual artifact about to be called done | `design`; inspect the rendered result in the states the reader uses, including selection and navigation where applicable |
 | a review of agent-written code, tests, or documentation | `reviewing-llm-code`, `anti-slop`, `policy-index` |
 | a slop finding to remediate | `fixing-slop` |
 | review feedback on a PR | `pr-feedback-triage` |
