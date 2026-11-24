@@ -180,3 +180,32 @@ in place of the fence or raw block.
 environment, or `\input{diagrams/example.tikzcd}`); metadata in the
 house's accepted form — `::: {#fig-square caption="…"}` around the
 diagram — where the cross-reference resolver finds it (`XREF-1`).
+
+## DIA-9: Compose the relation before annotating it
+
+Choose the form that exposes the operation the reader wants to perform.
+To take homology at a term, the reader needs to see two composable maps.
+Separate entries for the incoming and outgoing maps force the reader to
+match their copies of the middle term. Typesetting each entry still leaves
+that work to the reader. Write the fragment once. For a cohomological
+spectral sequence on page two, the fragment at bidegree $(p,q)$ is
+
+$$
+E_2^{p-2,q+1} \xrightarrow{d_2} E_2^{p,q}
+              \xrightarrow{d_2} E_2^{p+2,q-1}.
+$$
+
+Keep the information. Put the bidegree on its term and a known map on
+its arrow. If the middle group vanishes, write $E_2^{p,q}=0$; if the
+outgoing map vanishes, label its arrow $0$. These assertions differ even
+when both appear as “zero” in the data. Give a value on a generator as
+an equation, for example $d_2(x)=y$. In a cropped diagram, attach the
+offscreen indication to the affected endpoint. Its position in the
+viewport says nothing about whether the group vanishes.
+
+The same choice arises in prose, tables, and interactive controls. A
+short exact sequence exhibits a kernel and quotient together; a
+commuting square lets the eye follow either composite. Use the familiar
+form that supports the intended reading, then add the hypotheses,
+formulas, and qualifications the reader still needs. On screen, render
+the whole mathematical expression with MathJax.

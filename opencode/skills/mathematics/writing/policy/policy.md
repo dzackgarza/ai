@@ -246,6 +246,7 @@ the writer's recollection of what rigorous writing looks like.
 | Which hypotheses are intrinsic and which are proof artifacts | `STR-3`, `STR-8`, `DEF-50`, `CITE-6` |
 | Which notation is standard, which is necessary, which is redundant | `NOT-4`, `NOT-5`, `NOT-6`, `NOT-10`, `SYM-14`, `SYM-16` |
 | Which relation earns a diagram or sequence, which an equation | `DIA-7`, `DEF-40`, `PR-75`, `PR-77` |
+| How to present several facts about one mathematical construction, including in an interactive figure | [`DIA-9`](references/diagrams.md#dia-9-compose-the-relation-before-annotating-it) |
 | Which construction is foundational, which an immediate consequence | `DEF-16`, `DEF-22`, `DEF-44`, `DEF-45`, `SEC-16`, `SEC-18`, `SEC-19`, `STR-6` |
 | Which fact is obvious, which needs a proof or a citation | `PR-9`, `EV-1`, `CITE-1`, `CITE-7`, `CITE-8`, `SEC-6` |
 | Which name is a handle into the literature, which a coinage | `TERM-20`, `TERM-16`, `NOT-4`, `XREF-7`, `SEC-19`, `DEF-45` |

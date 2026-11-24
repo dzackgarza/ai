@@ -21,6 +21,11 @@ consequences that the notation does not state. Rigor is a property of what is
 stated and proved, not of how much notation, categorical vocabulary,
 construction detail, or citation surrounds it.
 
+When several facts concern one construction, choose the expression a reader
+would write to reason about it. Place each fact on the object, map, or
+operation it qualifies. This applies equally to a proof on paper and a
+selected term in an interactive figure. See [DIA-9](policy/references/diagrams.md#dia-9-compose-the-relation-before-annotating-it).
+
 The goal is **elegant, rigorous, checkable mathematics**.
 Every proof should be verifiable by a human reader.
 Every step should be justified.
