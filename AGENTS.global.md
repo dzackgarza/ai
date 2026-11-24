@@ -422,6 +422,8 @@ clarification, plans, tasks, analysis, implementation, convergence. Specs keep *
 stories, and acceptance tests are derived from them. The source-edit rule in **Bugs** applies
 to instruction and policy edits.
 
+Run `~/ai/scripts/speckit-prerequisites` from the project being checked. The global Specify CLI supplies the checker and its helpers. The project owns its feature selection and artifacts.
+
 A Spec Kit constitution should normally include:
 
 - **Test tiers.** Tier 1 is the smallest set that establishes correctness through the happy

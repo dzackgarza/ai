@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Run the checker shipped in the uv-installed Specify CLI, keeping the caller's cwd.
+set -euo pipefail
+tools_dir=$(uv tool dir)
+exec "$tools_dir/specify-cli/bin/python" -c '
+from importlib.resources import files
+import os
+import sys
+
+checker = files("specify_cli").joinpath("core_pack/scripts/bash/check-prerequisites.sh")
+os.execvp("bash", ["bash", str(checker), *sys.argv[1:]])
+' "$@"
