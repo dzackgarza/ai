@@ -31,9 +31,11 @@ selected term in an interactive figure. See [DIA-9](policy/references/diagrams.m
 Before choosing a figure, locate the result in the source and reconstruct
 the argument in its order of dependence. Identify the object computed, the
 coefficients, and the theorem that carries the computation to the conclusion.
-For example, Serre’s first-torsion result locates the first higher group
-with $p$-torsion and gives a cyclic primary component. Its exponent remains
-undetermined in that calculation. An integral calculation of the order
+For example, for an odd sphere $S^n$ with $n\geq 3$ and a prime $p$,
+Serre locates the first higher $p$-torsion in degree $n+2p-3$. Its
+$p$-primary component is cyclic of order $p^k$ for some $k\geq 1$
+(*Homologie singulière des espaces fibrés. Applications*, Chapter V,
+§5, Proposition 4 and its example). An integral calculation of the order
 requires a further argument. Cite each at the point where it is used.
 
 Give a heading the name of the construction or result. Give a sentence the
@@ -62,6 +64,12 @@ the rendered article, including captions and content revealed by interaction.
 Preserve meaningful uncertainty: a known zero map has label $0$, an
 undetermined map needs an indication of uncertainty, and a hidden arrow
 still has the same mathematical status when the reader changes a filter.
+
+When asked why a presentation reads strangely, explain what the reader
+has to reconstruct. In two rows for incident maps, the reader must match
+two copies of a term before seeing the composite. Naming the two rows
+again does not explain the cost. Answer a question about taste in those
+terms; a request for an explanation leaves the artifact as it stands.
 
 The goal is **elegant, rigorous, checkable mathematics**.
 Every proof should be verifiable by a human reader.
