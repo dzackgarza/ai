@@ -203,9 +203,19 @@ an equation, for example $d_2(x)=y$. In a cropped diagram, attach the
 offscreen indication to the affected endpoint. Its position in the
 viewport says nothing about whether the group vanishes.
 
-The same choice arises in prose, tables, and interactive controls. A
-short exact sequence exhibits a kernel and quotient together; a
-commuting square lets the eye follow either composite. Use the familiar
-form that supports the intended reading, then add the hypotheses,
-formulas, and qualifications the reader still needs. On screen, render
-the whole mathematical expression with MathJax.
+The reader’s question also determines the order of attention. If the
+question is which maps meet a selected term, give the chain the main
+line, place the value on a generator beside its arrow, and mark a clipped
+endpoint locally. If the question is why a factor of two occurs, give
+the product-rule calculation its own display and use the diagram to
+locate its source and target. Both readings preserve the terms, maps,
+formulas, and viewport information. Equal headings for these facts
+would make the reader decide which one answers the question.
+
+Apply the same judgment beyond diagrams. To compare ranks and determinants
+across a family of lattices, align each invariant in its own column.
+To explain why one determinant is a square multiple of another, put the
+index formula at the point of inference and state the finite-index
+hypothesis there. Read the result twice: can the reader make the intended
+inference directly, and can they still recover every qualification on
+which it depends? On screen, render the mathematical expressions with MathJax.

@@ -21,10 +21,18 @@ consequences that the notation does not state. Rigor is a property of what is
 stated and proved, not of how much notation, categorical vocabulary,
 construction detail, or citation surrounds it.
 
-When several facts concern one construction, choose the expression a reader
-would write to reason about it. Place each fact on the object, map, or
-operation it qualifies. This applies equally to a proof on paper and a
-selected term in an interactive figure. See [DIA-9](policy/references/diagrams.md#dia-9-compose-the-relation-before-annotating-it).
+Ask what the reader came to determine. Group the facts needed for that
+inference, even when they come from separate records or separate steps of
+a computation. Following a composite calls for a chain of maps. Comparing
+the same invariants across several objects calls for aligned table columns.
+A hypothesis that explains why a theorem applies may take only a sentence.
+
+Give the relation on which the inference depends first place. Keep every
+qualification the reader needs and attach it to the precise claim it
+qualifies. A hypothesis on which the conclusion depends belongs with the
+conclusion; a note about the extent of a plot belongs beside its boundary.
+The same fact can deserve different prominence when the question changes.
+See [DIA-9](policy/references/diagrams.md#dia-9-compose-the-relation-before-annotating-it).
 
 ### Worked mathematics from the literature
 
