@@ -26,6 +26,43 @@ would write to reason about it. Place each fact on the object, map, or
 operation it qualifies. This applies equally to a proof on paper and a
 selected term in an interactive figure. See [DIA-9](policy/references/diagrams.md#dia-9-compose-the-relation-before-annotating-it).
 
+### Worked mathematics from the literature
+
+Before choosing a figure, locate the result in the source and reconstruct
+the argument in its order of dependence. Identify the object computed, the
+coefficients, and the theorem that carries the computation to the conclusion.
+For example, Serre’s first-torsion result locates the first higher group
+with $p$-torsion and gives a cyclic primary component. Its exponent remains
+undetermined in that calculation. An integral calculation of the order
+requires a further argument. Cite each at the point where it is used.
+
+Give a heading the name of the construction or result. Give a sentence the
+step that needs prose. In the sphere example, “the cup square supplies the
+coefficient” leaves the reader to supply both the coefficient and its reason.
+Write $d_3(x^2)=d_3(x)x+xd_3(x)=2ux$, with $d_3(x)=u$ and $|x|=2$ stated.
+Explain why the cokernel gives the whole homology group in the degree at
+issue. This is the information a transition such as “we now read off the
+answer” leaves out.
+
+### Figures inside an argument
+
+Begin with the inference the figure supports. For the differential above,
+the reader follows the image of $x^2$ and then examines the target on the
+next page. Keep the arrow, its value, and that page change easy to find.
+Use the caption to identify the specific class and what its image implies
+at the target. Place optional display settings according to how often the
+reader needs them. Use `design-taste-frontend` and `design` when making
+these choices, and `responsive-design` for a figure of variable width.
+Inspect the rendered figure in its article while performing the inference.
+
+Read the surrounding words as ordinary prose and each expression as a
+mathematical unit. The possessive in “Serre’s theorem” belongs to prose;
+an ordered pair in a control belongs to mathematics. Use MathJax throughout
+the rendered article, including captions and content revealed by interaction.
+Preserve meaningful uncertainty: a known zero map has label $0$, an
+undetermined map needs an indication of uncertainty, and a hidden arrow
+still has the same mathematical status when the reader changes a filter.
+
 The goal is **elegant, rigorous, checkable mathematics**.
 Every proof should be verifiable by a human reader.
 Every step should be justified.
