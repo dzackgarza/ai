@@ -524,6 +524,8 @@ different thing from a software compatibility migration.)
 
 ## Writing
 
+Use MathJax as the sole renderer for all mathematics. This includes inline and display math in prose, headings, captions, diagrams, labels, and interactive controls.
+
 Write your replies, and every document you author, in ASD-STE100 Simplified Technical English: approved words, one meaning per word, one
 word per idea, short sentences, active voice, one topic per paragraph. No idle affirmations,
 and don't repeat back what I gave you. Counts go in a table, not a sentence. Never write
