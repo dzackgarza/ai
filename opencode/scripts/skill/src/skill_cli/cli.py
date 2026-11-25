@@ -22,7 +22,7 @@ from skill_cli.models import (
     SkillCatalog,
 )
 
-app = App(name="skill", help="List agent skills and print their absolute paths.")
+app = App(name="skill-cli", help="List agent skills and print their absolute paths.")
 
 
 def skill_label(skill: Skill, display_name: str, descriptions: bool) -> Text:
@@ -66,12 +66,12 @@ def print_lookup_failure(result: Ambiguous | NoMatch, query: str) -> None:
             print(f"No exact skill named {query!r}.", file=sys.stderr)
             match suggestions:
                 case []:
-                    print("No near matches. Run 'skill list'.", file=sys.stderr)
+                    print("No near matches. Run 'skill-cli list'.", file=sys.stderr)
                 case _:
                     print("Did you mean one of these?", file=sys.stderr)
                     for skill in suggestions:
                         print(
-                            f"  {skill.identifier}  (retry: skill get {skill.identifier})",
+                            f"  {skill.identifier}  (retry: skill-cli get {skill.identifier})",
                             file=sys.stderr,
                         )
         case _:

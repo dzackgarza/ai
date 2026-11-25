@@ -1,12 +1,12 @@
 # Skill CLI
 
-`skill` lists agent skills and resolves their documentation paths. It does not print or
+`skill-cli` lists agent skills and resolves their documentation paths. It does not print or
 load skill bodies. An agent can read the returned absolute path with its own file tool.
 
 ## Install
 
 Run `just install` from the repository root. This installs the command with `uv tool`
-and creates `~/.config/skill/config.toml` when that file is absent.
+and creates `~/.config/skill/config.toml` when that file is absent. Re-run `just install` to upgrade an earlier installation; the existing settings file is retained. The command is `skill-cli`, not `skill` (the procps process-signal command).
 
 The configuration names the skills directory and the fuzzy-match policy:
 
@@ -25,11 +25,11 @@ maximum number of suggestions after a failed lookup.
 ## Use
 
 ```bash
-skill list
-skill list --descriptions
-skill get mathematics
-skill get objects-in-code
-skill get mathematics/objects-in-code
+skill-cli list
+skill-cli list --descriptions
+skill-cli get mathematics
+skill-cli get objects-in-code
+skill-cli get mathematics/objects-in-code
 ```
 
 `list` shows top-level skills and their nested subskills. `--descriptions` keeps each
@@ -54,5 +54,5 @@ From the repository root, run `just test`. To inspect the command help without a
 installed copy, run:
 
 ```bash
-uv run --project opencode/scripts/skill skill --help
+uv run --project opencode/scripts/skill skill-cli --help
 ```

@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-skill = "skill_cli.__main__:main"
+skill-cli = "skill_cli.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/skill_cli"]
