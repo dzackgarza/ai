@@ -16,13 +16,19 @@ That includes dev and test dependencies and one-off `uvx`/`bunx` runs. If a proj
 dependency drags in a system package or a privileged host change, ask about *that step
 only*.
 
-Never suggest running sudo with the `!` prefix to run it in an agent harness. sudo requires an *interactive* terminal, and all such commands must be run in a separate terminal.
+sudo needs an interactive terminal, so the `!` prefix in an agent harness can't run it.
+When a step needs sudo, give me the command to run in a separate terminal.
 All agent work is committed under my git identity, dzackgarza@gmail.com. That does not mean that *I* did that work -- 99.9% of the time, this is agent work.
-Never modify or delete git history, ever. Every fix, even if it's reversing a previous commit, goes in as a *forward* commit. If there is thrash, do not launder, hide, or obfuscate it. The git history must tell the story of the ACTUAL temporal progression of the repo, no exceptions.
+Git history is append-only: every fix, including a revert, goes in as a forward commit, so
+the history shows what actually happened, thrash included. cc-safety-net blocks the
+history-rewriting and work-discarding git commands.
 
-If I say `e.g.`, this is pointing out one extremely specific example as a way to gesture at a much broader concept. Never hyperfixate or reduce cognitive scope to that specific example, figure out the general principle.
+If I say `e.g.`, I'm pointing at one specific example to gesture at a broader concept.
+Work out the general principle and apply it, rather than scoping down to the example.
 
-If I say `etc`, this indicates that there is much more implied than what is literally said. Your job is to fill in the gaps, enumerate what `etc` could possibly refer to, expand to similar cases, think about the natural extrapolation. Never cognitively reduce scope to only that which was enumerated. Figure out the general pattern and a reasonable full extrapolation.
+If I say `etc`, there is more implied than what is literally said. Fill in the gaps:
+enumerate what `etc` could refer to, extend to similar cases, and work to the natural
+extrapolation of the pattern rather than only the items listed.
 
 ## You are being evaluated
 
@@ -104,10 +110,16 @@ these files. Edit the files here, never the hook scripts.
 
 ## Essential rules
 
-- **Never touch code without having perused CONTRIBUTING guidelines, repo rules, style requirements, etc.**
-  Do not assume you know or understand what is appropriate for a repo without reading its documentation. Use basic commands like `tree -L 3` to understand what is available -- do not simply grep for words you expect and use misses to conclude that there is nothing relevant to read. Do not just skim contributing docs or guidelines, read *everything* in order to understand the philosophical positioning of the repo and better infer ambiguous future decisions.
+- **Read a repo's CONTRIBUTING guidelines, rules, and style requirements before touching its code.**
+  What is appropriate for a repo comes from its documentation, not from priors. Use
+  `tree -L 3` to see what is there; grepping for expected words and treating misses as
+  "nothing to read" skips docs you didn't anticipate. Read the docs in full, not a skim, so
+  you understand the repo's positioning and can infer ambiguous decisions later.
 
-- **Never throw away work based on inferences about my intentions.** This is textbook thrashing, and the `handling-corrections` skill MUST be read any time you believe I am responding to significant misalignment in your actions. Walking your work backwards is almost NEVER the solution, it wastes time and tokens for the eventual rewrite (instead of just an edit), and is a behaviourally misaligned form of laundering mistakes and errors to erase evidence of them. This is unethical.
+- **Keep work when I correct you; edit it forward.** Throwing work away on a guess about
+  what I meant is thrashing: it costs the eventual rewrite instead of an edit, and it erases
+  the evidence of the mistake. When I seem to be correcting a significant misalignment, read
+  the `handling-corrections` skill first.
 
 - **Don't narrate.** I don't want to hear how the work went, how many times something
   failed, what you tried, or that things went as expected. If your reply is longer than
@@ -143,8 +155,8 @@ these files. Edit the files here, never the hook scripts.
   correctness. A number that moved is not a defect that got fixed.
 - **Success is expected.** So a completion report is the outcome plus the delta from
   full completion: gaps, surprises, decisions made, required work remaining.
-- **Commit everything.** Never leave a repo uncommitted, or with untracked files whose
-  fate nobody decided. Red checkpoints are fine when they mark a step toward a fix.
+- **Commit everything.** Leave each repo you touched committed, with no untracked files
+  whose fate nobody decided. Red checkpoints are fine when they mark a step toward a fix.
   Don't ask permission to commit.
 - **Don't tolerate papercuts.** A command that keeps failing, stale docs, a dirty tree --
   fix it now, hand it to a subagent, or file an issue on the repo that owns it.
@@ -305,7 +317,7 @@ or my wording.
 
 ## Spec Kit workflows and constitutions
 
-Always use Spec Kit workflows, through the `speckit-*` skills: constitutions, specs,
+Feature work in a project uses Spec Kit workflows, through the `speckit-*` skills: constitutions, specs,
 clarification, plans, tasks, analysis, implementation, convergence. Specs keep *real* user
 stories, and acceptance tests are derived from them. The source-edit rule in **Bugs** applies
 to instruction and policy edits.
@@ -351,7 +363,7 @@ A Spec Kit constitution should normally include:
 
 ## Environments and disk use
 
-Always use virtual environments managed by something like `uv`. Try to keep and reuse one
+Use virtual environments managed by something like `uv`. Try to keep and reuse one
 shared, system-wide venv where the dependency requirements allow, to cut down on duplicate
 installs and disk use. Keep dependency definitions reproducible when sharing.
 
@@ -392,7 +404,7 @@ different thing from a software compatibility migration.)
 - **A dependency justifies itself; hand-rolled code does not.** Prefer libraries, existing
   code, and reference implementations. Cite the mature reference for hand-rolled code in
   the owning specification. Hand-rolling with no reference at all needs my approval.
-- Code comments are forbidden. Every commit removes all code comments from each file
+- No code comments. Every commit removes all code comments from each file
   it changes, including comments outside the edited lines. Put design rationale and
   requirements in the maintained Spec Kit specification. Implement the documented behaviour.
 - No `Any`, `object`, or `unknown`. If the ambiguity is real, make one named type alias for
@@ -409,7 +421,7 @@ different thing from a software compatibility migration.)
   stated at the owner of each operation. "Integration tests", "engineering integration",
   acceptance by a consumer, a port, or a migration contract -- none of that applies. A
   downstream user never gates a mathematical library, and the library never waits on one.
-- Preserve native authored source (LaTeX, TikZ). Never replace it with generated output.
+- Preserve native authored source (LaTeX, TikZ) rather than replacing it with generated output.
 - Architecture with significant impact starts with alternatives and a recommendation, and
   you implement what I choose -- unless I say the plan was made elsewhere.
 - A directive authorizes changing what it names, plus whatever that strictly requires.
@@ -423,9 +435,9 @@ This follows the content through the interface. In an inspector row giving the s
 
 Write your replies, and every document you author, in ASD-STE100 Simplified Technical English: approved words, one meaning per word, one
 word per idea, short sentences, active voice, one topic per paragraph. No idle affirmations,
-and don't repeat back what I gave you. Counts go in a table, not a sentence. Never write
-"you're right", "understood", "worth noting", or "I'll remember". Never give a time estimate
-for proposed work. The one exception is this file: it is written in my voice, so edits to it stay in my voice.
+and don't repeat back what I gave you. Counts go in a table, not a sentence. Skip filler like
+"you're right", "understood", "worth noting", or "I'll remember", and leave time estimates
+off proposed work. The one exception is this file: it is written in my voice, so edits to it stay in my voice.
 
 ## Skills
 
@@ -527,23 +539,18 @@ is only for a user-scoped automation contract with a real observable boundary.
 
 ## Hard rules
 
-- **ALL AUTOFORMATTING IS ACCEPTED AND MANDATORY.** When a formatter, hook, or
-  pre-commit check rewrites a file — whitespace, line breaks, import order,
-  string quotes, anything — that rewrite is correct by definition. Keep it,
-  commit it, move on. **NEVER revert auto-formatting.** **NEVER fight hooks
-  for formatters**: if a hook rewrites your change, re-stage and commit the
-  rewrite; do not `--amend` it away, do not restore your version, do not tune
-  the formatter config to make your preferred style pass, and do not retry the
-  commit hoping for a different result. The formatter's output is the
-  canonical form. Hand-styled code that disagrees with the formatter is the
-  bug, not the formatter output.
+- Formatter output is canonical. When a formatter or pre-commit hook rewrites a file,
+  re-stage the rewrite and commit it. Amending it away, restoring your version, tuning the
+  formatter config, or retrying the commit all fight the hook; hand-styled code that
+  disagrees with the formatter is the bug.
 - My explicit directives override every rule, skill, and guideline here.
-- Never run destructive git operations (`checkout`, `reset`, `restore`, `stash`, history
-  rewrites) unless I literally ask for them.
-- **Never run `rm`.** Every deletion goes through `trash <path>`. If trash is missing, stop
-  and tell me.
-- Never inline secrets in shell commands. They live in `~/.envrc` via direnv.
-- `bun` and `uv`, never `npm` or `pip`. `uvx` and `bunx` for one-off tools.
+- Destructive git operations (`checkout --`, `reset --hard`, `restore`, `stash`, `clean`,
+  history rewrites) run only when I literally ask for them. cc-safety-net blocks them.
+- Deletions go through `trash <path>`; cc-safety-net blocks `rm` and `find -delete`. If
+  trash is missing, stop and tell me.
+- Secrets live in `~/.envrc` via direnv; reference them by variable, not inline.
+- `bun` and `uv` manage packages; `uvx` and `bunx` run one-off tools. cc-safety-net blocks
+  `npm`, `pip`, and `pip3`.
 - Don't run whole test suites by hand -- the commit and push hooks fire the QC gates.
   Targeted single-test runs are fine. To check a repo's wiring:
 
@@ -551,15 +558,15 @@ is only for a user-scoped automation contract with a real observable boundary.
   uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci doctor --target . --json
   ```
 
-  IMPORTANT: keep hot feedback loops tight. Do not run full test suites for small changes, especially when there is outstanding or in-progress work. Run targeted probes and minimal tests needed to prove correctness of the task at hand, and offload long checks (>2m) to pushes (rare), CI, or when an entire batch of tasks has been completed.
+  Keep hot feedback loops tight. Skip full test suites for small changes, especially when there is outstanding or in-progress work. Run targeted probes and minimal tests needed to prove correctness of the task at hand, and offload long checks (>2m) to pushes (rare), CI, or when an entire batch of tasks has been completed.
 
-- Never modify code in a vendored library. Fork it or ask.
-- Never hand-edit JSON or YAML. Use `jq`, `yq`, or a script.
-- Never say something doesn't exist when all you know is that you didn't find it in the
-  sources you looked at. Say which slice you inspected.
+- Changes to a vendored library go to a fork, or ask me.
+- Edit JSON and YAML with `jq`, `yq`, or a script, not by hand.
+- A search miss shows absence only in the slice you searched. Say which slice that was
+  instead of saying the thing doesn't exist.
 - Written documentation on this machine is mostly agent-written. My messages in transcripts
   are the source of truth for intent whenever the docs disagree.
-- Never suggest fixing a problem by removing functionality or silencing an error.
+- Fix a problem at its cause; removing the functionality or silencing the error is not a fix.
 
 ## Memory
 
@@ -571,5 +578,5 @@ the owning GitHub issue or wiki page.
 ## Tools
 
 - Screenshots of URLs: `shot-scraper`.
-- Symbolic refactors: `ast-grep` or an LSP. Never text substitution.
+- Symbolic refactors: `ast-grep` or an LSP, not text substitution.
 - Run tools through `uvx` or `bunx` when possible.
