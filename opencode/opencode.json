@@ -632,6 +632,9 @@
         "google/gemini-4-neon": {
           "status": "deprecated"
         },
+        "google/gemini-4-neon-fast": {
+          "status": "deprecated"
+        },
         "google/gemini-nano-banana-2.1": {
           "status": "deprecated"
         },
@@ -1964,10 +1967,16 @@
         "undi95/remm-slerp-l2-13b": {
           "status": "deprecated"
         },
+        "upstage/solar-mini-4-5": {
+          "status": "deprecated"
+        },
         "upstage/solar-mini4": {
           "status": "deprecated"
         },
         "upstage/solar-pro-3": {
+          "status": "deprecated"
+        },
+        "upstage/solar-pro-4-contributor": {
           "status": "deprecated"
         },
         "upstage/solar-pro4": {
@@ -2064,6 +2073,9 @@
           "status": "deprecated"
         },
         "xiaomi/mimo-v2.6-flash": {
+          "status": "deprecated"
+        },
+        "xiaomi/mimo-v2.6-flash-mopd": {
           "status": "deprecated"
         },
         "xiaomi/mimo-v2.6-pro": {
@@ -3437,6 +3449,9 @@
           "status": "deprecated"
         },
         "kimi-k3": {
+          "status": "deprecated"
+        },
+        "kimi-k3.1-pro": {
           "status": "deprecated"
         },
         "laguna-s-2.1-free": {
@@ -6049,10 +6064,16 @@
         "undi95/toppy-m-7b": {
           "status": "deprecated"
         },
+        "upstage/solar-mini-4-5": {
+          "status": "deprecated"
+        },
         "upstage/solar-mini4": {
           "status": "deprecated"
         },
         "upstage/solar-pro-3": {
+          "status": "deprecated"
+        },
+        "upstage/solar-pro-4-contributor": {
           "status": "deprecated"
         },
         "upstage/solar-pro4": {
@@ -6146,6 +6167,9 @@
           "status": "deprecated"
         },
         "xiaomi/mimo-v2.6-flash": {
+          "status": "deprecated"
+        },
+        "xiaomi/mimo-v2.6-flash-mopd": {
           "status": "deprecated"
         },
         "xiaomi/mimo-v2.6-pro": {
