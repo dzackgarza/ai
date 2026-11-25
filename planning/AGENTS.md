@@ -161,7 +161,7 @@ Do not place plans above other plans to simulate feature hierarchy.
 A feature owns specs and plans.
 A plan owns phases. A phase owns tasks.
 
-Do not create plan-level task directories.
+Do not create plan-level task directories; `just check-plan-task-dirs` fails the commit when one exists.
 A path such as `plans/features/FEATURE-ID/plans/PLAN-ID/tasks/TASK-ID.md` is not a
 shortcut or a temporary staging area; it means the phase gate was skipped.
 Do not create or continue from that path.

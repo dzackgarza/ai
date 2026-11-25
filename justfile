@@ -1,9 +1,5 @@
-# AI harness installation and repository quality-control recipes.
-#
-# The docs-and-configs profile delegates formatting and link validation to ai-review-ci.
 set fallback := true
 
-# ai-review-ci contract variables consumed by doctor and workflow installers.
 ai_review_ci_schema_version := "1"
 ai_review_ci_profile := "docs-and-configs"
 ai_review_ci_ref := "main"
@@ -14,18 +10,14 @@ ai_review_ci_default_branch := "main"
 set script-interpreter := ['uv', 'run', '--script']
 qc-type := "python"
 
-# Install symlinks for all CLI harnesses
-# Usage: just install
 
 repo := env_var_or_default("REPO", env_var("HOME") / "ai")
 home := env_var("HOME")
 
-# Repository targets (top-level source of truth)
 
 opencode_dir := repo / "opencode"
 dotfiles_dir := repo / "dotfiles"
 
-# Core assets
 
 agents_md := repo / "AGENTS.global.md"
 skills_dir := opencode_dir / "skills"
@@ -33,17 +25,14 @@ skill_cli_dir := opencode_dir / "scripts" / "skill"
 skill_config_dir := home / ".config" / "skill"
 skill_config := skill_config_dir / "config.toml"
 
-# Spec Kit release that supplies the global Specify CLI (scripts/speckit-prerequisites runs its checker).
 
 specify_cli_release := "v1.4.4"
 
-# Tool configs
 
 tmux_conf := dotfiles_dir / "tmux.conf"
 tmux_powerline_config := dotfiles_dir / "tmux-powerline" / "config.sh"
 tmux_powerline_theme := dotfiles_dir / "tmux-powerline" / "themes" / "my-theme.sh"
 
-# Harness home directories
 
 claude_home := home / ".claude"
 codex_home := home / ".codex"
@@ -55,13 +44,10 @@ agents_home := home / ".agents"
 kilocode_home := home / ".kilocode"
 opencode_root := home / ".opencode"
 
-# Show available recipes
 
-# Usage: just
 default:
     @just --list
 
-# Validate repository Markdown entrypoints and installed-skill WikiLinks.
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md AGENTS.global.md
     @just --justfile {{ justfile() }} check-skill-wikilinks
@@ -71,24 +57,19 @@ test:
 _test-skill-cli:
     @uv run --project {{ skill_cli_dir }} --with pytest pytest -q {{ skill_cli_dir }}/tests/test_cli.py
 
-# Reformat Markdown and structured configuration before commit.
-test-commit: build
+test-commit: build check-plan-task-dirs
     @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-commit
 
-# Validate documentation links before push.
 test-push: test
     @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-push
 
-# Run local Markdown checks and documentation-link validation in CI.
 test-ci: test
     @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-ci
 
-# Install all symlinks and environment variables
 install:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # Assertion of existence
     echo "Verifying repository targets..."
     for target in "{{ agents_md }}" "{{ skills_dir }}" \
                   "{{ tmux_conf }}" "{{ tmux_powerline_config }}" \
@@ -113,13 +94,11 @@ install:
     ln -snf "{{ opencode_dir }}" "{{ opencode_home }}"
     ln -snf "{{ opencode_dir }}/rate-limit-fallback.json" "{{ opencode_root }}/rate-limit-fallback.json"
 
-    # tmux config symlinks
     ln -snf "{{ tmux_conf }}" "{{ home }}/.tmux.conf"
     mkdir -p "{{ home }}/.config/tmux-powerline/themes"
     ln -snf "{{ tmux_powerline_theme }}" "{{ home }}/.config/tmux-powerline/themes/my-theme.sh"
     ln -snf "{{ tmux_powerline_config }}" "{{ home }}/.config/tmux-powerline/config.sh"
 
-    # Merge existing qoder skills into repo before symlinking
     if [ -d "{{ qoder_home }}/skills" ] && [ ! -L "{{ qoder_home }}/skills" ]; then
         echo "Found existing Qoder skills at {{ qoder_home }}/skills"
         for skill_dir in "{{ qoder_home }}/skills"/*/; do
@@ -136,7 +115,6 @@ install:
         done
     fi
 
-    # Backup existing skills directories before creating symlinks
     for dir in "{{ claude_home }}/skills" "{{ codex_home }}/skills" \
                "{{ agents_home }}/skills" "{{ home }}/.config/agents/skills" \
                "{{ kilocode_home }}/skills" "{{ qoder_home }}/skills" \
@@ -185,15 +163,12 @@ _install-skill-cli:
 _install-specify-cli:
     uv tool install --force specify-cli --from "git+https://github.com/github/spec-kit.git@{{ specify_cli_release }}"
 
-# Install the current OpenCode plugin packages with Bun.
 install-plugins:
     @bun add --cwd {{ opencode_dir }} cc-safety-net@latest opencode-pty@latest @hueyexe/opencode-ensemble@latest context-mode@latest
 
-# Sync MCP server definitions into each configured harness.
 sync-mcp-configs *args:
     @cd {{ repo }} && uv run --script mcp/sync_mcp_configs.py {{ args }}
 
-# Update shell rc files with system prompt env vars (internal recipe)
 _update-shell-rc:
     #!/usr/bin/env python3
     from pathlib import Path
@@ -220,17 +195,11 @@ _update-shell-rc:
             text = text.rstrip("\n") + block
         rc_path.write_text(text.rstrip("\n") + "\n")
 
-# Scaffold /var/sandbox/execa/ if not already initialized (idempotent)
-# /var/sandbox/ is a plain dir hosting multiple project repos on demand.
 
-# Usage: just sandbox
 create-sandbox:
     @{{ repo }}/scripts/scaffold-sandbox.sh
 
-# Reset /var/sandbox/execa/ and re-initialize from scratch
-# Leaves other /var/sandbox/<subdir>/ repos untouched.
 
-# Usage: just reset-sandbox
 reset-sandbox:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -240,29 +209,14 @@ reset-sandbox:
     fi
     {{ repo }}/scripts/scaffold-sandbox.sh
 
-# Run a named OpenCode microagent with additional arguments.
 run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
-# Build the full OpenCode pipeline in canonical order.
-# Usage: just build
-# Steps:
-#   1. build-config — compile opencode.json from skeleton + provider fragments
-#   2. build-agents — validate tracked manual agent markdown
-#
-# AGENTS.global.md is the authored policy. Repo and harness instruction entrypoints
-# link to it; detailed procedures live in opencode/skills/.
 build: build-config build-agents
 
-# Build only the compiled OpenCode config pipeline.
-# Usage: just build-config
-# Steps:
-#   - _build-opencode-config-compile — compile opencode.json from source config fragments
 build-config:
     @just --justfile {{ justfile() }} _build-opencode-config-compile
 
-# Validate manually managed OpenCode agent markdown files.
-# Usage: just build-agents
 build-agents:
     @just --justfile {{ justfile() }} _validate-opencode-agents
 
@@ -290,16 +244,6 @@ _validate-opencode-agents:
         assert "permission" in frontmatter, f"manual permission block required: {path}"
     print(f"validated {len(agent_files)} manually managed OpenCode agent files")
 
-# =============================================================================
-# Provider Config Validation
-# =============================================================================
-# Validate opencode/configs/providers/*.json against live catalogs (for
-# directly-queryable providers like NVIDIA/VectorEngine/Antigravity) or
-# models.dev (for OAuth-only providers). Fails (non-zero exit) on drift:
-# whitelisted models that rotted off the live catalog, or live models not yet
-# triaged into a whitelist/blacklist.
-#
-# Usage: just providers-validate [provider]
 providers-validate provider="":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -310,54 +254,34 @@ providers-validate provider="":
         uv run --python .venv/bin/python scripts/build_config.py --validate-only --strict
     fi
 
-# Show provider partition diagnostics for one provider without failing.
-# Usage: just providers-debug <provider>
 providers-debug provider:
     @cd {{ opencode_dir }} && uv run --python .venv/bin/python scripts/build_config.py --validate-only --provider {{ provider }}
 
-# =============================================================================
-# Utilities
-# =============================================================================
 
-# Count tokens in any file using tiktoken (cl100k_base).
 count-tokens file:
     @uvx --with tiktoken python -c 'import sys, tiktoken; from pathlib import Path; path = Path(sys.argv[1]); text = path.read_text(); count = len(tiktoken.get_encoding("cl100k_base").encode(text)); print(f"{path}: {count} tokens")' {{ file }}
 
-# =============================================================================
-# Linting & Formatting
-# =============================================================================
 
-# Python Linting (ruff check)
 lint-python *args:
     uvx ruff check {{ args }}
 
-# Python Formatting (ruff format)
 fmt-python *args:
     uvx ruff format {{ args }}
 
-# Python Type Checking (mypy)
 mypy *args:
     uvx mypy {{ args }}
 
-# JS/TS Linting (eslint)
 lint-js *args:
     npx eslint {{ args }}
 
-# JS/TS Formatting (prettier)
 fmt-js *args:
     npx prettier --write {{ args }}
 
-# =============================================================================
-# Diagnostics
-# =============================================================================
-# Find broken symlinks in ~ (skips common ignored dirs)
 
-# Usage: just broken-symlinks
 broken-symlinks:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # Directories to skip (common caches, build artifacts, gitignored dirs)
     skip_dirs=(
         "node_modules"
         "__pycache__"
@@ -415,13 +339,11 @@ broken-symlinks:
         ".local/share/Trash"
     )
 
-    # Build find command with -prune for each skip dir
     prune_expr=""
     for dir in "${skip_dirs[@]}"; do
         prune_expr="$prune_expr -name '$dir' -prune -o"
     done
 
-    # Find all symlinks, test if target exists, report broken ones
     eval "find ~ $prune_expr -type l" 2>/dev/null | while read -r link; do
         if [ ! -e "$link" ]; then
             target=$(readlink "$link")
@@ -429,13 +351,12 @@ broken-symlinks:
         fi
     done | sort
 
-# Check markdown files for broken local file references.
-#
-# Usage: just check-markdown [path ...]
-# Audit WikiLinks between installed skills in the assembled skill tree.
-# Lychee is the resolver. A temporary dereferenced vault is required because Lychee
-# intentionally ignores symlinks while indexing WikiLink targets.
-# Usage: just check-skill-wikilinks
+check-plan-task-dirs:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    bad="$(git ls-files --cached --others --exclude-standard | { grep -E '(^|/)plans/[^/]+/tasks/' || true; })"
+    [[ -z "$bad" ]] || { echo "plan-level task directory (tasks belong under a phase):" >&2; echo "$bad" >&2; exit 1; }
+
 check-skill-wikilinks:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -450,7 +371,6 @@ check-skill-wikilinks:
         --base-url "$vault/skills" --fallback-extensions md \
         --include '/SKILL' "${skill_files[@]}"
 
-# Usage: just check-markdown [path ...]
 check-markdown *args:
     #!/usr/bin/env bash
     set -euo pipefail
