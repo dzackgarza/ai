@@ -63,7 +63,7 @@ frontmatter, containment, dependency, and validation rules.
 Project-local tracker schemas live at the project root under `.nimbalyst/trackers/`,
 symlinked to `~/ai/planning/schemas/`. The canonical schemas live under
 `~/ai/planning/schemas/`. Schema edits go there with a git commit on that repo.
-Projects symlink and consume these schemas — local forks are never correct.
+Projects symlink and consume these schemas; do not fork them locally.
 If a schema is too restrictive, the fix is to add the field to the canonical schema, not
 to fork or relax the local copy.
 
@@ -161,7 +161,7 @@ Do not place plans above other plans to simulate feature hierarchy.
 A feature owns specs and plans.
 A plan owns phases. A phase owns tasks.
 
-Plan-level task directories are forbidden.
+Do not create plan-level task directories.
 A path such as `plans/features/FEATURE-ID/plans/PLAN-ID/tasks/TASK-ID.md` is not a
 shortcut or a temporary staging area; it means the phase gate was skipped.
 Do not create or continue from that path.
@@ -376,7 +376,7 @@ Parent cards may link to child cards and explain why those children exist, but t
 not copy child status, completion percentage, review state, owner, priority, or other
 mutable tracker metadata into body text.
 
-Forbidden patterns:
+Disallowed patterns:
 
 - A phase table that lists child tasks and manually writes each task’s current status.
 
