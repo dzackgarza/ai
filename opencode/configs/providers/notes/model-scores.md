@@ -76,7 +76,9 @@ version.
    3. Vendor-reported benchmarks. These count for the least. When an
       independent result exists, it wins: Reflection reports
       Terminal-Bench 2.1 80.1 for Beam, but AA measured 17.66 on v5.0.1.
-   4. Release facts: tier inside a series, generation, and whether the
+   4. OpenRouter usage, for models served there. See **OpenRouter usage
+      signals** below.
+   5. Release facts: tier inside a series, generation, and whether the
       published checkpoint is a base model.
 6. **Stealth and unknown models.** A model with no public identity and no
    sourced benchmarks gets the placeholder **40**, and its evidence cell
@@ -87,6 +89,45 @@ version.
    routes to, and its evidence cell says so.
 8. **One score per model.** The same model on several providers has one
    row, and the row lists every provider id that serves it.
+
+### OpenRouter usage signals
+
+OpenRouter pages embed their data as JSON in the HTML. Read the payload,
+not the rendered page:
+
+- `https://openrouter.ai/<author>/<model>/apps`: the top 5 apps for the
+  model, each with `total_tokens` and `categories` (for example
+  `cli-agent`, `ide-extension`, `personal-agent`).
+- `https://openrouter.ai/apps/<slug>`: the top 10 models in one app, as
+  `ListItem` entries in order.
+
+What the signals can show:
+
+- **The model works in agent loops.** Sustained traffic from agentic
+  coding apps (Hermes Agent, Claude Code, pi, OpenClaw, DeepSeek Harness)
+  shows that the served model follows instructions and calls tools. This
+  can refute a low score that rests on a release fact. ERNIE 5.5 Flash
+  Preview carries about 470B tokens through agent apps other than Kilo
+  Code, so the served model is not the base checkpoint.
+- **A coarse ordering in one app.** Compare models inside the same agent
+  app, not across apps. Use tokens from apps that do not promote the
+  model.
+
+What the signals cannot show:
+
+- **A fine ranking.** Volume follows price, free availability, app
+  defaults, and age more than quality. On 2026-11-25, Ling 3.1 Flash (46)
+  had 18B tokens in Hermes Agent while MiMo V2.6 Flash (41) had 349B.
+- **Promoted models.** An app that features a free model sends it most
+  of its traffic. Kilo Code sent ERNIE 5.5 Flash Preview 3.9T of its
+  4.4T tokens and ranks it above DeepSeek V4.1 Flash 1017.
+- **Roleplay traffic.** Tokens from roleplay and companion apps
+  (SillyTavern, Janitor AI, ISEKAI ZERO, Hello Minds) say nothing about
+  agent work. Ignore them.
+
+The `/rankings` page has daily rows with `total_tool_calls` and
+`requests_with_tool_call_errors`, but on 2026-11-25 it held only the top
+20 models and the tool fields were 0.
 
 ### Generations inside one vendor
 
@@ -138,9 +179,9 @@ Snapshot: 2026-11-25.
 | 44 | Step 5 Preview | `nvidia/stepfun-ai/step-5-preview` | AA v5.0.1 28.52 |
 | 44 | Hunyuan HY4 Flash | `opencode/hy4-flash-free` | no AA row. Flash tier of Hunyuan HY4 (53), less the Flash gap of other series; Vals Index 50.78 against HY4 59.4 |
 | 43 | GLM 5.3 Flash | `nvidia/z-ai/glm-5.3-flash`, `ollama-cloud/glm-5.3-flash`, `openmathos/z-ai/glm-5.3-flash` | AA v5.0.1 27.74 (max) |
+| 42 | Particle 1 | `openrouter/particle-ai/particle-1:free` | no AA row. OpenRouter: 96B tokens, 75% from agentic coding apps (Kilo Code, DeepSeek Harness, Hermes Agent, pi, Claude Code); #7 in Kilo Code. Usage like Ling 3.1/3.2 Flash (46–47) in the same apps. LLM Stats lists GPQA 90.4 and MMLU 86.1 without a source |
 | 41 | MiMo V2.6 Flash | `ollama-cloud/mimo-v2.6-flash`, `opencode/mimo-v2.6-flash-free`, `tokenharbor/mimo-v2.6-flash:free` | AA v5.0.1 26.83 |
 | 40 | Mistral Large 4 | `nvidia/mistralai/mistral-large-4-1t-a52b`, `ollama-cloud/mistral-large-4`, `openmathos/mistralai/mistral-large-4-0` | AA v5.0.1 26.12 (high) |
-| 40 | Particle 1 | `openrouter/particle-ai/particle-1:free` | placeholder: no AA row; LLM Stats lists GPQA 90.4 and MMLU 86.1 without a source |
 | 40 | Big Pickle | `opencode/big-pickle` | placeholder (stealth); the compaction agent uses it |
 | 40 | Glyph Cluster | `kilo/stealth/glyph-cluster` | placeholder (stealth) |
 | 40 | Iceman | `opencode/iceman-free` | placeholder (stealth) |
@@ -148,8 +189,8 @@ Snapshot: 2026-11-25.
 | 38 | Muse Spark Open | `ollama-cloud/muse-spark-open`, `openmathos/meta/muse-spark-open` | AA v5.0.1 24.88 (xhigh) |
 | 35 | DeepSeek V4 Pro (0813) | `ollama-cloud/deepseek-v4-pro:0813` | AA v5.0.1 23.06 (DeepSeek V4 Pro, max). Older generation than the anchor |
 | 35 | LongCat 2.5 | `opencode/longcat-2.5-free` | no AA row. Predecessor LongCat 2.0: AA v4.3.2 19.11, bridged 9.0 (map: 12). Vendor: Terminal-Bench 4.0 38.5 (Sonnet 5.5: 64.14). One generation step on this board has added up to about 38 points (DeepSeek V4 Flash 0420 → V4.1 Flash 1017) |
-| 30 | OpenRouter Free router | `openrouter/openrouter/free` | routes to a different free model per call, including blacklisted weak ones |
+| 35 | ERNIE 5.5 Flash Preview | `openrouter/baidu/ernie-5.5-flash-preview:free` | no AA row. OpenRouter: 4.4T tokens, 95% from agentic coding apps; about 470B outside Kilo Code, which promotes it (Hermes Agent 186B against MiMo V2.6 Flash 349B and Ling 3.2 Flash 24B). The served model works in agent loops, so it is not the base checkpoint. Predecessor ERNIE 5.0 (thinking): AA v4.3.2 14.26, bridged 3.5 (map: 4) |
 | 29 | MiniMax M3 | `ollama-cloud/minimax-m3` | AA v5.0.1 19.05 |
 | 26 | Beam | `ollama-cloud/beam`, `opencode/beam-free`, `kilo/reflection/beam-free` | AA v5.0.1 17.66. Vendor claims (Terminal-Bench 2.1 80.1, SWE-bench Pro 66.1) are not confirmed |
+| 21 | OpenRouter Free router | `openrouter/openrouter/free` | picks at random from the 11 OpenRouter free models. Mean of their scores: Ling 3.2 Flash 47, Particle 1 42, Flint 40 (placeholder), ERNIE 5.5 Flash Preview 35; on AA v5.0.1 Nemotron 3.5 Super VL 20, Nemotron 3 Ultra 17, LFM3 1.7B 8, Nemotron 3.5 Lightning 7, Gemma 4 31B 5; bridged from v4.3.2 Gemma 4 26B A4B 8, Nemotron 3 Nano Omni 0 |
 | 17 | MiMo V2.5 | `tokenharbor/mimo-v2.5:free` | AA v4.3.2 21.82, bridged 12.1 |
-| 5 | ERNIE 5.5 Flash Preview | `openrouter/baidu/ernie-5.5-flash-preview:free` | no AA row. Predecessor ERNIE 5.0 (thinking): AA v4.3.2 14.26, bridged 3.5 (map: 4). The published checkpoint is a base model |
