@@ -3675,16 +3675,16 @@
       "name": "OpenRouter",
       "models": {
         "openrouter/free": {
-          "name": "[30] OpenRouter Free router"
+          "name": "[21] OpenRouter Free router"
         },
         "baidu/ernie-5.5-flash-preview:free": {
-          "name": "[5] ERNIE 5.5 Flash Preview"
+          "name": "[35] ERNIE 5.5 Flash Preview"
         },
         "inclusionai/ling-3.2-flash:free": {
           "name": "[47] Ling 3.2 Flash"
         },
         "particle-ai/particle-1:free": {
-          "name": "[40] Particle 1"
+          "name": "[42] Particle 1"
         },
         "01-ai/yi-1.5-34b-chat": {
           "status": "deprecated"
