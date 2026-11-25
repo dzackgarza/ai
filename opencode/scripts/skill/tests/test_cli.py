@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 import subprocess
-import sys
 from pathlib import Path
 
 
@@ -27,9 +26,7 @@ def run_skill(config: Path, *arguments: str) -> subprocess.CompletedProcess[str]
     command, *command_arguments = arguments
     return subprocess.run(
         [
-            sys.executable,
-            "-m",
-            "skill_cli",
+            "skill-cli",
             command,
             "--config",
             str(config),
@@ -177,7 +174,7 @@ def test_get_rejects_a_near_miss_and_prompts_with_fuzzy_matches(
     assert result.returncode == 1
     assert result.stdout == ""
     assert "mathematics" in result.stderr
-    assert "skill get mathematics" in result.stderr
+    assert "skill-cli get mathematics" in result.stderr
     assert "original-draft" not in result.stderr
     assert str(nested) not in result.stderr
 
@@ -194,3 +191,27 @@ def test_get_rejects_an_ambiguous_subskill_name_with_qualified_choices(
     assert result.stdout == ""
     assert "code-patterns/general" in result.stderr
     assert "creating-skills/general" in result.stderr
+
+
+def test_missing_lookup_command_does_not_execute_procps_skill(tmp_path: Path) -> None:
+    """A missing lookup CLI fails even when the old executable name is on PATH."""
+    sentinel = tmp_path / "skill"
+    marker = tmp_path / "signal-command-ran"
+    sentinel.write_text('#!/bin/sh\nprintf invoked > "$MARKER"\n')
+    sentinel.chmod(0o755)
+
+    readme = Path(__file__).resolve().parents[1] / "README.md"
+    examples = readme.read_text().split("## Use", 1)[1]
+    commands = examples.split("```bash\n", 1)[1].split("```", 1)[0].splitlines()
+    assert commands
+    for invocation in commands:
+        result = subprocess.run(
+            ["/bin/sh", "-c", invocation],
+            check=False,
+            capture_output=True,
+            text=True,
+            env=os.environ | {"PATH": str(tmp_path), "MARKER": str(marker)},
+        )
+        assert result.returncode != 0
+        assert "skill-cli" in result.stderr
+        assert not marker.exists()
