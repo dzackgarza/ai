@@ -66,11 +66,11 @@ of the map, the isomorphism as a claim with its reason.
 
 ### Yes/no example: the discriminant class already has a symbol
 
-**No:** "$\bigl(\div_L(v),v/\div_L(v)\bmod L\bigr)$" in a passage
-whose preceding definition introduced $v^*=v/\div_L(v)\in L^\#$ and
+**No:** "$\bigl(\divisibility_L(v),v/\divisibility_L(v)\bmod L\bigr)$" in a passage
+whose preceding definition introduced $v^*=v/\divisibility_L(v)\in L^\#$ and
 $[v^*]\in A_L^\sharp$.
 
-**Yes:** "$\bigl(\div_L(v),[v^*]\bigr)$". For the rank-one lattice
+**Yes:** "$\bigl(\divisibility_L(v),[v^*]\bigr)$". For the rank-one lattice
 $L=\langle2\rangle$ with generator $e$, the pair is
 $(2,[e/2])$ and $A_L^\sharp=\langle[e/2]\rangle\cong\mathbb Z/2\mathbb Z$.
 

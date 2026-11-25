@@ -420,9 +420,9 @@ no $b$, no fiber.
 with $\gamma^*$ named; or just "$q\in\operatorname{Quad}_{R,W}(M)$."
 
 The same adjective appears as a verb: "refining its length $v^2$" for
-the pair $(\div_L(v),[v^*])$ asserts a map from the pair to $v^2$ that
-does not exist — $v^2$ is determined by $(\div_L(v),[v^*])$ only
-modulo $2\div_L(v)^2$ — so "refines" names no relation and the
+the pair $(\divisibility_L(v),[v^*])$ asserts a map from the pair to $v^2$ that
+does not exist — $v^2$ is determined by $(\divisibility_L(v),[v^*])$ only
+modulo $2\divisibility_L(v)^2$ — so "refines" names no relation and the
 sentence is false.
 
 Observed in `dzackgarza/research`,
@@ -432,9 +432,9 @@ discriminant group".
 
 **Banned:** "refining its length $v^2$."
 
-**Preferred:** "$(\div_L(v),[v^*])$ determines $v^2$ modulo
-$2\div_L(v)^2$:
-$v^2\equiv\div_L(v)^2\,q_L([v^*])\pmod{2\div_L(v)^2}$" — the relation
+**Preferred:** "$(\divisibility_L(v),[v^*])$ determines $v^2$ modulo
+$2\divisibility_L(v)^2$:
+$v^2\equiv\divisibility_L(v)^2\,q_L([v^*])\pmod{2\divisibility_L(v)^2}$" — the relation
 that holds, as an equation.
 
 ## `TERM-13`: "Discriminant setting" is not a mathematical object — the object is the category of torsion bilinear/quadratic modules

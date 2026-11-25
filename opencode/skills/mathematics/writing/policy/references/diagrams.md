@@ -144,13 +144,13 @@ divisibility;
 corollary "Lifting across a unimodular overlattice" and definition "The
 gluing datum of a pair of primitive inclusions".
 
-**Banned:** "Define the **divisibility** $\div_L(v)\geq0$ by the image
+**Banned:** "Define the **divisibility** $\divisibility_L(v)\geq0$ by the image
 factorization" with no triangle;
 "$\bar{\varphi}_N\circ\gamma=\gamma\circ\bar{\varphi}_M$" as the whole
 statement of a commuting square; the top arrow of the square
 characterizing $h$ drawn as `L \arrow[r]` with no label.
 
-**Preferred:** the triangle $L\twoheadrightarrow\div_L(v)\bZ\injects\bZ$
+**Preferred:** the triangle $L\twoheadrightarrow\divisibility_L(v)\bZ\injects\bZ$
 whose composite is $b_L(v,-)$; the square with $\gamma$ horizontal and
 $\bar\varphi_M$, $\bar\varphi_N$ vertical; the top arrow labelled
 $j^\#$.

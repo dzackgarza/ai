@@ -2168,7 +2168,7 @@ $(0,2)$-tensor $\delta_{ij}$, well-defined only for $F$ algebraic free
 discrete. For $b\in\mathbf{Bil}_{R,R}(F)$, put $A$ with
 $A(e_j):=\sum_iG_{ij}e_i$; then $b(v,w)=\langle v,Aw\rangle_0$. Stably /
 topologically this is $b\in\operatorname{Hom}_{\mathrm{cont}}(\widehat
-F\hat\otimes\widehat F,W)\cong\{\text{matrices with summability}\}$. :::"
+F\widehat\otimes\widehat F,W)\cong\{\text{matrices with summability}\}$. :::"
 
 **Banned:** "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$, a finite sum by finite support
 of the coordinates. Every family $(G_{ij})$ arises uniquely" as the

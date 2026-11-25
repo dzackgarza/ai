@@ -445,7 +445,7 @@ lattice".
 **Banned:** "The norm shell $L[n]$ of @def:lattice-basic-invariants
 decomposes into finitely many $\Orth(L)$-orbits."; "a splitting
 $L\isoto U^{2}\oplus M$" and
-"$\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$" where
+"$\bigl(\divisibility_L(v),\ v/\divisibility_L(v)\bmod L\bigr)$" where
 $\operatorname{PrimEmb}(U^{\perp2},L)$ and $[v^*]$ are defined; "If
 $\operatorname{PrimEmb}(U^{\oplus2},L)$ contains an embedding whose
 image is an orthogonal direct summand" — the object named and then
