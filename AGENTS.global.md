@@ -502,8 +502,11 @@ different thing from a software compatibility migration.)
 - The simplest implementation that fully meets the surveyed requirements. Simplest is not
   narrowest: one general mechanism beats a special case plus the migration away from it later.
 - **A dependency justifies itself; hand-rolled code does not.** Prefer libraries, existing
-  code, and reference implementations. Hand-rolled code cites a mature reference in a
-  comment. Hand-rolling with no reference at all needs my approval.
+  code, and reference implementations. Cite the mature reference for hand-rolled code in
+  the owning specification. Hand-rolling with no reference at all needs my approval.
+- Code comments are forbidden. Every commit removes all code comments from each file
+  it changes, including comments outside the edited lines. Put design rationale and
+  requirements in the maintained Spec Kit specification. Implement the documented behaviour.
 - No `Any`, `object`, or `unknown`. If the ambiguity is real, make one named type alias for
   it in one place.
 - KISS. No abstraction, wrapper, generic, or config knob until a second real caller exists.
