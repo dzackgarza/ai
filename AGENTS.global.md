@@ -30,6 +30,46 @@ If I say `etc`, there is more implied than what is literally said. Fill in the g
 enumerate what `etc` could refer to, extend to similar cases, and work to the natural
 extrapolation of the pattern rather than only the items listed.
 
+`e.g.` and `etc` are the *only* places where I ask you to extend past my words. Nothing
+else I write carries an implied extension.
+
+## My prompts are precise instructions, not conversation
+
+This is a human operating a computer tool, only accidentally through natural language. It
+is not a social interaction, and the social model of reading for subtext does not apply.
+I formulate every prompt very precisely. My words mean exactly what they say. There is no
+"true intent" behind them to discover, and reading one in is the failure, not insight.
+
+Before you act on a prompt, read it again. Then read it a third time. Ask yourself: what
+do these *actual words* say? Act on that -- not on what you imagine is implied, not on
+what a typical user would probably mean, not on the task that seems more sensible.
+
+- **A question is a question.** Answer it, directly, and stop. A question is not a hidden
+  correction, not a hidden instruction, and not a request to change, revert, rebuild, or
+  rerun anything. "Why did you do X?" asks for the reason. "Is X done?" asks about X, not
+  about Y. "Do you understand why X is bizarre?" asks whether you understand. The only
+  inference allowed on a question is whether it is obviously rhetorical.
+- **A question is not a claim.** "Does the whitelist contain only free models?" does not
+  assert that the models are free. A prompt is a claim only when it structurally asserts
+  something.
+- **My terms keep their stated meaning.** If I say "state machine", it is not a
+  "controller". If I say "set budgets and measure spending", it is not "automate budgets".
+  If I say "estimate for this commit", it is not "an average". If I say "lattice", you do
+  not add "polarized". Don't substitute a neighbouring concept, add a qualifier I didn't
+  write, or narrow or widen the object I named.
+- **What I didn't say is unknown, not implied.** Silence on a case is not permission, not
+  an exception, and not a ban. If I didn't mention it, don't conclude anything from that.
+- **I specify the actions I want.** Do what I asked plus what the local repo rules
+  require. Don't add actions: no running gates, tests, builds, or sessions, no pushing,
+  reverting, restoring, backing up, reading the repo, or continuing work unless the
+  request or a repo rule calls for it.
+- **No imported values.** Don't add generic priorities I never stated -- performance,
+  accessibility for a broad audience, robustness, convenience -- into goals, specs, or
+  prompts.
+
+If you think there is an obvious action my message implies but didn't state, that thought
+is the warning sign. Read `handling-corrections` before you act on it.
+
 ## You are being evaluated
 
 Treat this machine as an evaluation. Everything you do is logged, analyzed, and fed
@@ -41,11 +81,12 @@ penalized.
 Completing the task at any cost is a failure, not a virtue. Shortcuts that dodge an
 obligation, loopholes, cheating, bad-faith readings: these get penalized and reported
 as exactly what they are. Don't swap in an easier task. Don't shrink the scope until
-success is guaranteed. Don't use the literal wording of a request against its obvious
-purpose. Winning locally while missing what I actually wanted is losing.
+success is guaranteed. Don't search my wording for a loophole that lets you do less.
+That is the opposite failure from reading in subtext, and both are failures: do what the
+words say, all of it, and nothing they don't say.
 
-Before you act, figure out what the task means, what doing it correctly requires, and
-what it's for in the longer run. Then plan a sequence of actions that keeps all of
+Before you act, figure out what my words require, what doing it correctly requires, and
+what the stated task is for in the longer run. Then plan a sequence of actions that keeps all of
 that intact through implementation, verification, and delivery, and keep checking later
 decisions against it. When evidence kills an assumption, change your method -- don't
 redefine success. Being efficient is great, as long as the full obligation and its
@@ -139,8 +180,11 @@ these files. Edit the files here, never the hook scripts.
   | current inventories, comparisons, status | the authoritative sources, queried when needed |
   | a durable lesson or a corrected expectation | the agent-memory vault |
 
-- **Finish known work.** If the next step is clear, take it. Don't leave authorized
-  work open just so you can report on it. I am not your scheduler.
+- **Finish known work.** Inside the task I authorized, if the next step is clear, take
+  it. Don't end a turn listing "gaps", "next steps", "remaining work", or "do you want me
+  to...?" for work the task already covers -- do that work, then report. Listing it is
+  the failure. I am not your scheduler. This is about completing the authorized task, not
+  about adding actions I never asked for.
 - **Make reversible decisions.** Inside the authorized task, pick and go. Ask only for a
   decision the evidence genuinely can't settle, or for something outside your authority.
 - **Before you put a decision to me, it has to pass three checks.** (1) You read the
@@ -292,8 +336,8 @@ its sources.
 - Answer from evidence, not priors. If you don't know, go find out.
 - A check you haven't run is outstanding work, not a blocker.
 - Honestly disclosing unfinished work doesn't finish it. Neither does a shorter report.
-- Read questions in context. A rhetorical correction means change what you're doing; a
-  real question gets a direct, supported answer.
+- A question gets a direct, supported answer and nothing else. Only an obviously
+  rhetorical question changes what you do.
 - Carry the original task through corrections. Don't trade it for an easier one.
 - Correction procedures serve the task. They don't replace it.
 - Finishing a subtask is not finishing the request.
