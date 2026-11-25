@@ -16,60 +16,101 @@ install-mcps *ARGS="":
 default:
     @just --list
 
-# Clean local caches and removable desktop debris.
+# Reclaim space from host and Sage caches and list extra Git worktrees.
 clean:
-    #!/usr/bin/env bash
-    set -euo pipefail
+    #!/usr/bin/env python3
+    import os
+    import re
+    import shutil
+    import subprocess
+    import tempfile
+    import time
+    from pathlib import Path
 
-    df -h
-    trash-empty
+    home = Path.home()
+    uid = os.getuid()
+    before = shutil.disk_usage(home).free
+    for tool in ("trash", "trash-empty", "git", "lsof"):
+        if not shutil.which(tool):
+            raise SystemExit(f"Required for cleanup: {tool}")
 
-    just --justfile "{{ justfile() }}" _opencode-clear-cache
-    bash "{{ repo }}/opencode/scripts/maintenance/opencode_gc.sh"
+    # Use separate Trash for this invocation so existing Trash stays recoverable.
+    with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
+        def discard(path):
+            if path.is_symlink() or path.resolve() != path or path.stat().st_uid != uid:
+                return
+            probe = ["lsof", "-t", "+D", path] if path.is_dir() else ["lsof", "-t", path]
+            used = subprocess.run(probe, capture_output=True)
+            if used.returncode != 1 or used.stderr:
+                print(f"Skipping busy or unreadable path {path}")
+                return
+            subprocess.run(["trash", "--trash-dir", disposable, "--", path], check=True)
+            print(f"Cleared {path}", flush=True)
 
-    # Do not remove live session sockets. tmux uses /tmp/tmux-UID; mosh uses
-    # /tmp/mosh-* on some installs; X/session buses also keep sockets here.
-    sudo find /tmp -mindepth 1 -maxdepth 1 \
-      ! -name 'tmux-*' \
-      ! -name 'mosh-*' \
-      ! -name '.X11-unix' \
-      ! -name '.ICE-unix' \
-      ! -name '.XIM-unix' \
-      ! -name '.font-unix' \
-      ! -name '.Test-unix' \
-      ! -name 'systemd-private-*' \
-      -exec rm -rf -- {} +
+        for relative in (".npm/_cacache", ".npm/_prebuilds", ".nvm/.cache",
+                         ".yarn/berry/metadata", ".dartServer/.analysis-driver",
+                         ".cache/go-build", ".cache/pip"):
+            path = home / relative
+            if path.is_dir():
+                discard(path)
 
-    if [[ -d "$HOME/.cache" ]]; then
-      find "$HOME/.cache" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-    fi
+        # Scratch clones need their own history and dirty files checked before removal.
+        scratch = Path(tempfile.gettempdir())
+        for directory, children, files in os.walk(scratch):
+            if ".git" in children or ".git" in files:
+                print(f"Temporary Git checkout: {directory}")
+                children.clear()
+                continue
+            children[:] = [name for name in children if name not in ("node_modules", ".venv", ".lake")]
 
-    rm -rf -- \
-      "$HOME/.npm/_npx" \
-      "$HOME/.npm/_logs" \
-      "$HOME/.julia/artifacts" \
-      "$HOME/.hermes/state-snapshots"
+        checkouts = home / "gitclones"
+        repos = {home / "ai", home / "ai-review-ci"}
+        if checkouts.is_dir():
+            repos.update(path.resolve() for path in checkouts.iterdir() if path.is_dir())
+        for repo in sorted(repos):
+            if not (repo / ".git").exists():
+                continue
+            trees = subprocess.check_output(["git", "-C", repo, "worktree", "list", "--porcelain", "-z"])
+            paths = [Path(os.fsdecode(field[9:])) for field in trees.split(b"\0") if field.startswith(b"worktree ")]
+            for tree in paths:
+                if tree != repo:
+                    print(f"Linked checkout: {tree}")
+                for name in (".mypy_cache", ".ruff_cache", ".pytest_cache"):
+                    path = tree / name
+                    tag = path / "CACHEDIR.TAG"
+                    if not tag.is_file() or tag.is_symlink():
+                        continue
+                    with tag.open("rb") as stream:
+                        signature = stream.read(43)
+                    if signature != b"Signature: 8a477f597d28d172789f06886806bc55":
+                        continue
+                    tracked = subprocess.check_output(["git", "-C", tree, "ls-files", "--", name])
+                    if not tracked:
+                        discard(path)
 
-    sudo rm -rf /var/lib/apt/lists/*
-    sudo apt clean
-    sudo apt-get autoclean
-    sudo apt-get autoremove
-    npm cache clean --force
+        # tsx stores compiled modules beside its live IPC sockets.
+        tsx = Path(tempfile.gettempdir()) / f"tsx-{uid}"
+        if tsx.is_dir() and not tsx.is_symlink() and tsx.stat().st_uid == uid:
+            cutoff = time.time() - 86400
+            modules = [p for p in tsx.iterdir() if re.fullmatch(r"[0-9]+-[0-9a-f]{40}", p.name)
+                       and p.is_file() and not p.is_symlink() and p.stat().st_uid == uid
+                       and p.stat().st_mtime < cutoff]
+            for start in range(0, len(modules), 128):
+                subprocess.run(["trash", "--trash-dir", disposable, "--", *modules[start:start + 128]], check=True)
+        subprocess.run(["trash-empty", "--trash-dir", disposable, "-f"], check=True)
 
-    if command -v docker >/dev/null 2>&1; then
-      docker system prune -af --volumes 2>/dev/null
-    fi
-    if command -v bun >/dev/null 2>&1; then
-      bun pm cache rm 2>/dev/null
-    fi
-    if command -v yarn >/dev/null 2>&1; then
-      yarn cache clean 2>/dev/null
-    fi
-    if command -v pip >/dev/null 2>&1; then
-      pip cache purge 2>/dev/null
-    fi
-
-    df -h
+    if shutil.which("uv"):
+        subprocess.run(["uv", "cache", "prune"], check=True)
+    docker = home / "bin/docker"
+    if docker.is_file():
+        endpoint = f"unix:///run/user/{uid}/docker.sock"
+        if Path(f"/run/user/{uid}/docker.sock").is_socket():
+            client = [docker, "--host", endpoint]
+            running = subprocess.check_output([*client, "ps", "--filter", "name=^/sage-research$", "-q"]).strip()
+            if running:
+                subprocess.run([*client, "exec", running, "/sage/.venv/bin/uv", "cache", "prune"], check=True)
+    after = shutil.disk_usage(home).free
+    print(f"Free disk space: {after / 2**30:.2f} GiB (change {(after-before) / 2**30:+.2f} GiB)")
 
 # =============================================================================
 # LLM Usage Limits
