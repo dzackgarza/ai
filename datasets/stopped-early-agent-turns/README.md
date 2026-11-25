@@ -25,9 +25,11 @@ To read the turn in its session, use the transcript corpus tools: `just slice <s
 
 ## Selection
 
-The `~/agent-transcripts` index was searched on 2026-11-25 for user messages that contain phrases such as "why did you stop", "why are you stopping", "outstanding work", "you left", "loose ends", "finish the work", and "narrating". Each hit was checked in the raw session file to confirm that a person typed it. Tool results, system reminders, task notifications, and messages from other agents were removed. For each remaining message, the agent text immediately before it was taken.
+The `~/agent-transcripts` index (built 2026-11-20) was searched on 2026-11-25 for user messages that contain phrases such as "why did you stop", "why are you stopping", "outstanding work", "you left", "loose ends", "finish the work", and "narrating". Each hit was checked in the raw session file to confirm that a person typed it. Tool results, system reminders, task notifications, and messages from other agents were removed. For each remaining message, the agent text immediately before it was taken.
 
 Each candidate user message was then read by hand. A pair was kept only when the user's reply clearly said that the agent stopped early to report, or that the agent left work undone. A pair was dropped when the reply was about something else, for example only narration style or a new request. If one agent turn had more than one matching reply, it is in the collection only once.
+
+Sessions written after the index was built were then scanned directly from their raw files, with the same filters: the newer corpus archives and the live `~/.claude/projects` and `~/.codex/sessions` trees. Records from that scan have `live` in their `id`. A record whose session is not yet in the corpus has a `source` path that starts with `~/`.
 
 ## Limits
 
