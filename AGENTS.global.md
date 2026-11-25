@@ -115,6 +115,9 @@ these files. Edit the files here, never the hook scripts.
   `tree -L 3` to see what is there; grepping for expected words and treating misses as
   "nothing to read" skips docs you didn't anticipate. Read the docs in full, not a skim, so
   you understand the repo's positioning and can infer ambiguous decisions later.
+  Before each commit, check the work against `CONTRIBUTING.md` when the repo has one. Its
+  policies carry alphanumeric IDs (e.g. `TEST001`); name the ID a choice follows when it
+  isn't obvious. A repo whose CONTRIBUTING has no IDs is a papercut: give them IDs.
 
 - **Keep work when I correct you; edit it forward.** Throwing work away on a guess about
   what I meant is thrashing: it costs the eventual rewrite instead of an edit, and it erases
@@ -158,10 +161,46 @@ these files. Edit the files here, never the hook scripts.
 - **Commit everything.** Leave each repo you touched committed, with no untracked files
   whose fate nobody decided. Red checkpoints are fine when they mark a step toward a fix.
   Don't ask permission to commit.
-- **Don't tolerate papercuts.** A command that keeps failing, stale docs, a dirty tree --
-  fix it now, hand it to a subagent, or file an issue on the repo that owns it.
+- **Don't tolerate papercuts.** A command that keeps failing, stale docs, a dirty tree, a
+  missing script or program -- fix it now. Boy scout rule: leave the environment better than
+  you found it. A missing repo-local tool or program: install it. A missing system package:
+  stop and ask me to install it, or add it to the container definition when the work runs in
+  one. Most papercuts can go to a subagent right away while you continue the main task. File
+  an issue on the owning repo only when the fix is outside what you can reach. Working around
+  the same inefficiency twice means you tolerated it.
+- **Accumulate tooling.** When you write the same ad-hoc script for missing functionality a
+  third time, or it will obviously be needed again, encode the correct way to do it in the
+  repo: a `just` recipe or a script under the repo's scripts directory. Ship it, and say
+  it exists in the repo's `AGENTS.md` or the justfile, so the next agent uses it instead of
+  rewriting it.
 - **Read the tree before editing.** Don't touch a single file in a repo until you have
   its layout and its governing docs in context.
+
+## A shared, constrained machine
+
+This machine has limited CPU, memory, and disk, and it usually runs several workstreams at
+once -- other agents, builds, and computations you can't see from your session. Every heavy
+command you run takes resources from them, and theirs from you.
+
+So feedback loops stay light and tight. It is not the local loop's job to prove that the
+whole regression suite passes on every change. The commit and push hooks run the QC gates;
+trust them. Heavy checks go to milestone pushes and CI. Running a suite or a test recipe by
+hand that a hook will run anyway doubles the wait. When you run tests by hand, run the
+smallest targeted set that checks the exact thing you're changing. To check a repo's wiring:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci doctor --target . --json
+```
+
+The usual failure: running full or heavy suites on every change. That gives a noisy,
+distracting signal, eats resources, and makes tests flaky for everyone.
+
+When a test fails on a timeout now and then, check system load first (`uptime`, `top`, `ps`
+for other test runs and builds). If yours is the only heavy job running, the timeout may be a
+real defect. Most of the time it is a correct test that ran while something else was heavy.
+"Fixing" that test -- raising the timeout, adding retries, skipping it -- overfits to a
+passing local condition. A timeout under load is also a hint that the thing you ran is too
+heavy for a local feedback loop.
 
 ## Durable knowledge vs. current state
 
@@ -224,6 +263,18 @@ If the task really needs a reusable view of changing state, keep a reproducible 
 comparison against the sources. Keep editorial judgments separate, keyed to stable source
 IDs, so they survive the next run. Use existing query tools where you can. A one-off
 question does not license building automation just to justify an artifact.
+
+Docs earn their place by saying what the code can't. Keep checking docs for prose that only
+restates what an agent sees by reading the code: file lists, function-by-function
+walkthroughs, "this module does X" where the module's name and code say it. That prose adds
+nothing, goes stale, and buries what matters. Delete it. Specs explain why the code exists
+and what it must do; code explains itself.
+
+Be skeptical of any doc that explains why something is "okay", "acceptable", "intentional",
+or "safe to ignore". That is the typical trace of an agent that did the wrong thing and then
+wrote a fluent justification, which primes the next agent to agree with it. This is
+reader- and judge-hacking, not documentation. Check the claim against the spec, the code, and
+my messages. If it doesn't hold up, fix the thing and delete the justification.
 
 If the task calls for a static report or a historical record, name the source revisions
 or capture dates and present it as a snapshot. A timestamp is provenance; it doesn't keep
@@ -374,9 +425,15 @@ delete before deleting it; leave live process state, tmux sockets and state, act
 and my work alone. Follow the deletion rules below. Centralize and share caches wherever
 you can.
 
-Workers clean up after themselves. A clone, worktree or scratch checkout that a worker makes
+Agents clean up after themselves. A clone, worktree or scratch checkout that a worker makes
 is the worker's to remove when its work has landed: commit and push, check that nothing is
-unpushed, then trash the directory and run `git worktree prune` for a worktree. Reuse one
+unpushed, then trash the directory and run `git worktree prune` for a worktree. Branches get
+merged and pruned, locally and on the remote. Scratch and `/tmp` files get cleared. Build
+output gets cleaned (`cargo clean` for Rust targets, and the equivalent for other build
+systems), and caches nobody will use soon get cleared. Where a repo can do this itself,
+put the cleanup in a `just` recipe and have the push hook run it, so it happens without
+anyone remembering. Don't thrash caches that the next build, test, or computation needs warm:
+cleanup removes what is finished, not what is about to be reused. Reuse one
 checkout per repository rather than making a fresh clone for each task or publish. On
 2026-11-20, 58 clean clones of sage-indefinite-port (`/tmp/sage-indefinite-port-publish-*`,
 about 85M each, 4.9G in all) were left in `/tmp` and took the disk to 97%. Any session that
@@ -390,10 +447,12 @@ git -C <repo> worktree list
 More than a few copies of one repository is a leak. Find the tool, recipe or agent that makes
 them and repair it at its owner, then trash the copies that are clean and fully pushed.
 
-Every useful mathematical environment should end up in my Sage container, so the research
-can be reproduced on another machine. Maintain the container's environment definitions and
-verify the actual mathematical workflow *in* the container. (This consolidation is a
-different thing from a software compatibility migration.)
+All mathematics and research computation runs in a reproducible Docker container -- my Sage
+container. That is the basic standard of reproducible science: a result that only runs on
+this host's ad-hoc environment can't be checked by anyone else. Every tool and package the
+work needs goes into the container's environment definitions, and the actual mathematical
+workflow is verified *in* the container. (This consolidation is a different thing from a
+software compatibility migration.)
 
 ## Engineering and code style
 
@@ -551,15 +610,8 @@ is only for a user-scoped automation contract with a real observable boundary.
 - Secrets live in `~/.envrc` via direnv; reference them by variable, not inline.
 - `bun` and `uv` manage packages; `uvx` and `bunx` run one-off tools. cc-safety-net blocks
   `npm`, `pip`, and `pip3`.
-- Don't run whole test suites by hand -- the commit and push hooks fire the QC gates.
-  Targeted single-test runs are fine. To check a repo's wiring:
-
-  ```bash
-  uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci doctor --target . --json
-  ```
-
-  Keep hot feedback loops tight. Skip full test suites for small changes, especially when there is outstanding or in-progress work. Run targeted probes and minimal tests needed to prove correctness of the task at hand, and offload long checks (>2m) to pushes (rare), CI, or when an entire batch of tasks has been completed.
-
+- Don't run whole test suites by hand; the hooks run the QC gates. See **A shared,
+  constrained machine**.
 - Changes to a vendored library go to a fork, or ask me.
 - Edit JSON and YAML with `jq`, `yq`, or a script, not by hand.
 - A search miss shows absence only in the slice you searched. Say which slice that was
