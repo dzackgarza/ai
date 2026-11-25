@@ -48,6 +48,7 @@ opencode_root := home / ".opencode"
 default:
     @just --list
 
+[doc("Validate repository Markdown entrypoints and installed-skill WikiLinks.")]
 test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md AGENTS.global.md
     @just --justfile {{ justfile() }} check-skill-wikilinks
@@ -57,15 +58,19 @@ test:
 _test-skill-cli:
     @uv run --project {{ skill_cli_dir }} --with pytest pytest -q {{ skill_cli_dir }}/tests/test_cli.py
 
+[doc("Reformat Markdown and structured configuration before commit.")]
 test-commit: build check-plan-task-dirs
     @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-commit
 
+[doc("Validate documentation links before push.")]
 test-push: test
     @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-push
 
+[doc("Run local Markdown checks and documentation-link validation in CI.")]
 test-ci: test
     @just -d . -f ~/ai-review-ci/justfiles/docs-and-configs.just test-ci
 
+[doc("Install all symlinks and environment variables")]
 install:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -163,12 +168,15 @@ _install-skill-cli:
 _install-specify-cli:
     uv tool install --force specify-cli --from "git+https://github.com/github/spec-kit.git@{{ specify_cli_release }}"
 
+[doc("Install the current OpenCode plugin packages with Bun.")]
 install-plugins:
     @bun add --cwd {{ opencode_dir }} cc-safety-net@latest opencode-pty@latest @hueyexe/opencode-ensemble@latest context-mode@latest
 
+[doc("Sync MCP server definitions into each configured harness.")]
 sync-mcp-configs *args:
     @cd {{ repo }} && uv run --script mcp/sync_mcp_configs.py {{ args }}
 
+[doc("Update shell rc files with system prompt env vars (internal recipe)")]
 _update-shell-rc:
     #!/usr/bin/env python3
     from pathlib import Path
@@ -209,14 +217,18 @@ reset-sandbox:
     fi
     {{ repo }}/scripts/scaffold-sandbox.sh
 
+[doc("Run a named OpenCode microagent with additional arguments.")]
 run-microagent *args:
     @cd {{ repo }}/opencode && uv run --python .venv/bin/python llm-run {{ args }}
 
+[doc("Build the full OpenCode pipeline in canonical order.")]
 build: build-config build-agents
 
+[doc("Build only the compiled OpenCode config pipeline.")]
 build-config:
     @just --justfile {{ justfile() }} _build-opencode-config-compile
 
+[doc("Validate manually managed OpenCode agent markdown files.")]
 build-agents:
     @just --justfile {{ justfile() }} _validate-opencode-agents
 
@@ -254,26 +266,33 @@ providers-validate provider="":
         uv run --python .venv/bin/python scripts/build_config.py --validate-only --strict
     fi
 
+[doc("Show provider partition diagnostics for one provider without failing.")]
 providers-debug provider:
     @cd {{ opencode_dir }} && uv run --python .venv/bin/python scripts/build_config.py --validate-only --provider {{ provider }}
 
 
+[doc("Count tokens in any file using tiktoken (cl100k_base).")]
 count-tokens file:
     @uvx --with tiktoken python -c 'import sys, tiktoken; from pathlib import Path; path = Path(sys.argv[1]); text = path.read_text(); count = len(tiktoken.get_encoding("cl100k_base").encode(text)); print(f"{path}: {count} tokens")' {{ file }}
 
 
+[doc("Python Linting (ruff check)")]
 lint-python *args:
     uvx ruff check {{ args }}
 
+[doc("Python Formatting (ruff format)")]
 fmt-python *args:
     uvx ruff format {{ args }}
 
+[doc("Python Type Checking (mypy)")]
 mypy *args:
     uvx mypy {{ args }}
 
+[doc("JS/TS Linting (eslint)")]
 lint-js *args:
     npx eslint {{ args }}
 
+[doc("JS/TS Formatting (prettier)")]
 fmt-js *args:
     npx prettier --write {{ args }}
 
@@ -357,6 +376,7 @@ check-plan-task-dirs:
     bad="$(git ls-files --cached --others --exclude-standard | { grep -E '(^|/)plans/[^/]+/tasks/' || true; })"
     [[ -z "$bad" ]] || { echo "plan-level task directory (tasks belong under a phase):" >&2; echo "$bad" >&2; exit 1; }
 
+[doc("Check markdown files for broken local file references.")]
 check-skill-wikilinks:
     #!/usr/bin/env bash
     set -euo pipefail
