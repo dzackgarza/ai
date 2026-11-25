@@ -138,6 +138,7 @@ opencode/*.db-wal
 
 # Claude Code skill sync (harness-managed)
 opencode/skills/synced/
+opencode/skills/.system/
 
 # Local OpenCode service credentials
 /opencode/service.json
