@@ -1,6 +1,6 @@
 ---
 name: llm-failure-modes
-description: "Reference catalog of LLM failure patterns. Load only from a review skill that cites a specific code, never as a general checklist."
+description: "Use when a review skill cites an LLM failure-mode code and you need that code's catalog entry."
 metadata:
   author: dzack
   version: 0.3.0
