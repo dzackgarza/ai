@@ -34,3 +34,5 @@ Each candidate user message was then read by hand. A pair was kept only when the
 - Phrase search finds only the replies that use these phrases. Other replies that identify the same defect are not in the collection.
 - The `pattern` label comes from the user's reply, not from a separate review of the agent turn.
 - Email addresses in agent text were replaced with `[email]`. Agent text can still quote or paraphrase what the user wrote earlier in the session.
+
+The control set of completed turns is in [completed-agent-turns](../completed-agent-turns/README.md).
