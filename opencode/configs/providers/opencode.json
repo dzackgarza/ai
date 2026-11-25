@@ -136,10 +136,10 @@
       "name": "[40] Big Pickle"
     },
     "mimo-v2.6-flash-free": {
-      "name": "[38] MiMo V2.6 Flash"
+      "name": "[41] MiMo V2.6 Flash"
     },
     "beam-free": {
-      "name": "[10] Beam"
+      "name": "[26] Beam"
     },
     "deepseek-v4.1-flash-free": {
       "name": "[50] DeepSeek V4.1 Flash"
@@ -154,13 +154,13 @@
       "name": "Mistral Large 4"
     },
     "hy4-flash-free": {
-      "name": "[30] Hunyuan HY4 Flash"
+      "name": "[44] Hunyuan HY4 Flash"
     },
     "iceman-free": {
       "name": "[40] Iceman"
     },
     "longcat-2.5-free": {
-      "name": "[45] LongCat 2.5"
+      "name": "[35] LongCat 2.5"
     },
     "tidepool-alpha-free": {
       "name": "[40] Tidepool Alpha"

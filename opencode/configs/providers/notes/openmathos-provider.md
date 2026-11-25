@@ -35,17 +35,17 @@ explicit `models` map as the alternative for single-run automation.
 
 The catalog has no chat-model exclusions (no embedding, image, or router ids).
 
-Whitelisted:
+Whitelisted (scores in `model-scores.md`):
 
-| Model | Score | Same-model precedent |
-| --- | ---: | --- |
-| `moonshotai/kimi-k3.1-pro` | 75 | `nvidia`, `ollama-cloud` |
-| `deepseek/deepseek-v4.1-flash` | 50 | `ollama-cloud`, `opencode`, `tokenharbor` |
-| `z-ai/glm-5.3` | 49 | `ollama-cloud` |
-| `z-ai/glm-5.3-flash` | 41 | `nvidia`, `ollama-cloud` |
-| `mistralai/mistral-large-4-0` | 35 | `nvidia`, `ollama-cloud` |
-| `meta/muse-spark-open` | 33 | `ollama-cloud` |
-| `thinkingmachines/inkling-2-small` | 11 | `ollama-cloud` |
+| Model | Same-model precedent |
+| --- | --- |
+| `moonshotai/kimi-k3.1-pro` | `nvidia`, `ollama-cloud` |
+| `deepseek/deepseek-v4.1-flash` | `ollama-cloud`, `opencode`, `tokenharbor` |
+| `z-ai/glm-5.3` | `ollama-cloud` |
+| `z-ai/glm-5.3-flash` | `nvidia`, `ollama-cloud` |
+| `mistralai/mistral-large-4-0` | `nvidia`, `ollama-cloud` |
+| `meta/muse-spark-open` | `ollama-cloud` |
+| `thinkingmachines/inkling-2-small` | `ollama-cloud` |
 
 Blacklisted:
 

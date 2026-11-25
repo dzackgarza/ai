@@ -41,43 +41,43 @@
       "name": "[50] DeepSeek V4.1 Flash"
     },
     "deepseek-v4-pro:0813": {
-      "name": "[40] DeepSeek V4 Pro (0813)"
+      "name": "[35] DeepSeek V4 Pro (0813)"
     },
     "glm-5.3": {
       "name": "[49] GLM 5.3"
     },
     "glm-5.3-flash": {
-      "name": "[41] GLM 5.3 Flash"
+      "name": "[43] GLM 5.3 Flash"
     },
     "minimax-m3": {
-      "name": "[38] MiniMax M3"
+      "name": "[29] MiniMax M3"
     },
     "beam": {
-      "name": "[10] Beam"
+      "name": "[26] Beam"
     },
     "inkling-2-small": {
-      "name": "[11] Inkling 2 Small"
+      "name": "[47] Inkling 2 Small"
     },
     "kimi-k3.1-pro": {
-      "name": "[75] Kimi K3.1 Pro"
+      "name": "[73] Kimi K3.1 Pro"
     },
     "mimo-v2.6-flash": {
-      "name": "[38] MiMo V2.6 Flash"
+      "name": "[41] MiMo V2.6 Flash"
     },
     "mimo-v2.6-pro": {
-      "name": "[53] MiMo V2.6 Pro"
+      "name": "[46] MiMo V2.6 Pro"
     },
     "minimax-m3.1-flash": {
-      "name": "[43] MiniMax M3.1 Flash"
+      "name": "[45] MiniMax M3.1 Flash"
     },
     "mistral-large-4": {
-      "name": "[35] Mistral Large 4"
+      "name": "[40] Mistral Large 4"
     },
     "muse-spark-open": {
-      "name": "[33] Muse Spark Open"
+      "name": "[38] Muse Spark Open"
     },
     "hy4": {
-      "name": "[40] Hunyuan HY4"
+      "name": "[53] Hunyuan HY4"
     }
   },
   "whitelist": [
