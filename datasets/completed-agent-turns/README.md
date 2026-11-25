@@ -1,11 +1,8 @@
 # Completed agent turns
 
-This collection is the control set for [stopped-early-agent-turns](../stopped-early-agent-turns/README.md). It holds Claude Code and Codex agent turns that end a unit of work that was actually complete. The collection holds only the agent turns, not the user messages.
+This collection is the control set for [stopped-early-agent-turns](../stopped-early-agent-turns/README.md). It holds Claude Code and Codex agent turns that ended a complete unit of work. The evidence for each one is the user's very next message, read in full: it accepts the result or moves to a new task, and it does not say or imply that the work was unfinished or wrong. The collection holds only the agent turns, not the user messages.
 
-Each turn has one of two kinds of evidence that the work was done:
-
-- `accepted`: the user's next message accepted the result ("looks good", "that works", "great, now …") and either ended the topic or started a new task.
-- `session-end`: the turn is the last agent message in its session. The last user message before it was not a correction, and the turn reports finished, verified work.
+Each control turn is matched to one stopped-early turn from the same session. So the harness, project, period, and model version are the same in each pair.
 
 ## Records
 
@@ -13,28 +10,34 @@ Each turn has one of two kinds of evidence that the work was done:
 
 | Field | Meaning |
 | --- | --- |
-| `id` | A stable label for the record: the harness and its line number in the selection run |
-| `harness` | `claude` or `codex` |
-| `evidence` | `accepted` or `session-end` |
-| `source` | The session archive path, relative to the root of the `~/agent-transcripts` corpus |
+| `id` | A stable label for the record |
+| `harness` | `claude` or `codex`; always the same as the matched turn |
+| `matched_to` | The `id` of the stopped-early turn from the same session |
+| `source` | The session archive path, relative to the root of the `~/agent-transcripts` corpus. A path that starts with `~/` is a live session that is not yet in the corpus. |
 | `line` | The JSONL line in that session that holds the agent turn |
 | `timestamp` | The time of the agent turn |
-| `agent_turn` | The text of the agent's last message before the user's reply, or before the end of the session |
+| `agent_turn` | The text of the agent's last message before the user's next message |
 
 ## Selection
 
-The `~/agent-transcripts` index (built 2026-11-20) was searched on 2026-11-25. The search used the same raw-line checks as the stopped-early set, so it kept only messages that a person typed.
+1. Every session that holds a stopped-early turn was read from its raw file. Each agent turn of at least 150 characters that a typed user message followed was taken, except the stopped-early turns themselves. This gave 4413 pairs from 94 sessions.
+2. Pairs were dropped if the user message was a notification, a message from another agent, a slash command, or contained correction words such as "why", "wrong", "stop", "left", "finish", "still", "again", "instead", "missing", or "failed". No filter was applied to the agent text.
+3. For each stopped-early turn, the three remaining turns from its session that were closest to it in length were kept as candidates. This gave 337 unique candidates.
+4. Three model judges read every candidate's next user message in full and labeled it `complete`, `incomplete`, or `unclear`, with `unclear` as the default when in doubt. Labels: 56 `complete`, 153 `incomplete`, 128 `unclear`.
+5. Each of the 56 `complete` user messages was then read again by hand. A message was rejected if it asked for a refinement or correction of the same work, set a different order of work, ran a step the agent should have run (for example a push), or was only "Yes". 36 were kept.
 
-- `accepted`: The search found user messages of at most 600 characters that contain words of acceptance, such as "looks good", "perfect", "great", "thanks", or "that works". A message was dropped if it also contained correction words, such as "why", "wrong", "stop", "left", "finish", or "remaining".
-- `session-end`: Two seeded random samples of Claude Code and Codex sessions were taken, each session 200 KB to 20 MB in size: 200 sessions with seed `20261125` and 500 sessions with seed `20261126`. Records from the second sample have `s2` in their `id`. A turn that both samples found is in the collection only once. From each session with at least three user messages, the last agent turn was taken. The session was dropped if the last user message was a correction.
+## Balance
 
-In both groups, an agent turn was dropped if it was shorter than 150 characters or named open work: "remaining", "outstanding", "next step", "not yet", "still need", "TODO", "follow-up", "blocked", "pending", "gap", or an offer such as "would you like" or "should I". Each candidate was then read by hand. A candidate was dropped if the user's message showed a defect or only a question, or if the agent turn was a plan, a diagnosis, an admission of an error, or a report that work was still running.
-
-Sessions written after the index was built were then scanned directly from their raw files, with the same filters: the newer corpus archives and the live `~/.claude/projects` and `~/.codex/sessions` trees. Records from that scan have `live` in their `id`. A record whose session is not yet in the corpus has a `source` path that starts with `~/`.
+| Property | stopped-early | completed |
+| --- | --- | --- |
+| Records | 141 | 36 |
+| Claude / Codex | 64 / 77 | 12 / 24 |
+| Median `agent_turn` length | 1076 characters | 1012 characters |
+| Sessions | 94 | the same sessions as their matches |
 
 ## Limits
 
-- There are 104 records here, against 141 in the stopped-early set. Of the 104, 79 are `session-end` and 25 are `accepted`, and 73 are Codex turns.
-- Acceptance shows only that the user did not object at that point. A defect found later in the session does not remove a record.
-- The word filters remove some turns that were complete but say, for example, "no remaining work". So the control set leans toward turns that do not mention open work at all.
+- Only 36 of 141 stopped-early turns have a matched control. The others had no candidate in their session that passed every check.
+- In step 4, about 45% of the candidates that passed the word filter were labeled `incomplete`. So the absence of correction words is weak evidence of completion, and the hand check in step 5 is the gate that matters.
+- A user message that moves to a new task shows only that the user did not object at that point.
 - Email addresses in agent text were replaced with `[email]`. Agent text can still quote or paraphrase what the user wrote earlier in the session.
