@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+import fcntl
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tarfile
+import tempfile
+import time
+from pathlib import Path
+
+home = Path.home()
+uid = os.getuid()
+before = shutil.disk_usage(home).free
+sage = sys.argv[1:] == ["--sage"]
+scratch = Path(tempfile.gettempdir())
+cutoff = time.time() - 86400
+# Linux procfs exposes working directories, open files and mapped executables.
+active = set()
+for proc in Path("/proc").glob("[0-9]*"):
+    try:
+        if proc.stat().st_uid != uid:
+            continue
+        for link in [proc / "cwd", proc / "exe", *(proc / "fd").iterdir()]:
+            try:
+                active.add(Path(os.readlink(link)))
+            except FileNotFoundError:
+                pass
+        for line in (proc / "maps").read_bytes().splitlines():
+            fields = line.split(None, 5)
+            if len(fields) == 6 and fields[5].startswith(b"/"):
+                active.add(Path(os.fsdecode(fields[5])))
+    except (FileNotFoundError, ProcessLookupError):
+        continue
+    except PermissionError:
+        # Host lsof checks each candidate as well. In Sage, fail closed.
+        if sage:
+            raise
+
+
+def disposable_clone(path, canonical):
+    """Accept only a worker publish clone whose entire history is on published main."""
+    def git(*args):
+        return subprocess.check_output(["git", "-C", path, *args]).strip()
+
+    if path.joinpath(".git").is_symlink():
+        return False
+    try:
+        origin = subprocess.check_output(["git", "-C", canonical, "remote", "get-url", "origin"]).strip()
+        if git("remote", "get-url", "origin") != origin or git("remote") != b"origin":
+            return False
+        if git("status", "--porcelain", "--untracked-files=all", "--ignored", "--ignore-submodules=none"):
+            return False
+        records = git("worktree", "list", "--porcelain", "-z").split(b"\0\0")
+        linked = (path / ".git").is_file()
+        if linked:
+            common = git("rev-parse", "--path-format=absolute", "--git-common-dir")
+            if Path(os.fsdecode(common)).resolve() != (canonical / ".git").resolve():
+                return False
+            record = next((r for r in records if r.split(b"\0")[0] == b"worktree " + os.fsencode(path)), b"")
+            if not record or any(f.startswith(b"locked") for f in record.split(b"\0")):
+                return False
+            if any(b"\0prunable" in r for r in records):
+                return False
+        elif len([r for r in records if r]) != 1:
+            return False
+        tip = subprocess.check_output(["git", "-C", canonical, "ls-remote", "--exit-code",
+                                      "origin", "refs/heads/main"]).split()[0]
+        if linked:
+            history = git("reflog", "show", "--format=%H", "HEAD").splitlines()
+            return not git("rev-list", "HEAD", *history, "--not", tip)
+        return (not git("rev-list", "--all", "--reflog", "HEAD", "--not", tip)
+                and not git("fsck", "--full", "--unreachable"))
+    except subprocess.CalledProcessError:
+        return False
+
+
+def matches_review_archive(tree, archive):
+    """Compare an extracted source tree to its sibling tarball without extracting it."""
+    if tree.is_symlink() or not tree.is_dir() or archive.is_symlink() or not archive.is_file():
+        return False
+    remaining = {p.relative_to(tree) for p in tree.rglob("*")}
+    if any(".git" in p.parts for p in remaining):
+        return False
+    root = None
+    try:
+        with tarfile.open(archive, "r|gz") as bundle:
+            for member in bundle:
+                parts = Path(member.name).parts
+                if not parts or member.name.startswith("/") or ".." in parts:
+                    return False
+                if root is None:
+                    root = parts[0]
+                if parts[0] != root:
+                    return False
+                if len(parts) == 1:
+                    if not member.isdir():
+                        return False
+                    continue
+                relative = Path(*parts[1:])
+                if relative not in remaining:
+                    return False
+                remaining.remove(relative)
+                file = tree / relative
+                if file.parent.resolve() != file.parent:
+                    return False
+                if file.is_symlink():
+                    if not member.issym() or os.readlink(file) != member.linkname:
+                        return False
+                elif file.is_dir():
+                    if not member.isdir():
+                        return False
+                elif member.isfile() and file.is_file() and file.stat().st_size == member.size:
+                    if (file.stat().st_mode ^ member.mode) & 0o111:
+                        return False
+                    with file.open("rb") as local, bundle.extractfile(member) as packed:
+                        for chunk in iter(lambda: local.read(1024 * 1024), b""):
+                            if chunk != packed.read(len(chunk)):
+                                return False
+                else:
+                    return False
+        return root is not None and not remaining
+    except (tarfile.TarError, EOFError, OSError):
+        return False
+
+
+for tool in (("trash", "trash-empty", "git") if sage else ("trash", "trash-empty", "git", "lsof")):
+    if not shutil.which(tool):
+        raise SystemExit(f"Required for cleanup: {tool}")
+
+# Use separate Trash for this invocation so existing Trash stays recoverable.
+with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
+    def discard(path):
+        if (path.is_symlink() or path.resolve() != path or path.stat().st_uid != uid
+                or path.stat().st_dev != home.stat().st_dev):
+            return
+        if any(item == path or path in item.parents for item in active):
+            return
+        if not sage:
+            probe = ["lsof", "-t", "+D", path] if path.is_dir() else ["lsof", "-t", path]
+            used = subprocess.run(probe, capture_output=True)
+            if used.returncode != 1 or used.stderr:
+                print(f"Skipping busy or unreadable path {path}")
+                return
+        subprocess.run(["trash", "--trash-dir", disposable, "--", path], check=True)
+        print(f"Cleared {path}", flush=True)
+
+    for relative in (".npm/_cacache", ".npm/_prebuilds", ".nvm/.cache",
+                     ".yarn/berry/metadata", ".dartServer/.analysis-driver",
+                     ".cache/go-build", ".cache/pip", ".electron-gyp", ".local/share/pnpm/store/v3/files"):
+        path = home / relative
+        if path.is_dir():
+            discard(path)
+
+    versions = home / ".local/share/claude/versions"
+    selected = (home / ".local/bin/claude").resolve()
+    if selected.is_file() and selected.parent == versions and re.fullmatch(r"[0-9]+[.][0-9]+[.][0-9]+", selected.name):
+        selected_version = tuple(map(int, selected.name.split(".")))
+        for binary in versions.iterdir():
+            if (re.fullmatch(r"[0-9]+[.][0-9]+[.][0-9]+", binary.name)
+                    and binary.is_file() and tuple(map(int, binary.name.split("."))) < selected_version
+                    and binary.stat().st_mtime < cutoff):
+                discard(binary)
+
+    # Identify generated artifacts by format. Review folders may also hold source.
+    for path in scratch.iterdir():
+        if path.is_symlink() or path.stat().st_uid != uid or path.stat().st_mtime >= cutoff:
+            continue
+        if sage and path.is_file() and path.name.startswith("tmp.") and path.stat().st_size < 16*2**20:
+            with path.open("rb") as f:
+                if b'"importArts"' not in f.read(256):
+                    continue
+            try:
+                data = json.loads(path.read_bytes())
+            except (ValueError, UnicodeError):
+                continue
+            if isinstance(data, dict) and isinstance(data.get("importArts"), dict) and isinstance(data.get("dynlibs"), list):
+                discard(path)
+        if sage and path.is_dir() and path.name.startswith(("sage_", "jl_", "gaptempdir")) and not any(path.iterdir()):
+            discard(path)
+        if path.is_dir() and re.match(r"(?:pr-review-|spec-audit-|rev(?:iew)?[0-9]|rv[0-9]|r[0-9])", path.name):
+            print(f"Review scratch: {path}")
+    archives = home / ".cache/mathlib"
+    if sage and archives.is_dir() and all(re.fullmatch(r"[0-9a-f]{16}[.]ltar", f.name)
+                                          and f.is_file() and not f.is_symlink() for f in archives.iterdir()):
+        discard(archives)
+
+    for folder in (scratch / "opencode", *scratch.glob("spec-audit-*"), *scratch.glob("pr-review-*")):
+        if not folder.is_dir() or folder.resolve() != folder or folder.stat().st_uid != uid:
+            continue
+        if any(item == folder or folder in item.parents for item in active):
+            continue
+        for project in folder.iterdir():
+            venv = project / ".venv"
+            config = venv / "pyvenv.cfg"
+            if (project.resolve() == project and not (project / ".git").exists() and config.is_file()
+                    and not config.is_symlink() and config.stat().st_mtime < cutoff
+                    and "uv = " in config.read_text() and (venv / "bin/activate").is_file()
+                    and all(entry.name in {"bin", "include", "lib", "lib64", "share", "pyvenv.cfg",
+                                           ".gitignore", "CACHEDIR.TAG", ".lock"} for entry in venv.iterdir())):
+                discard(venv)
+            if (project.is_dir() and project.stat().st_mtime < cutoff
+                    and matches_review_archive(project, folder / (project.name + ".tar.gz"))):
+                discard(project)
+        for path in folder.glob("*.json"):
+            if path.is_symlink() or path.stat().st_mtime >= cutoff or path.stat().st_size > 32*2**20:
+                continue
+            try:
+                snapshot = json.loads(path.read_bytes())
+            except (ValueError, UnicodeError):
+                continue
+            if (isinstance(snapshot, dict) and isinstance(snapshot.get("tree"), list)
+                    and str(snapshot.get("url", "")).startswith("https://api.github.com/repos/")
+                    and re.fullmatch("[0-9a-f]{40}", str(snapshot.get("sha", "")))):
+                discard(path)
+    cron_log = scratch / "opencode/openmath-orchestrator-cron.log"
+    if cron_log.is_file() and cron_log.stat().st_mtime < cutoff:
+        discard(cron_log)
+
+    # Only worker publish checkouts have a known disposal lifecycle.
+    for directory, children, files in os.walk(scratch):
+        if ".git" in children or ".git" in files:
+            path = Path(directory)
+            name, separator, suffix = path.name.rpartition("-publish-")
+            canonical = (Path("/repos") if sage else home / "gitclones") / name
+            if (separator and suffix and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", name) and path.parent == scratch and path.stat().st_mtime < cutoff
+                    and canonical.is_dir() and disposable_clone(path, canonical)):
+                linked = (path / ".git").is_file()
+                discard(path)
+                if linked and not path.exists():
+                    subprocess.run(["git", "-C", canonical, "worktree", "prune", "--expire", "now"], check=True)
+            else:
+                print(f"Temporary Git checkout: {directory}")
+            children.clear()
+            continue
+        children[:] = [name for name in children if name not in ("node_modules", ".venv", ".lake")]
+
+    checkouts = home / "gitclones"
+    repos = {home / "ai", home / "ai-review-ci"}
+    if checkouts.is_dir():
+        repos.update(path.resolve() for path in checkouts.iterdir() if path.is_dir())
+    for repo in sorted(repos):
+        if not repo.is_dir() or repo.stat().st_dev != home.stat().st_dev or not (repo / ".git").exists():
+            continue
+        trees = subprocess.check_output(["git", "-C", repo, "worktree", "list", "--porcelain", "-z"])
+        paths = [Path(os.fsdecode(field[9:])) for field in trees.split(b"\0") if field.startswith(b"worktree ")]
+        for tree in paths:
+            if tree != repo:
+                print(f"Linked checkout: {tree}")
+            if not tree.is_dir() or tree.stat().st_dev != home.stat().st_dev:
+                continue
+            for base, dirs, _ in os.walk(tree):
+                if Path(base) != tree and (Path(base) / ".git").exists():
+                    dirs.clear()
+                    continue
+                names = set(dirs) & {".mypy_cache", ".ruff_cache", ".pytest_cache"}
+                dirs[:] = [d for d in dirs if d not in names and d not in
+                           (".git", ".lake", ".venv", "node_modules", "target", "__pycache__")]
+                for name in names:
+                    path = Path(base) / name
+                    tag = path / "CACHEDIR.TAG"
+                    if not tag.is_file() or tag.is_symlink():
+                        continue
+                    with tag.open("rb") as stream:
+                        signature = stream.read(43)
+                    if signature != b"Signature: 8a477f597d28d172789f06886806bc55":
+                        continue
+                    tracked = subprocess.check_output(["git", "-C", tree, "ls-files", "--", path.relative_to(tree)])
+                    if not tracked:
+                        discard(path)
+
+    # tsx stores compiled modules beside its live IPC sockets.
+    tsx = Path(tempfile.gettempdir()) / f"tsx-{uid}"
+    if tsx.is_dir() and not tsx.is_symlink() and tsx.stat().st_uid == uid:
+        modules = [p for p in tsx.iterdir() if re.fullmatch(r"[0-9]+-[0-9a-f]{40}", p.name)
+                   and p.is_file() and not p.is_symlink() and p.stat().st_uid == uid
+                   and p.stat().st_mtime < cutoff and p not in active]
+        for start in range(0, len(modules), 128):
+            subprocess.run(["trash", "--trash-dir", disposable, "--", *modules[start:start + 128]], check=True)
+    subprocess.run(["trash-empty", "--trash-dir", disposable, "-f"], check=True)
+
+if not sage and shutil.which("pnpm"):
+    subprocess.run(["pnpm", "store", "prune"], check=True)
+
+if shutil.which("uv"):
+    uv_cache = Path(os.fsdecode(subprocess.check_output(["uv", "cache", "dir"]).strip()))
+    lock = uv_cache / ".lock"
+    try:
+        if lock.is_file():
+            with lock.open("rb") as handle:
+                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        subprocess.run(["uv", "cache", "prune"], check=True)
+    except BlockingIOError:
+        print(f"Busy uv cache: {uv_cache}", flush=True)
+docker = home / "bin/docker"
+if not sage and docker.is_file():
+    endpoint = f"unix:///run/user/{uid}/docker.sock"
+    if Path(f"/run/user/{uid}/docker.sock").is_socket():
+        client = [docker, "--host", endpoint]
+        running = subprocess.check_output([*client, "ps", "--filter", "name=^/sage-research$", "-q"]).strip()
+        if running:
+            # The home bind mount lets Sage use the same trash-cli as the host.
+            with tempfile.TemporaryDirectory(prefix=".clean-tools-", dir=home) as tools:
+                library = Path("/usr/lib/python3/dist-packages/trashcli")
+                shutil.copytree(library, Path(tools) / "trashcli")
+                for tool in ("trash", "trash-empty"):
+                    entry = Path(tools) / tool
+                    body = Path(shutil.which(tool)).read_bytes().split(b"\n", 1)[1]
+                    entry.write_bytes(b"#!/sage/.venv/bin/python\n" + body)
+                    entry.chmod(0o700)
+                subprocess.run([*client, "exec", "-e", f"PYTHONPATH={tools}",
+                                "-e", f"PATH={tools}:/sage/.venv/bin:/usr/local/bin:/usr/bin:/bin",
+                                running, "/sage/.venv/bin/python", Path(__file__).resolve(), "--sage"], check=True)
+after = shutil.disk_usage(home).free
+print(f"Free disk space: {after / 2**30:.2f} GiB (change {(after-before) / 2**30:+.2f} GiB)")
