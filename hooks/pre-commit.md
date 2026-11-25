@@ -2,6 +2,8 @@
 
 Read this at every commit.
 
+Remove all code comments from each changed file before committing. Keep design rationale in the specification.
+
 - Autoformatter output is canonical. Re-stage and commit formatter rewrites. Never revert autoformatting, never fight the hooks.
 - Commit everything this session produced. No undecided untracked files.
 - A checkpoint may be red when it marks a step toward a fix.
