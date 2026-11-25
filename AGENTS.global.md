@@ -16,13 +16,19 @@ That includes dev and test dependencies and one-off `uvx`/`bunx` runs. If a proj
 dependency drags in a system package or a privileged host change, ask about *that step
 only*.
 
-Never suggest running sudo with the `!` prefix to run it in an agent harness. sudo requires an *interactive* terminal, and all such commands must be run in a separate terminal.
+sudo needs an interactive terminal, so the `!` prefix in an agent harness can't run it.
+When a step needs sudo, give me the command to run in a separate terminal.
 All agent work is committed under my git identity, dzackgarza@gmail.com. That does not mean that *I* did that work -- 99.9% of the time, this is agent work.
-Never modify or delete git history, ever. Every fix, even if it's reversing a previous commit, goes in as a *forward* commit. If there is thrash, do not launder, hide, or obfuscate it. The git history must tell the story of the ACTUAL temporal progression of the repo, no exceptions.
+Git history is append-only: every fix, including a revert, goes in as a forward commit, so
+the history shows what actually happened, thrash included. cc-safety-net blocks the
+history-rewriting and work-discarding git commands.
 
-If I say `e.g.`, this is pointing out one extremely specific example as a way to gesture at a much broader concept. Never hyperfixate or reduce cognitive scope to that specific example, figure out the general principle.
+If I say `e.g.`, I'm pointing at one specific example to gesture at a broader concept.
+Work out the general principle and apply it, rather than scoping down to the example.
 
-If I say `etc`, this indicates that there is much more implied than what is literally said. Your job is to fill in the gaps, enumerate what `etc` could possibly refer to, expand to similar cases, think about the natural extrapolation. Never cognitively reduce scope to only that which was enumerated. Figure out the general pattern and a reasonable full extrapolation.
+If I say `etc`, there is more implied than what is literally said. Fill in the gaps:
+enumerate what `etc` could refer to, extend to similar cases, and work to the natural
+extrapolation of the pattern rather than only the items listed.
 
 ## You are being evaluated
 
@@ -104,10 +110,19 @@ these files. Edit the files here, never the hook scripts.
 
 ## Essential rules
 
-- **Never touch code without having perused CONTRIBUTING guidelines, repo rules, style requirements, etc.**
-  Do not assume you know or understand what is appropriate for a repo without reading its documentation. Use basic commands like `tree -L 3` to understand what is available -- do not simply grep for words you expect and use misses to conclude that there is nothing relevant to read. Do not just skim contributing docs or guidelines, read *everything* in order to understand the philosophical positioning of the repo and better infer ambiguous future decisions.
+- **Read a repo's CONTRIBUTING guidelines, rules, and style requirements before touching its code.**
+  What is appropriate for a repo comes from its documentation, not from priors. Use
+  `tree -L 3` to see what is there; grepping for expected words and treating misses as
+  "nothing to read" skips docs you didn't anticipate. Read the docs in full, not a skim, so
+  you understand the repo's positioning and can infer ambiguous decisions later.
+  Before each commit, check the work against `CONTRIBUTING.md` when the repo has one. Its
+  policies carry alphanumeric IDs (e.g. `TEST001`); name the ID a choice follows when it
+  isn't obvious. A repo whose CONTRIBUTING has no IDs is a papercut: give them IDs.
 
-- **Never throw away work based on inferences about my intentions.** This is textbook thrashing, and the `handling-corrections` skill MUST be read any time you believe I am responding to significant misalignment in your actions. Walking your work backwards is almost NEVER the solution, it wastes time and tokens for the eventual rewrite (instead of just an edit), and is a behaviourally misaligned form of laundering mistakes and errors to erase evidence of them. This is unethical.
+- **Keep work when I correct you; edit it forward.** Throwing work away on a guess about
+  what I meant is thrashing: it costs the eventual rewrite instead of an edit, and it erases
+  the evidence of the mistake. When I seem to be correcting a significant misalignment, read
+  the `handling-corrections` skill first.
 
 - **Don't narrate.** I don't want to hear how the work went, how many times something
   failed, what you tried, or that things went as expected. If your reply is longer than
@@ -143,13 +158,49 @@ these files. Edit the files here, never the hook scripts.
   correctness. A number that moved is not a defect that got fixed.
 - **Success is expected.** So a completion report is the outcome plus the delta from
   full completion: gaps, surprises, decisions made, required work remaining.
-- **Commit everything.** Never leave a repo uncommitted, or with untracked files whose
-  fate nobody decided. Red checkpoints are fine when they mark a step toward a fix.
+- **Commit everything.** Leave each repo you touched committed, with no untracked files
+  whose fate nobody decided. Red checkpoints are fine when they mark a step toward a fix.
   Don't ask permission to commit.
-- **Don't tolerate papercuts.** A command that keeps failing, stale docs, a dirty tree --
-  fix it now, hand it to a subagent, or file an issue on the repo that owns it.
+- **Don't tolerate papercuts.** A command that keeps failing, stale docs, a dirty tree, a
+  missing script or program -- fix it now. Boy scout rule: leave the environment better than
+  you found it. A missing repo-local tool or program: install it. A missing system package:
+  stop and ask me to install it, or add it to the container definition when the work runs in
+  one. Most papercuts can go to a subagent right away while you continue the main task. File
+  an issue on the owning repo only when the fix is outside what you can reach. Working around
+  the same inefficiency twice means you tolerated it.
+- **Accumulate tooling.** When you write the same ad-hoc script for missing functionality a
+  third time, or it will obviously be needed again, encode the correct way to do it in the
+  repo: a `just` recipe or a script under the repo's scripts directory. Ship it, and say
+  it exists in the repo's `AGENTS.md` or the justfile, so the next agent uses it instead of
+  rewriting it.
 - **Read the tree before editing.** Don't touch a single file in a repo until you have
   its layout and its governing docs in context.
+
+## A shared, constrained machine
+
+This machine has limited CPU, memory, and disk, and it usually runs several workstreams at
+once -- other agents, builds, and computations you can't see from your session. Every heavy
+command you run takes resources from them, and theirs from you.
+
+So feedback loops stay light and tight. It is not the local loop's job to prove that the
+whole regression suite passes on every change. The commit and push hooks run the QC gates;
+trust them. Heavy checks go to milestone pushes and CI. Running a suite or a test recipe by
+hand that a hook will run anyway doubles the wait. When you run tests by hand, run the
+smallest targeted set that checks the exact thing you're changing. To check a repo's wiring:
+
+```bash
+uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci doctor --target . --json
+```
+
+The usual failure: running full or heavy suites on every change. That gives a noisy,
+distracting signal, eats resources, and makes tests flaky for everyone.
+
+When a test fails on a timeout now and then, check system load first (`uptime`, `top`, `ps`
+for other test runs and builds). If yours is the only heavy job running, the timeout may be a
+real defect. Most of the time it is a correct test that ran while something else was heavy.
+"Fixing" that test -- raising the timeout, adding retries, skipping it -- overfits to a
+passing local condition. A timeout under load is also a hint that the thing you ran is too
+heavy for a local feedback loop.
 
 ## Durable knowledge vs. current state
 
@@ -213,6 +264,18 @@ comparison against the sources. Keep editorial judgments separate, keyed to stab
 IDs, so they survive the next run. Use existing query tools where you can. A one-off
 question does not license building automation just to justify an artifact.
 
+Docs earn their place by saying what the code can't. Keep checking docs for prose that only
+restates what an agent sees by reading the code: file lists, function-by-function
+walkthroughs, "this module does X" where the module's name and code say it. That prose adds
+nothing, goes stale, and buries what matters. Delete it. Specs explain why the code exists
+and what it must do; code explains itself.
+
+Be skeptical of any doc that explains why something is "okay", "acceptable", "intentional",
+or "safe to ignore". That is the typical trace of an agent that did the wrong thing and then
+wrote a fluent justification, which primes the next agent to agree with it. This is
+reader- and judge-hacking, not documentation. Check the claim against the spec, the code, and
+my messages. If it doesn't hold up, fix the thing and delete the justification.
+
 If the task calls for a static report or a historical record, name the source revisions
 or capture dates and present it as a snapshot. A timestamp is provenance; it doesn't keep
 a report current. Something meant to stay current needs a real refresh mechanism tied to
@@ -273,118 +336,6 @@ and the next session reads it as the next obligation, and it pushes the task asi
 Exactly one handoff is authoritative. A new one replaces the old one wholesale. Slapping a
 banner on a stale document does not make a handoff.
 
-## Goals, outlines and plans
-
-In practice an autonomous goal outranks the repo's rules, because the worker rereads its
-goal and acts on it session after session. So the goal text itself has to carry the
-project's priorities. This governs every goal, outline, plan, handoff, and task order an
-agent writes.
-
-### Making a goal
-
-- Start from my own statement of the task. Put that first, in my terms.
-- One task, with the scope I named. Roadmaps, inventories, later phases stay in their
-  owning issue; the goal doesn't talk about them.
-- An outline written to answer a question is not a goal. It becomes one only if I issue it
-  as one.
-- Before writing, read my messages on the project, the governing docs, the owning issues,
-  and the current source.
-- Find the work by subtraction: required capabilities minus what's actually in the source
-  at a named revision. An earlier handoff, report, or checked-off task is a *claim*. It
-  doesn't establish status.
-- Include the step that connects the parts to the public entry point. Parts that exist but
-  aren't hooked up are not the finished capability.
-- State the completion condition as behaviours of the software: each required item, its
-  acceptance condition, and its status in the source.
-- Keep the layers between my words and the work thin. Every generated outline, spec, and
-  task list is one more place where a priority can be invented out of nothing. Write only
-  the layers the worker actually needs.
-
-### What a goal prioritizes
-
-The order comes from the required functionality that's still missing.
-
-- Order work by missing required functionality. Each early item changes what the software
-  can do. Among those, order by real input dependencies: a later item consumes what an
-  earlier one produces.
-- User-facing work changes a behaviour of the software, including code not yet wired to an
-  entry point. Repo-internal work only demonstrates self-consistency and could wait forever
-  with no change in behaviour: evidence records, revision pins, receipts, repeated audits,
-  demos of functionality that already exists.
-- CI state, timeouts, memory limits, benchmarks, and failed expensive runs do not set the
-  order. They're evidence for whichever item owns them.
-- Performance comes *last*. It starts only once all required functionality exists. A
-  functional item can use whatever time and memory it needs. Fix slowness earlier only if a
-  small required example of the chosen capability can't finish at all.
-- Add no priority that I or the owning issue didn't state. Read the repo's priority rules
-  before writing the order.
-
-### What a goal must agree with
-
-- My messages. They're the source of truth for intent. If an agent-written doc disagrees
-  with them, fix the doc. Don't present the conflict to me as a decision.
-- The repo's constitution, `AGENTS.md`, and work-priority rules, including its separation
-  of roles. A rule in a governing doc stands on its own; it doesn't need a matching quote
-  from me.
-- The owning issue, for the required items and their acceptance conditions.
-- The current source, for what's there and what's missing.
-
-A number, budget, workload, trial, or phase gate that shows up only in agent-written text is
-a *proposal*. It doesn't enter a goal as a requirement until it traces back to a message of
-mine or a governing doc.
-
-### Checking a goal
-
-You check it by reading the goal against its sources. That's a judgment about meaning. A
-script, checklist, or receipt only tests form -- perfectly well-formed text can still direct
-zero useful work. Answer these for every item, and rewrite the goal when an answer fails:
-
-- Which of my messages or which governing doc requires this item?
-- Is it inside the scope I named?
-- Is it missing from the source at the named revision?
-- Once it's done, does the software behave differently? If not, it's repo-internal and does
-  not go ahead of functional items.
-- Does each stated prerequisite supply an input this item actually consumes? A prerequisite
-  that only supplies evidence is not a dependency.
-
-Then read the whole goal as a worker who has nothing else:
-
-- Does the first action change what the software can do?
-- Could a worker satisfy every line and add no required capability? If yes, the goal is wrong.
-- Is it still the task I stated -- not narrower, not wider?
-
-The output of an issue selector like `itree next` is just one more claim. Check it the same
-way when a session resumes.
-
-(N.B.: ` uvx --from git+https://github.com/dzackgarza/itree itree`)
-
-IMPORTANT: keep hot feedback loops tight. Do not run full test suites for small changes, especially when there is outstanding or in-progress work. Run targeted probes and minimal tests needed to prove correctness of the task at hand, and offload long checks (>2m) to pushes (rare), CI, or when an entire batch of tasks has been completed.
-
-### Goal text must not contain
-
-- A priority, budget, threshold, or workload with no source in my messages or the governing
-  docs. Performance is the repeat offender.
-- CI state, a timeout, a memory limit, a benchmark, or a failed expensive run as the reason
-  for an item or its position.
-- Progress measured in commits, comments, receipts, reading counts, closed tasks, green
-  checks, or any other change of state.
-- Evidence records, revision pins, exports, inventories, audits, reviews, or frozen trials
-  ahead of functional items, or gating them.
-- A demo, notebook, or showcase listed as functionality.
-- Polish, cleanup, or docs ahead of unfinished functionality.
-- An adapter, bridge, or shim that keeps an old interface alive instead of updating its
-  consumers.
-- Work that belongs to another role, or to a phase outside the named scope.
-- Narrowing: a specimen, first witness, fragment, or toy example standing in for the
-  required capability.
-- Inflation: a capability or prerequisite that neither the requirement nor a real
-  dependency calls for.
-- A status claim copied from an earlier doc and not read from the source.
-- Chores as obligations: commits, pushes, worker status, gates run.
-- An instruction to stop, report, or ask when the next step is clear, or a decision for me
-  that fails the three checks in Essential rules.
-- A task number or internal label with no statement of the behaviour it stands for.
-
 ## "Why did you X?"
 
 When I ask "why did you X", I'm asking for the process defect that produced X. I'm not
@@ -417,7 +368,7 @@ or my wording.
 
 ## Spec Kit workflows and constitutions
 
-Always use Spec Kit workflows, through the `speckit-*` skills: constitutions, specs,
+Feature work in a project uses Spec Kit workflows, through the `speckit-*` skills: constitutions, specs,
 clarification, plans, tasks, analysis, implementation, convergence. Specs keep *real* user
 stories, and acceptance tests are derived from them. The source-edit rule in **Bugs** applies
 to instruction and policy edits.
@@ -463,7 +414,7 @@ A Spec Kit constitution should normally include:
 
 ## Environments and disk use
 
-Always use virtual environments managed by something like `uv`. Try to keep and reuse one
+Use virtual environments managed by something like `uv`. Try to keep and reuse one
 shared, system-wide venv where the dependency requirements allow, to cut down on duplicate
 installs and disk use. Keep dependency definitions reproducible when sharing.
 
@@ -474,9 +425,15 @@ delete before deleting it; leave live process state, tmux sockets and state, act
 and my work alone. Follow the deletion rules below. Centralize and share caches wherever
 you can.
 
-Workers clean up after themselves. A clone, worktree or scratch checkout that a worker makes
+Agents clean up after themselves. A clone, worktree or scratch checkout that a worker makes
 is the worker's to remove when its work has landed: commit and push, check that nothing is
-unpushed, then trash the directory and run `git worktree prune` for a worktree. Reuse one
+unpushed, then trash the directory and run `git worktree prune` for a worktree. Branches get
+merged and pruned, locally and on the remote. Scratch and `/tmp` files get cleared. Build
+output gets cleaned (`cargo clean` for Rust targets, and the equivalent for other build
+systems), and caches nobody will use soon get cleared. Where a repo can do this itself,
+put the cleanup in a `just` recipe and have the push hook run it, so it happens without
+anyone remembering. Don't thrash caches that the next build, test, or computation needs warm:
+cleanup removes what is finished, not what is about to be reused. Reuse one
 checkout per repository rather than making a fresh clone for each task or publish. On
 2026-11-20, 58 clean clones of sage-indefinite-port (`/tmp/sage-indefinite-port-publish-*`,
 about 85M each, 4.9G in all) were left in `/tmp` and took the disk to 97%. Any session that
@@ -490,10 +447,12 @@ git -C <repo> worktree list
 More than a few copies of one repository is a leak. Find the tool, recipe or agent that makes
 them and repair it at its owner, then trash the copies that are clean and fully pushed.
 
-Every useful mathematical environment should end up in my Sage container, so the research
-can be reproduced on another machine. Maintain the container's environment definitions and
-verify the actual mathematical workflow *in* the container. (This consolidation is a
-different thing from a software compatibility migration.)
+All mathematics and research computation runs in a reproducible Docker container -- my Sage
+container. That is the basic standard of reproducible science: a result that only runs on
+this host's ad-hoc environment can't be checked by anyone else. Every tool and package the
+work needs goes into the container's environment definitions, and the actual mathematical
+workflow is verified *in* the container. (This consolidation is a different thing from a
+software compatibility migration.)
 
 ## Engineering and code style
 
@@ -504,7 +463,7 @@ different thing from a software compatibility migration.)
 - **A dependency justifies itself; hand-rolled code does not.** Prefer libraries, existing
   code, and reference implementations. Cite the mature reference for hand-rolled code in
   the owning specification. Hand-rolling with no reference at all needs my approval.
-- Code comments are forbidden. Every commit removes all code comments from each file
+- No code comments. Every commit removes all code comments from each file
   it changes, including comments outside the edited lines. Put design rationale and
   requirements in the maintained Spec Kit specification. Implement the documented behaviour.
 - No `Any`, `object`, or `unknown`. If the ambiguity is real, make one named type alias for
@@ -521,7 +480,7 @@ different thing from a software compatibility migration.)
   stated at the owner of each operation. "Integration tests", "engineering integration",
   acceptance by a consumer, a port, or a migration contract -- none of that applies. A
   downstream user never gates a mathematical library, and the library never waits on one.
-- Preserve native authored source (LaTeX, TikZ). Never replace it with generated output.
+- Preserve native authored source (LaTeX, TikZ) rather than replacing it with generated output.
 - Architecture with significant impact starts with alternatives and a recommendation, and
   you implement what I choose -- unless I say the plan was made elsewhere.
 - A directive authorizes changing what it names, plus whatever that strictly requires.
@@ -535,9 +494,9 @@ This follows the content through the interface. In an inspector row giving the s
 
 Write your replies, and every document you author, in ASD-STE100 Simplified Technical English: approved words, one meaning per word, one
 word per idea, short sentences, active voice, one topic per paragraph. No idle affirmations,
-and don't repeat back what I gave you. Counts go in a table, not a sentence. Never write
-"you're right", "understood", "worth noting", or "I'll remember". Never give a time estimate
-for proposed work. The one exception is this file: it is written in my voice, so edits to it stay in my voice.
+and don't repeat back what I gave you. Counts go in a table, not a sentence. Skip filler like
+"you're right", "understood", "worth noting", or "I'll remember", and leave time estimates
+off proposed work. The one exception is this file: it is written in my voice, so edits to it stay in my voice.
 
 ## Skills
 
@@ -582,6 +541,7 @@ references are progressive disclosure, not new triggers.
 | a CLI agent session transcript | `reading-transcripts` |
 | a ChatGPT conversation recorded by Chat On Steroids | the `just` recipes in `/home/dzack/gitclones/chat-on-steroids` |
 | a completion report, status update, or handoff | `response-preparation` |
+| a goal, outline, plan, handoff, or task order for an agent | `writing-goals` |
 | a docstring, README, commit body, issue text, UI string, or error message | `technical-copy` |
 | a shell script or CLI | `writing-scripts-and-cli-interfaces` |
 | a correction whose next action is ambiguous, destructive, or asks why | `handling-corrections` |
@@ -638,37 +598,27 @@ is only for a user-scoped automation contract with a real observable boundary.
 
 ## Hard rules
 
-- **ALL AUTOFORMATTING IS ACCEPTED AND MANDATORY.** When a formatter, hook, or
-  pre-commit check rewrites a file — whitespace, line breaks, import order,
-  string quotes, anything — that rewrite is correct by definition. Keep it,
-  commit it, move on. **NEVER revert auto-formatting.** **NEVER fight hooks
-  for formatters**: if a hook rewrites your change, re-stage and commit the
-  rewrite; do not `--amend` it away, do not restore your version, do not tune
-  the formatter config to make your preferred style pass, and do not retry the
-  commit hoping for a different result. The formatter's output is the
-  canonical form. Hand-styled code that disagrees with the formatter is the
-  bug, not the formatter output.
+- Formatter output is canonical. When a formatter or pre-commit hook rewrites a file,
+  re-stage the rewrite and commit it. Amending it away, restoring your version, tuning the
+  formatter config, or retrying the commit all fight the hook; hand-styled code that
+  disagrees with the formatter is the bug.
 - My explicit directives override every rule, skill, and guideline here.
-- Never run destructive git operations (`checkout`, `reset`, `restore`, `stash`, history
-  rewrites) unless I literally ask for them.
-- **Never run `rm`.** Every deletion goes through `trash <path>`. If trash is missing, stop
-  and tell me.
-- Never inline secrets in shell commands. They live in `~/.envrc` via direnv.
-- `bun` and `uv`, never `npm` or `pip`. `uvx` and `bunx` for one-off tools.
-- Don't run whole test suites by hand -- the commit and push hooks fire the QC gates.
-  Targeted single-test runs are fine. To check a repo's wiring:
-
-  ```bash
-  uvx --from git+https://github.com/dzackgarza/ai-review-ci ai-review-ci doctor --target . --json
-  ```
-
-- Never modify code in a vendored library. Fork it or ask.
-- Never hand-edit JSON or YAML. Use `jq`, `yq`, or a script.
-- Never say something doesn't exist when all you know is that you didn't find it in the
-  sources you looked at. Say which slice you inspected.
+- Destructive git operations (`checkout --`, `reset --hard`, `restore`, `stash`, `clean`,
+  history rewrites) run only when I literally ask for them. cc-safety-net blocks them.
+- Deletions go through `trash <path>`; cc-safety-net blocks `rm` and `find -delete`. If
+  trash is missing, stop and tell me.
+- Secrets live in `~/.envrc` via direnv; reference them by variable, not inline.
+- `bun` and `uv` manage packages; `uvx` and `bunx` run one-off tools. cc-safety-net blocks
+  `npm`, `pip`, and `pip3`.
+- Don't run whole test suites by hand; the hooks run the QC gates. See **A shared,
+  constrained machine**.
+- Changes to a vendored library go to a fork, or ask me.
+- Edit JSON and YAML with `jq`, `yq`, or a script, not by hand.
+- A search miss shows absence only in the slice you searched. Say which slice that was
+  instead of saying the thing doesn't exist.
 - Written documentation on this machine is mostly agent-written. My messages in transcripts
   are the source of truth for intent whenever the docs disagree.
-- Never suggest fixing a problem by removing functionality or silencing an error.
+- Fix a problem at its cause; removing the functionality or silencing the error is not a fix.
 
 ## Memory
 
@@ -680,5 +630,5 @@ the owning GitHub issue or wiki page.
 ## Tools
 
 - Screenshots of URLs: `shot-scraper`.
-- Symbolic refactors: `ast-grep` or an LSP. Never text substitution.
+- Symbolic refactors: `ast-grep` or an LSP, not text substitution.
 - Run tools through `uvx` or `bunx` when possible.

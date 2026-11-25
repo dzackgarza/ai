@@ -35,17 +35,17 @@ explicit `models` map as the alternative for single-run automation.
 
 The catalog has no chat-model exclusions (no embedding, image, or router ids).
 
-Whitelisted:
+Whitelisted (scores in `model-scores.md`):
 
-| Model | Score | Same-model precedent |
-| --- | ---: | --- |
-| `moonshotai/kimi-k3.1-pro` | 75 | `nvidia`, `ollama-cloud` |
-| `deepseek/deepseek-v4.1-flash` | 50 | `ollama-cloud`, `opencode`, `tokenharbor` |
-| `z-ai/glm-5.3` | 49 | `ollama-cloud` |
-| `z-ai/glm-5.3-flash` | 41 | `nvidia`, `ollama-cloud` |
-| `mistralai/mistral-large-4-0` | 35 | `nvidia`, `ollama-cloud` |
-| `meta/muse-spark-open` | 33 | `ollama-cloud` |
-| `thinkingmachines/inkling-2-small` | 11 | `ollama-cloud` |
+| Model | Same-model precedent |
+| --- | --- |
+| `moonshotai/kimi-k3.1-pro` | `nvidia`, `ollama-cloud` |
+| `deepseek/deepseek-v4.1-flash` | `ollama-cloud`, `opencode`, `tokenharbor` |
+| `z-ai/glm-5.3` | `ollama-cloud` |
+| `z-ai/glm-5.3-flash` | `nvidia`, `ollama-cloud` |
+| `mistralai/mistral-large-4-0` | `nvidia`, `ollama-cloud` |
+| `meta/muse-spark-open` | `ollama-cloud` |
+| `thinkingmachines/inkling-2-small` | `ollama-cloud` |
 
 Blacklisted:
 
@@ -59,10 +59,21 @@ also serves open-weight models for free. Scores and display names come from
 
 ## Model metadata
 
-Open Math OS reports a context window and capabilities for each model. The
-fragment does not copy them: every provider fragment in this directory names its
-whitelisted models only, and OpenCode applies its own defaults. If a model's
-limit must be correct in the picker, add `limit` to the model entry.
+Open Math OS is absent from models.dev, so OpenCode has no limits for its
+models. A model with no `limit` falls back to a default window near 200k
+tokens, and auto-compaction fires at about 175k–190k tokens. Kimi K3.1 Pro
+sessions on this provider compacted at that point, although the model has a
+1,048,576-token window.
+
+Each model entry therefore carries `limit`. `limit.context` is the
+`context_length` from `GET /v1/models`. The endpoint reports no output cap, so
+`limit.output` equals `limit.context`. Refresh the values from the endpoint when
+the whitelist changes:
+
+```bash
+curl -s -H "Authorization: Bearer $OPENMATH_OS_API_KEY" \
+  https://os.openmathmodel.org/v1/models | jq '.data[] | {id, context_length}'
+```
 
 ## Key delivery to the background service
 
