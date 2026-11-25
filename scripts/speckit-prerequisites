@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Run the checker shipped in the uv-installed Specify CLI, keeping the caller's cwd.
+# `just install` in ~/ai installs that CLI as the uv tool `specify-cli`.
 set -euo pipefail
 tools_dir=$(uv tool dir)
 exec "$tools_dir/specify-cli/bin/python" -c '

@@ -33,6 +33,10 @@ skill_cli_dir := opencode_dir / "scripts" / "skill"
 skill_config_dir := home / ".config" / "skill"
 skill_config := skill_config_dir / "config.toml"
 
+# Spec Kit release that supplies the global Specify CLI (scripts/speckit-prerequisites runs its checker).
+
+specify_cli_release := "v1.4.4"
+
 # Tool configs
 
 tmux_conf := dotfiles_dir / "tmux.conf"
@@ -153,6 +157,7 @@ install:
 
     just --justfile {{ repo }}/justfile _update-shell-rc
     just --justfile {{ repo }}/justfile _install-skill-cli
+    just --justfile {{ repo }}/justfile _install-specify-cli
     just --justfile {{ repo }}/justfile install-plugins
 
     echo "✓ Environment installed"
@@ -175,6 +180,10 @@ _install-skill-cli:
         cp "{{ skill_cli_dir }}/config.toml" "{{ skill_config }}"
     fi
     uv tool install --force "{{ skill_cli_dir }}"
+
+[private]
+_install-specify-cli:
+    uv tool install --force specify-cli --from "git+https://github.com/github/spec-kit.git@{{ specify_cli_release }}"
 
 # Install the current OpenCode plugin packages with Bun.
 install-plugins:
