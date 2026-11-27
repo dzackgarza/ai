@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import io
 import json
 import os
@@ -11,7 +13,7 @@ from pathlib import Path
 
 
 class SageCleanupTest(unittest.TestCase):
-    def test_home_recipe_preserves_recently_used_project_cache(self):
+    def test_home_recipe_preserves_recently_used_project_cache(self) -> None:
         project = Path(__file__).resolve().parents[2]
         just = shutil.which("just")
         with tempfile.TemporaryDirectory() as folder:
@@ -41,9 +43,9 @@ class SageCleanupTest(unittest.TestCase):
             self.assertTrue((repo / ".ruff_cache/entries").is_file())
             self.assertFalse((repo / ".pytest_cache").exists())
 
-    def test_sage_cleanup(self):
+    def test_sage_cleanup(self) -> None:
         script = Path(__file__).resolve().parents[1] / "home-clean"
-        docker = shutil.which("docker") or Path.home() / "bin/docker"
+        docker = Path.home() / "bin/docker"
         client = [docker, "--host", f"unix:///run/user/{os.getuid()}/docker.sock"]
         image = subprocess.check_output(
             [*client, "inspect", "sage-research", "--format", "{{.Image}}"], text=True

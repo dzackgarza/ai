@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import fcntl
 import json
 import os
@@ -125,7 +127,7 @@ def matches_review_archive(tree, archive):
         return False
 
 
-def recently_used_cache(path):
+def recently_used_cache(path: Path) -> bool:
     try:
         if path.stat().st_mtime >= cutoff:
             return True
@@ -135,7 +137,8 @@ def recently_used_cache(path):
                 return True
             if stat.S_ISREG(info.st_mode) and entry.name != "CACHEDIR.TAG" and info.st_atime >= cutoff:
                 return True
-    except OSError:
+    except FileNotFoundError:
+        print(f"Cache changed during cleanup: {path}", flush=True)
         return True
     return False
 
