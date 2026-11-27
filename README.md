@@ -88,7 +88,7 @@ kilo
 
 ### Skill CLI
 
-Run `skill list` to display the configured skill tree. Run `skill get NAME` to print the
+Run `skill-cli list` to display the configured skill tree. Run `skill-cli get NAME` to print the
 absolute path for a top-level skill or subskill. Exact names, qualified paths, fuzzy
 suggestions, and configuration are documented in the
 [Skill CLI README](opencode/scripts/skill/README.md). `just install` installs the command

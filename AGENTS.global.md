@@ -557,12 +557,12 @@ off proposed work. The one exception is this file: it is written in my voice, so
 
 ## Skills
 
-`~/ai/opencode/skills` is the assembled `skills` vault. Use the `skill` CLI instead of
-harness skill tools whenever possible. List skills with `skill list`, adding
-`--descriptions` to browse summaries. Search with `skill get NAME` using an exact name or
+`~/ai/opencode/skills` is the assembled `skills` vault. Use the `skill-cli` CLI instead of
+harness skill tools whenever possible. List skills with `skill-cli list`, adding
+`--descriptions` to browse summaries. Search with `skill-cli get NAME` using an exact name or
 qualified path; misses suggest near matches. To read a skill, open the absolute path
-printed by `skill get NAME` with your file tools. Use `skill --help` and each subcommand's
-`--help` for other options.
+printed by `skill-cli get NAME` with your file tools. Use `skill-cli --help` and each subcommand's
+`--help` for other options. If `skill-cli` is missing, run `just install` in `~/ai`. Do not use the system `skill` command: it sends signals to processes.
 
 Load a skill when the thing in front of you matches a row below. Don't load anything "just
 in case", don't announce loads, and don't reload what's already in context. A skill's own
