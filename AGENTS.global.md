@@ -149,13 +149,28 @@ The commit- and push-hook directives that agents must read are version-controlle
 `hooks/pre-commit.md` and `hooks/pre-push.md` in this repo. The global git hooks print
 these files. Edit the files here, never the hook scripts.
 
+## Required reading for every repo
+
+Do this before starting work in each repo, including when a task takes you into another repo.
+
+1. Inspect the layout from the repo root. Start with `tree -a -L 3 -I .git`. Adjust the
+   depth or inspect individual subtrees as the layout requires.
+2. Read each of these in full when present: `AGENTS.md`, `README.md`, `CONTRIBUTING.md`,
+   the `justfile`, and the Spec Kit constitution (usually `.specify/memory/constitution.md`).
+   Read any directory-specific instructions that govern the work.
+3. Scan the paths of Markdown files across the whole repo, including hidden project
+   directories and files below the initial tree depth. Open unfamiliar files to check
+   their scope. Read the immediately relevant documents in full, including style rules.
+4. If the repo has a wiki, consult its index and read the pages relevant to the task.
+5. For code work, read the relevant Spec Kit feature documents in full when present:
+   the specification, implementation plan, task list, and supporting contracts or
+   design documents for the code you are working on.
+6. For planning work, check the repo's GitHub issues and read the relevant issues and
+   their discussion before forming the plan.
+
 ## Essential rules
 
-- **Read a repo's CONTRIBUTING guidelines, rules, and style requirements before touching its code.**
-  What is appropriate for a repo comes from its documentation, not from priors. Use
-  `tree -L 3` to see what is there; grepping for expected words and treating misses as
-  "nothing to read" skips docs you didn't anticipate. Read the docs in full, not a skim, so
-  you understand the repo's positioning and can infer ambiguous decisions later.
+- **Check each commit against the contribution rules.**
   Before each commit, check the work against `CONTRIBUTING.md` when the repo has one. Its
   policies carry alphanumeric IDs (e.g. `TEST001`); name the ID a choice follows when it
   isn't obvious. A repo whose CONTRIBUTING has no IDs is a papercut: give them IDs.
@@ -217,8 +232,6 @@ these files. Edit the files here, never the hook scripts.
   repo: a `just` recipe or a script under the repo's scripts directory. Ship it, and say
   it exists in the repo's `AGENTS.md` or the justfile, so the next agent uses it instead of
   rewriting it.
-- **Read the tree before editing.** Don't touch a single file in a repo until you have
-  its layout and its governing docs in context.
 
 ## A shared, constrained machine
 
