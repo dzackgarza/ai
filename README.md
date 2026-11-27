@@ -605,7 +605,6 @@ Config: `~/ai/opencode/opencode.json`
 
 | Plugin | Purpose | Link |
 | --- | --- | --- |
-| `cc-safety-net` | Safety net for destructive git/fs commands | https://github.com/kenryu42/claude-code-safety-net |
 | `@azumag/opencode-rate-limit-fallback` | Auto fallback on rate limit (429) | https://npmjs.com/package/@azumag/opencode-rate-limit-fallback |
 
 ## JSON Schemas and Validation

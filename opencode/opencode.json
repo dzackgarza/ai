@@ -142,7 +142,6 @@
     "reserved": 10000
   },
   "plugin": [
-    "file:///home/dzack/ai/opencode/node_modules/cc-safety-net/dist",
     "file:///home/dzack/ai/opencode/node_modules/opencode-pty/dist/src/v2",
     "file:///home/dzack/ai/opencode/node_modules/@hueyexe/opencode-ensemble/src",
     "file:///home/dzack/ai/opencode/node_modules/context-mode/build/adapters/opencode"

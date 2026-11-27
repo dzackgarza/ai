@@ -170,7 +170,7 @@ _install-specify-cli:
 
 [doc("Install the current OpenCode plugin packages with Bun.")]
 install-plugins:
-    @bun add --cwd {{ opencode_dir }} cc-safety-net@latest opencode-pty@latest @hueyexe/opencode-ensemble@latest context-mode@latest
+    @bun add --cwd {{ opencode_dir }} opencode-pty@latest @hueyexe/opencode-ensemble@latest context-mode@latest
 
 [doc("Sync MCP server definitions into each configured harness.")]
 sync-mcp-configs *args:
