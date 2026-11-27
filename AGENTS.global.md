@@ -160,6 +160,17 @@ The commit- and push-hook directives that agents must read are version-controlle
 `hooks/pre-commit.md` and `hooks/pre-push.md` in this repo. The global git hooks print
 these files. Edit the files here, never the hook scripts.
 
+### Corrections to GitHub issues
+
+Put a correction in an issue comment by default. Say which earlier statement
+was wrong and give the correction. Readers should be able to follow what
+changed and why without opening the edit history.
+
+If the issue body itself needs a correction, strike through the incorrect
+statement with `~~strikethrough~~` and put the correction beside it. Avoid
+rewriting the body after each correction. Prune earlier material only when
+there is a specific reason that keeping it would mislead or distract readers.
+
 ## Required reading for every repo
 
 Do this before starting work in each repo, including when a task takes you into another repo.
