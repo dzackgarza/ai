@@ -11,6 +11,36 @@ from pathlib import Path
 
 
 class SageCleanupTest(unittest.TestCase):
+    def test_home_recipe_preserves_recently_used_project_cache(self):
+        project = Path(__file__).resolve().parents[2]
+        just = shutil.which("just")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            volume = root / ".local/share/docker/volumes/sage-repos/_data"
+            repo = volume / "project"
+            subprocess.run(["git", "init", "-q", repo], check=True)
+            clones = root / "gitclones"
+            clones.mkdir()
+            (clones / "project").symlink_to(repo)
+            scratch = root / "tmp"
+            scratch.mkdir()
+            old = time.time() - 2 * 86400
+            for name in (".ruff_cache", ".pytest_cache"):
+                cache = repo / name
+                cache.mkdir()
+                tag = cache / "CACHEDIR.TAG"
+                tag.write_bytes(b"Signature: 8a477f597d28d172789f06886806bc55\n")
+                entry = cache / "entries"
+                entry.write_text("existing result")
+                os.utime(tag, (old, old))
+                os.utime(cache, (old, old))
+                if name == ".pytest_cache":
+                    os.utime(entry, (old, old))
+            env = dict(os.environ, HOME=folder, TMPDIR=str(scratch), REPO=str(project), PATH="/usr/bin:/bin")
+            subprocess.run([just, "-f", project / "home-justfile", "clean"], env=env, check=True)
+            self.assertTrue((repo / ".ruff_cache/entries").is_file())
+            self.assertFalse((repo / ".pytest_cache").exists())
+
     def test_sage_cleanup(self):
         script = Path(__file__).resolve().parents[1] / "home-clean"
         docker = shutil.which("docker") or Path.home() / "bin/docker"
@@ -33,15 +63,16 @@ class SageCleanupTest(unittest.TestCase):
             compressed = subprocess.check_output(["zstd", "-qc"], input=stream.getvalue())
             stale = downloads / "b8lgfuw3oq94j8y7_file"
             recent = downloads / "k8lgfuw3oq94j8y7_file"
+            opened = downloads / "q8lgfuw3oq94j8y7_file"
             other = downloads / "release-notes"
-            for path in (stale, recent, other):
+            for path in (stale, recent, opened, other):
                 path.write_bytes(compressed)
             scratch = root / "tmp"
             scratch.mkdir()
             metadata = scratch / "tmp.XXabc123"
             metadata.write_text(json.dumps({"dynlibs": ["/lib/" + "x" * 300], "importArts": {}}))
             old = time.time() - 2 * 86400
-            for path in (stale, other, metadata):
+            for path in (stale, other, opened, metadata):
                 os.utime(path, (old, old))
 
             repo = root / "repos/project"
@@ -66,7 +97,8 @@ class SageCleanupTest(unittest.TestCase):
                 "-e", "HOME=/fixture/home", "-e", "ELAN_HOME=/fixture/elan",
                 "-e", "TMPDIR=/fixture/tmp", "-e", "PYTHONPATH=/tools",
                 "-e", "PATH=/fixture:/usr/local/bin:/usr/bin:/bin", "-e", "UV_CACHE_DIR=/fixture/uv",
-                "--entrypoint", "/sage/.venv/bin/python", image, "/clean", "--sage",
+                "--entrypoint", "/bin/sh", image, "-c",
+                'exec /sage/.venv/bin/python /clean --sage 3<"$ELAN_HOME/tmp/$1"', "sh", opened.name,
             ]
             subprocess.run(command, check=True)
             for path in (stale, metadata, loose):
@@ -77,6 +109,7 @@ class SageCleanupTest(unittest.TestCase):
                 self.assertEqual(warm.read_bytes(), b"cached archive")
             self.assertEqual(subprocess.check_output([*git, "cat-file", "blob", oid]), content)
             self.assertEqual(recent.read_bytes(), compressed)
+            self.assertEqual(opened.read_bytes(), compressed)
             self.assertEqual(other.read_bytes(), compressed)
 
 
