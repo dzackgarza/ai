@@ -234,8 +234,14 @@ When the source of a proposed result or argument is unclear, investigate
 before using it, including when the manuscript will say only “we prove.”
 Search for both the precise statement and the method under equivalent terminology. Search
 outside the project's references and the local library. Read the closest
-matches and follow their attributions to earlier work. Cite the best source
-for each claim through the bibliography (`CITE-1`), adding it when necessary.
+matches and follow their attributions to earlier work.
+
+Choose each citation for its mathematical relevance to the precise claim
+and for accurate credit to the source of the result or method. Existing
+Zotero holdings have zero weight in source selection, even as a tie-breaker.
+If the selected work is missing, add it to Zotero and cite its exported
+Better BibTeX key with the verified locator (`CITE-1`). Naming the work
+or its author in prose still requires the keyed citation.
 
 Credit a known result at its statement. Credit a borrowed proof or
 construction where the argument begins, even when rewriting it from memory,
