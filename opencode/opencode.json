@@ -737,6 +737,9 @@
         "inclusionai/ling-3.2-flash:free": {
           "status": "deprecated"
         },
+        "inclusionai/lingsante-3.1-air-vl": {
+          "status": "deprecated"
+        },
         "inclusionai/ring-2.6-1t": {
           "status": "deprecated"
         },
@@ -2439,9 +2442,6 @@
         "mistralai/devstral-2-123b-instruct-2512": {
           "status": "deprecated"
         },
-        "mistralai/magistral-small-2506": {
-          "status": "deprecated"
-        },
         "mistralai/mamba-codestral-7b-v0.1": {
           "status": "deprecated"
         },
@@ -2485,9 +2485,6 @@
           "status": "deprecated"
         },
         "moonshotai/kimi-k2.6": {
-          "status": "deprecated"
-        },
-        "moonshotai/kimi-k3": {
           "status": "deprecated"
         },
         "nv-mistralai/mistral-nemo-12b-instruct": {
@@ -2542,9 +2539,6 @@
           "status": "deprecated"
         },
         "nvidia/llama-3.1-nemotron-safety-guard-8b-v3": {
-          "status": "deprecated"
-        },
-        "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
           "status": "deprecated"
         },
         "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1": {
@@ -2658,9 +2652,6 @@
         "nvidia/parakeet-tdt-0.6b-v2": {
           "status": "deprecated"
         },
-        "nvidia/rerank-qa-mistral-4b": {
-          "status": "deprecated"
-        },
         "nvidia/riva-translate-4b-instruct": {
           "status": "deprecated"
         },
@@ -2680,12 +2671,6 @@
           "status": "deprecated"
         },
         "nvidia/synthetic-video-detector": {
-          "status": "deprecated"
-        },
-        "nvidia/usdcode": {
-          "status": "deprecated"
-        },
-        "nvidia/usdvalidate": {
           "status": "deprecated"
         },
         "nvidia/vila": {
@@ -2755,9 +2740,6 @@
           "status": "deprecated"
         },
         "writer/palmyra-med-70b-32k": {
-          "status": "deprecated"
-        },
-        "z-ai/glm-5.3": {
           "status": "deprecated"
         },
         "z-ai/glm4.7": {
@@ -3581,6 +3563,9 @@
           "status": "deprecated"
         },
         "ring-2.6-1t-free": {
+          "status": "deprecated"
+        },
+        "seaglass-alpha-free": {
           "status": "deprecated"
         },
         "space-bunny-free": {
@@ -4488,6 +4473,9 @@
           "status": "deprecated"
         },
         "inclusionai/ling-3.1-flash": {
+          "status": "deprecated"
+        },
+        "inclusionai/lingsante-3.1-air-vl": {
           "status": "deprecated"
         },
         "inclusionai/ring-2.6-1t": {
@@ -6077,15 +6065,6 @@
         "tokyotech-llm/llama-3.1-swallow-8b-instruct-v0.3": {
           "status": "deprecated"
         },
-        "unbiased/pareto-26.10": {
-          "status": "deprecated"
-        },
-        "unbiased/pareto-26.10-preview": {
-          "status": "deprecated"
-        },
-        "unbiased/pareto-26.9": {
-          "status": "deprecated"
-        },
         "undi95/remm-slerp-l2-13b": {
           "status": "deprecated"
         },
@@ -6315,9 +6294,6 @@
           "status": "deprecated"
         },
         "~openai/gpt-terra-latest": {
-          "status": "deprecated"
-        },
-        "~unbiased/pareto-latest": {
           "status": "deprecated"
         },
         "~x-ai/grok-latest": {

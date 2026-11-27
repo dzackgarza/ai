@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
@@ -17,7 +18,6 @@ before = shutil.disk_usage(home).free
 sage = sys.argv[1:] == ["--sage"]
 scratch = Path(tempfile.gettempdir())
 cutoff = time.time() - 86400
-# Linux procfs exposes working directories, open files and mapped executables.
 active = set()
 for proc in Path("/proc").glob("[0-9]*"):
     try:
@@ -35,7 +35,6 @@ for proc in Path("/proc").glob("[0-9]*"):
     except (FileNotFoundError, ProcessLookupError):
         continue
     except PermissionError:
-        # Host lsof checks each candidate as well. In Sage, fail closed.
         if sage:
             raise
 
@@ -126,11 +125,25 @@ def matches_review_archive(tree, archive):
         return False
 
 
+def recently_used_cache(path):
+    try:
+        if path.stat().st_mtime >= cutoff:
+            return True
+        for entry in path.rglob("*"):
+            info = entry.lstat()
+            if info.st_mtime >= cutoff:
+                return True
+            if stat.S_ISREG(info.st_mode) and entry.name != "CACHEDIR.TAG" and info.st_atime >= cutoff:
+                return True
+    except OSError:
+        return True
+    return False
+
+
 for tool in (("trash", "trash-empty", "git") if sage else ("trash", "trash-empty", "git", "lsof")):
     if not shutil.which(tool):
         raise SystemExit(f"Required for cleanup: {tool}")
 
-# Use separate Trash for this invocation so existing Trash stays recoverable.
 with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
     def discard(path):
         if (path.is_symlink() or path.resolve() != path or path.stat().st_uid != uid
@@ -151,7 +164,7 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
                      ".yarn/berry/metadata", ".dartServer/.analysis-driver",
                      ".cache/go-build", ".cache/pip", ".electron-gyp", ".local/share/pnpm/store/v3/files"):
         path = home / relative
-        if path.is_dir():
+        if not sage and path.is_dir():
             discard(path)
 
     versions = home / ".local/share/claude/versions"
@@ -164,13 +177,12 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
                     and binary.stat().st_mtime < cutoff):
                 discard(binary)
 
-    # Identify generated artifacts by format. Review folders may also hold source.
     for path in scratch.iterdir():
         if path.is_symlink() or path.stat().st_uid != uid or path.stat().st_mtime >= cutoff:
             continue
         if sage and path.is_file() and path.name.startswith("tmp.") and path.stat().st_size < 16*2**20:
             with path.open("rb") as f:
-                if b'"importArts"' not in f.read(256):
+                if not f.read(256).lstrip().startswith(b"{"):
                     continue
             try:
                 data = json.loads(path.read_bytes())
@@ -182,10 +194,17 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
             discard(path)
         if path.is_dir() and re.match(r"(?:pr-review-|spec-audit-|rev(?:iew)?[0-9]|rv[0-9]|r[0-9])", path.name):
             print(f"Review scratch: {path}")
-    archives = home / ".cache/mathlib"
-    if sage and archives.is_dir() and all(re.fullmatch(r"[0-9a-f]{16}[.]ltar", f.name)
-                                          and f.is_file() and not f.is_symlink() for f in archives.iterdir()):
-        discard(archives)
+    if sage:
+        downloads = Path(os.environ["ELAN_HOME"]) / "tmp"
+        if downloads.is_dir() and downloads.resolve() == downloads:
+            for path in downloads.iterdir():
+                if (not re.fullmatch(r"[a-z0-9]{16}_file", path.name) or path.is_symlink()
+                        or not path.is_file() or path.stat().st_mtime >= cutoff):
+                    continue
+                with path.open("rb") as stream:
+                    compressed = stream.read(4) == bytes.fromhex("28 b5 2f fd")
+                if compressed:
+                    discard(path)
 
     for folder in (scratch / "opencode", *scratch.glob("spec-audit-*"), *scratch.glob("pr-review-*")):
         if not folder.is_dir() or folder.resolve() != folder or folder.stat().st_uid != uid:
@@ -219,7 +238,6 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
     if cron_log.is_file() and cron_log.stat().st_mtime < cutoff:
         discard(cron_log)
 
-    # Only worker publish checkouts have a known disposal lifecycle.
     for directory, children, files in os.walk(scratch):
         if ".git" in children or ".git" in files:
             path = Path(directory)
@@ -238,6 +256,8 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
         children[:] = [name for name in children if name not in ("node_modules", ".venv", ".lake")]
 
     checkouts = home / "gitclones"
+    volumes = home / ".local/share/docker/volumes"
+    sage_sources = [volumes / volume / "_data" for volume in ("sage-repos", "sage-tree")]
     repos = {home / "ai", home / "ai-review-ci"}
     if checkouts.is_dir():
         repos.update(path.resolve() for path in checkouts.iterdir() if path.is_dir())
@@ -251,6 +271,7 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
                 print(f"Linked checkout: {tree}")
             if not tree.is_dir() or tree.stat().st_dev != home.stat().st_dev:
                 continue
+            in_sage_volume = any(tree.resolve().is_relative_to(root) for root in sage_sources)
             for base, dirs, _ in os.walk(tree):
                 if Path(base) != tree and (Path(base) / ".git").exists():
                     dirs.clear()
@@ -261,17 +282,18 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
                 for name in names:
                     path = Path(base) / name
                     tag = path / "CACHEDIR.TAG"
-                    if not tag.is_file() or tag.is_symlink():
+                    if path.is_symlink() or not tag.is_file() or tag.is_symlink():
                         continue
                     with tag.open("rb") as stream:
                         signature = stream.read(43)
                     if signature != b"Signature: 8a477f597d28d172789f06886806bc55":
                         continue
+                    if in_sage_volume and recently_used_cache(path):
+                        continue
                     tracked = subprocess.check_output(["git", "-C", tree, "ls-files", "--", path.relative_to(tree)])
                     if not tracked:
                         discard(path)
 
-    # tsx stores compiled modules beside its live IPC sockets.
     tsx = Path(tempfile.gettempdir()) / f"tsx-{uid}"
     if tsx.is_dir() and not tsx.is_symlink() and tsx.stat().st_uid == uid:
         modules = [p for p in tsx.iterdir() if re.fullmatch(r"[0-9]+-[0-9a-f]{40}", p.name)
@@ -280,6 +302,19 @@ with tempfile.TemporaryDirectory(prefix=".clean-", dir=home) as disposable:
         for start in range(0, len(modules), 128):
             subprocess.run(["trash", "--trash-dir", disposable, "--", *modules[start:start + 128]], check=True)
     subprocess.run(["trash-empty", "--trash-dir", disposable, "-f"], check=True)
+
+if sage:
+    for repo in sorted(Path("/repos").iterdir()):
+        if repo.is_symlink() or (repo / ".git").is_symlink() or not (repo / ".git").is_dir():
+            continue
+        git = ["git", "-C", repo, "-c", "pack.threads=1"]
+        counts = subprocess.check_output([*git, "count-objects", "-v"], text=True)
+        objects = dict(line.split(": ", 1) for line in counts.splitlines())
+        if int(objects["size"]) * 1024 >= shutil.disk_usage(repo).free:
+            print(f"Insufficient space to pack loose objects in {repo}", flush=True)
+            continue
+        subprocess.run([*git, "maintenance", "run", "--auto", "--task=loose-objects"], check=True)
+        subprocess.run([*git, "prune-packed"], check=True)
 
 if not sage and shutil.which("pnpm"):
     subprocess.run(["pnpm", "store", "prune"], check=True)
@@ -301,7 +336,6 @@ if not sage and docker.is_file():
         client = [docker, "--host", endpoint]
         running = subprocess.check_output([*client, "ps", "--filter", "name=^/sage-research$", "-q"]).strip()
         if running:
-            # The home bind mount lets Sage use the same trash-cli as the host.
             with tempfile.TemporaryDirectory(prefix=".clean-tools-", dir=home) as tools:
                 library = Path("/usr/lib/python3/dist-packages/trashcli")
                 shutil.copytree(library, Path(tools) / "trashcli")
