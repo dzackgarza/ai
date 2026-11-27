@@ -126,6 +126,17 @@ in `/home/dzack/ai`:
 - Let the commit hook compile the OpenCode config and validate providers. It needs the
   network and takes about half a minute. Wait for it.
 
+## SSH between the laptop and rack
+
+From the laptop (`bahamut`), use `ssh dzack@rack` to log in to rack.
+From rack, use `ssh -F ~/.config/bahamut-login/client.conf bahamut` to log in
+to the laptop as `dzack`.
+
+The laptop's `bahamut-rack-forward.service` user unit keeps the reverse tunnel
+open. It forwards rack's `127.0.0.1:22223` to the laptop's SSH server at
+`127.0.0.1:22222`. The client configuration on rack selects its dedicated
+login key and checks the laptop's pinned host key.
+
 ## Git delivery
 
 All work goes directly onto `main`: commit and push straight to `main`, checkpoints
