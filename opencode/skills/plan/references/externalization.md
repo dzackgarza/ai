@@ -11,7 +11,7 @@ Externalized project planning is one tree, not parallel artifacts:
 ```text
 planning tree node -> GitHub issue
 parent/child edge  -> GitHub sub-issue relation
-sibling order      -> GitHub sub-issue order, or a wiki roadmap list only when needed
+sibling order      -> GitHub sub-issue order
 blocker edge       -> GitHub issue dependency
 delivery bucket    -> GitHub Milestone assigned to the relevant issues and PRs
 implementation     -> PR linked to the issue set it claims to satisfy
@@ -52,7 +52,7 @@ themselves.
 PRs are not tree leaves. A PR is an implementation transaction against a selected
 issue set. It may claim one issue, several sibling issues, a vertical slice, or an
 entire subtree. The PR body must state its claim scope, linked issues, milestone,
-implementation plan, evidence, and any partial/non-claims.
+link to the issue plan, evidence, and any partial/non-claims.
 
 GitHub Milestones are delivery/progress buckets, not the tree. Shape the issue
 tree so milestone-sized work is usually a coherent subtree. Create the GitHub
@@ -63,9 +63,7 @@ broader milestone/release and say why.
 
 The wiki is a readable roadmap and projection surface. It may hold durable
 narrative context and generated tree/status views, but it must not own live issue,
-PR, or completion state. A wiki may own the ordered top-level roadmap list only if
-GitHub's issue/sub-issue ordering cannot represent that order cleanly; all
-decomposition and execution state still belongs to issues, milestones, and PRs.
+PR, or completion state. Render the ordered roadmap from the issue tree.
 
 ## PR Grouping Is an Execution-Time Decision, Never a Planning Output
 
@@ -102,19 +100,12 @@ session opens its PR when implementation starts, scoped by pr-scoping against th
 live backlog. Fragmentation is prevented by that skill's default — one session-scale
 PR — not by pre-scoped draft-PR ceremony that freezes a planner's guess.
 
-## Converge Before You Externalize
+## Revise the plan on the owning issue
 
-Externalization is a one-way door taken once. Until the semantic target has converged —
-one internal draft states the intended product transformation and has been reviewed
-against [[pr-scoping/SKILL|pr-scoping]] — create no branch, no PR, no issue edits, and no
-vault-synchronized copies. A correction to an unconverged draft is a prose edit; once a
-wrong scope has been committed, pushed, PR-bodied, and mirrored, the same correction
-becomes a distributed-state migration (commits, PR-body replacement, vault repair,
-revalidation) on every round. Draft → converge → externalize once.
-
-After promotion, keep exactly one authored copy. If the PR body is the claim map, any
-repo export or vault card is a pointer to it — never a synchronized duplicate whose
-byte-equality must be maintained by additional commits.
+Start with the selected itree issue. Use Spec Kit to revise its plan as the
+requirements become clear. Link supporting decisions and evidence in comments.
+Place independently reviewable work units under their grouping issue. Keep each
+unit’s internal steps on the work-unit issue.
 
 ## Source Plan Requirements
 
@@ -200,11 +191,9 @@ and what would make the first milestone useful.
 
 For nontrivial implementation work:
 
-1. Create or update the vault-owned `agent-memory` plan record while the plan is
-   still private or converging.
-2. Finalize the plan with the user.
-3. Inspect the existing GitHub issue tree, milestones, draft PRs, and wiki
-   projection.
+1. Select the existing work unit with itree. Inspect its requirements and discussion.
+2. Use Spec Kit to develop its plan and resolve any open decision on that issue.
+3. Inspect related issues, milestones, PRs and the wiki before changing the tree.
 4. Create or update story-shaped issues under the correct parent issue. Use native
    sub-issues for parent/child edges when available; otherwise keep explicit links
    in the parent issue until native sub-issues can be used.
@@ -215,17 +204,14 @@ For nontrivial implementation work:
    issue-set definition.
 7. Assign milestone membership to descendant issues that count toward delivery and
    to PRs linked to those issues. Do not rely on milestone names alone as scope.
-8. Draft PRs from the selected issue set or subtree. The PR body stores the local
-   implementation plan and claim scope.
+8. Draft PRs from the selected issue set or subtree. The PR body links the issue plan and states the claim scope.
 9. Use closing keywords or Development links only for issues the PR fully satisfies
    on merge. Use `Refs` or prose for broader parents, deferred work, partial
    claims, or excluded scope.
 10. Verify the issue tree, milestone assignments, PR body, and wiki projection
     preserve the finalized plan without semantic invention.
 
-After externalization, GitHub issues, milestones, and PRs are the execution
-tracker. The vault plan remains derivation context or restart aid; it must not
-diverge into a private second tracker.
+The issue remains the place to resume the plan and update task progress.
 
 ## Draft PR Body Requirements
 
@@ -236,7 +222,7 @@ A draft PR created from this workflow must state:
 - Linked issues to close on merge.
 - Broader parent issues only referenced.
 - Proof obligations claimed, partially claimed, and not claimed.
-- Local implementation plan.
+- Link to the implementation plan on the owning issue.
 - Evidence required for each claim.
 - Explicit exclusions and split/follow-up conditions.
 

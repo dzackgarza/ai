@@ -80,8 +80,8 @@ Problem → canonical system convention.
 | JS-based projects | **bun.** Runtime and package execution for any JavaScript/TypeScript project. |
 | JS dependency management | **pnpm.** Never `npm`. Install deps and run scripts via `pnpm`. |
 | Nontrivial CLIs | **Python** ([[writing-scripts-and-cli-interfaces/SKILL|writing-scripts-and-cli-interfaces]] skill). Build command-line tools in Python, not shell, once the task outgrows a one-liner. |
-| Memory | **agent-memory** ([[agent-memory/SKILL|agent-memory]] skill). Durable knowledge, plans, and project state live in the central vault. |
-| Plans | **agent-memory** ([[agent-memory/SKILL|agent-memory]] skill). Always file plans as `plan` records with agent-memory, never as loose repo-local markdown. |
+| Memory | **agent-memory** ([[agent-memory/SKILL|agent-memory]] skill). Store reusable knowledge in the central vault. |
+| Plans | Select the work-unit issue with itree. Use Spec Kit to write its plan and tasks on the issue. |
 | System-wide search | **locate** (or `kpsewhich` for TeX), not `rg ~`-style filesystem crawls. Use the right index for the domain. |
 | Mathematical calculations | **Prefer symbolic and semantic.** `sage`, `sympy`, GAP, Julia, Macaulay2, Singular — not naive float arithmetic. |
 | Web UIs | **Vite + Svelte/React + Tailwind.** Never hand-roll HTML or CSS; use the framework's component and styling system. |

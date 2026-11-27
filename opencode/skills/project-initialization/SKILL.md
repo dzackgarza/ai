@@ -80,8 +80,7 @@ treating local docs, plans, or transcripts as authoritative.
   active branch, failing gate, and touched module when those terms exist.
 - Treat the GitHub issue tree, sub-issue edges, blocker dependencies, GitHub Milestone
   scopes, linked PR claim maps, and review threads as canonical execution state. Wiki
-  roadmap pages are readable projections or narrative context unless they explicitly own
-  top-level order. Local plans, `.agents` notes, memory records, transcripts, and
+  roadmap pages show the issue tree’s order. Local plans, `.agents` notes, memory records, transcripts, and
   scratchpads are leads unless the current GitHub surface confirms them.
 - Before characterizing or normalizing an existing planning tree, load and read
   `plan/references/externalization.md`. You MUST read it before judging whether the tree
@@ -91,11 +90,9 @@ treating local docs, plans, or transcripts as authoritative.
   malformed from issue titles, labels, sub-issue edges, or milestone counts alone: that is
   structure, not conformance to the model. Treating structure as evidence of conformance is
   the failure this gate exists to prevent.
-- For long-horizon, cross-repo, or review-track work, externalize finalized plans into
-  a GitHub issue tree, GitHub Milestone scope, and draft PR claim map. Load and read
-  `plan/references/externalization.md` and use [[plan/SKILL|plan]] and [[git-guidelines/SKILL|git-guidelines]] first; do not
-  create or restructure tree nodes before reading it. Once public artifacts exist, they
-  become the tracker; local plans may explain derivation but must not stay authoritative.
+- Select the owning work-unit issue with itree. Use Spec Kit on that issue from the
+  first planning stage. Consult `plan/references/externalization.md` when the work
+  requires changes to the issue tree.
 - When an observed failure class repeats, causes false green, blocks convergence, or
   requires human rescue, route it to the durable enforcement surface that owns it:
   wiki user stories or proof burdens for product obligations, issues/PR contracts for
@@ -113,9 +110,8 @@ Load the repository's own instructions before editing.
 
 - Read top-level `README*`, `AGENTS.md`, and nearby nested `AGENTS.md` files that
   govern the task path.
-- If the repo has design docs or an [[agent-memory/SKILL|agent-memory]] pointer, inspect them before
-  inventing a workflow. Planning state belongs in [[agent-memory/SKILL|agent-memory]], not loose
-  repo-local planning files.
+- Read the project constitution and the owning issue. Use Spec Kit for the plan
+  and task list. Use [[agent-memory/SKILL|agent-memory]] for reusable knowledge.
 - If instructions conflict, direct user instructions win; then prefer the most
   local repo instructions over broader AGENTS.md/global skill guidance.
 
@@ -124,7 +120,7 @@ Load the repository's own instructions before editing.
 When repo-local docs, scratchpads, plans, TODO files, or agent process notes already
 exist, classify each one by durable owner before relying on it:
 
-- plan, phase state, queue, or residue ledger -> [[agent-memory/SKILL|agent-memory]] plan record;
+- current plan, task order, progress, and open obligations -> the owning itree issue, through Spec Kit;
 - correction, trap, reusable decision, or durable agent behavior -> typed memory;
 - durable project narrative, feature doctrine, architecture rationale, and readable
   roadmap/proof projections -> wiki;
@@ -159,9 +155,7 @@ artifacts in source directories.
 
 ### Agent Memory
 
-Project memory and planning state are part of initialization, not an
-afterthought. The goal is to confirm the normal structure exists and repair it
-when it is missing.
+Check the project memory binding during initialization.
 
 - Load [[agent-memory/SKILL|agent-memory]] for the current command surface.
 - Use the GitHub `uvx` runner to check memory tooling unless a verified setup has
@@ -172,7 +166,7 @@ when it is missing.
   missing, treat that as setup failure and use the [[agent-memory/SKILL|agent-memory]] skill plus the
   `/home/dzack/gitclones/agent-memory` checkout to provision dependencies.
 - Confirm the repository has a root `.agent-memory.toml` binding. If it is
-  missing and the project should keep memory/planning state, run
+  missing and the project should keep reusable memories, run
   `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory init project --vault <vault>`,
   then `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor`.
 - Confirm the bound project directory exists under the configured vault. A repo
@@ -180,13 +174,12 @@ when it is missing.
 - Confirm native harness routes are in place according to
   `opencode/skills/agent-memory/references/harness-state-hijacking-research.md`:
   - Claude Code auto memory writes into the vault-owned Claude project
-    directory, and Claude plans use `plansDirectory` pointed at the vault.
+    directory.
   - [[codex/SKILL|Codex]] memories and memory extensions are routed into the vault, while
     `~/.codex/sessions/` and `~/.codex/archived_sessions/` remain normal [[codex/SKILL|Codex]]
     runtime directories outside the vault.
-  - Durable [[codex/SKILL|Codex]] ExecPlan Markdown files resolve to the [[agent-memory/SKILL|agent-memory]] project
-    plan directory through `PLANS.md`/`AGENTS.md` guidance or a compatibility
-    pointer/symlink.
+  - Agent instructions direct planning to the selected itree issue and its Spec Kit
+    stages. Correct instructions that direct a harness to maintain another plan.
   - Antigravity/`agy` brain artifacts, when used for the project, preserve their
     native directory names and metadata while landing under the vault-owned
     compatibility area.

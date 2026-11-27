@@ -1,10 +1,12 @@
-# Planning Card Framework
+# Interpreting existing planning cards
 
-This directory is the reusable source for filesystem-backed planning cards.
-Reference it when a project needs a tracker-backed planning hierarchy.
-Project-local planning instructions should point here and record only local choices:
-schema installation method, card root, current feature IDs, generated artifact paths,
-and hook commands.
+Use the card-format reference below to recover obligations from existing files.
+Select the owning issue with itree. Transfer each open obligation, its place in
+the task order, dependencies, acceptance criteria and supporting evidence.
+Use Spec Kit on the issue for all subsequent planning and execution.
+
+The following reference describes the conventions in effect when those cards were
+authored. Read its requirements as definitions of the old fields and relationships.
 
 ## Contents
 

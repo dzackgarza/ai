@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Use when creating, revising, or reviewing an implementation plan stored through agent-memory. In plan mode, plan only."
+description: "Use when checking the scope, decomposition, acceptance criteria, and proof obligations of a Spec Kit plan for an itree work unit."
 license: MIT
 metadata:
   hermes:
@@ -123,10 +123,9 @@ satisfy it. Prescribing the exact line edits is an anti-pattern: strong implemen
 that micro-plan internally, and the diff is no more auditable than the commits and PRs.
 Spend tightness on outcomes, criteria, and invariants, not on mechanism.
 
-**The tree.** Every plan declares its parent plan key (or marks itself root / user-facing).
-A high-tier plan marks each phase too complex to expand inline as one that must spawn its
-own child plan. Store the whole tree as keyed [[agent-memory/SKILL|agent-memory]] plan records so parent and
-child links live in one place.
+**The tree.** Use itree groupings to order independently reviewable work units. Each
+work-unit issue is a leaf. Use Spec Kit to decompose its work into tasks in that issue.
+Keep the parent issue and original objective visible when reviewing the plan.
 
 The tree exists to stop the most common drift: an agent descends into a sub-sub-plan and
 loses the ambient, user-facing outcome entirely. The upward parent pointer keeps that
@@ -142,51 +141,17 @@ tier.
 - workstream / organizational → `references/tier-workstream.md`
 - implementation-adjacent → `references/tier-implementation.md`
 
-Additionally load `references/externalization.md` whenever the plan will become or must
-fit into a GitHub issue tree, GitHub milestone, wiki projection, draft PR, or multi-agent
-tracker -- at any tier. Implementation-adjacent plans must decide their tree fit before
-becoming local task lists or PR draft plans.
+Read `references/externalization.md` when placing a work unit in the issue tree,
+assigning its milestone, or linking a wiki page or PR to the owning issue.
 
-## Storage and Ownership Lifecycle
+## Plan ownership
 
-File every durable plan as a project-scoped [[agent-memory/SKILL|agent-memory]] record with type `plan`.
-Use the [[agent-memory/SKILL|agent-memory]] skill for the exact command surface. If [[agent-memory/SKILL|agent-memory]] is
-unavailable, report the blocker instead of creating an untracked substitute.
-
-A repo-local Markdown file may be a review/export artifact, but it is not the durable
-source of truth unless it points back to the vault-owned plan key. If a runtime or user
-explicitly requires a local Markdown export, first create or update the vault-owned plan
-record, then write the local file as a non-authoritative compatibility copy that points
-back to the memory key.
-
-Keep a plan vault-owned while it is exploratory, single-agent, or still converging with
-the user. Promote it to GitHub-owned execution state when any of these become true:
-
-- the plan coordinates multiple agents, branches, repos, milestones, or handoffs;
-- the plan defines public user stories, project direction, proof burdens, or roadmap
-  commitments;
-- work will span enough time that GitHub visibility is needed for auditability or
-  resumption;
-- the plan has been finalized by the user and is ready to become an issue tree,
-  milestone, or draft PR contract;
-- unresolved gaps, bugs, or follow-up obligations should be discoverable by future
-  agents without reading vault internals.
-
-Before promotion drives implementation, fill the externalization Plan Fit Gate: tree root,
-parent issue or roadmap/wiki node, GitHub milestone, issue set or subtree claimed,
-close/reference split, and claimed/non-claimed proof obligations.
-
-After promotion, the GitHub issue tree, GitHub Milestones, and PR claim maps are the
-execution tracker. Wiki pages are readable projections or durable narrative context, not
-live status owners. Keep the vault plan as derivation context or a restart aid, but do not
-let it diverge into a second private source of truth.
-
-After promotion, reduce the vault record to a pointer plus derivation notes. Never
-maintain a byte-synchronized full copy of the promoted body, and never demand equality
-between a repo export (`.pr/PR_BODY.md`), the live PR body, and a vault card — one owner,
-one writer. Plan-card bodies are file-owned: `plan update --set` edits metadata fields
-only, and body revisions to a promoted plan belong on the promoted owner, not simulated
-through card delete/recreate cycles.
+Every project uses Spec Kit for planning within the itree-selected GitHub work unit.
+Read the original issue contract, constitution, current plan, and unresolved findings.
+Use `speckit-plan` to produce the design and `speckit-tasks` for internal decomposition.
+Write current plans, tasks and progress to the issue; link research and decisions in
+its comments. Resolve the work from the live issue again when a session resumes.
+Keep durable product specifications and architecture in the project repository.
 
 ## Plan Fit Gate
 
@@ -276,11 +241,8 @@ checks before a plan proposes structure:
   approval tiers, and separation-of-duty rules are not planning placeholders. Plan them
   when there are real actors to fill them and a real boundary they enforce, not as
   front-loaded structure.
-- **Place state on the surface that owns it.** Ephemeral status, current-MVP plans,
-  roadmaps, and work state belong in [[agent-memory/SKILL|agent-memory]] plan records, GitHub issues,
-  milestones, and PRs — never dumped into a README or user-facing doc, which would require
-  constant babysitting and staleness review. The plan's own living state stays in the plan
-  record, not in the product's documentation.
+- **Keep current state on the work-unit issue.** Use its body and comments for the
+  Spec Kit plan, tasks, progress and evidence. Keep the README focused on the product.
 
 ## Required Discovery
 
@@ -311,8 +273,8 @@ supplies the work-decomposition body that fills the `<Work decomposition>` slot.
 # <Plan Title>
 
 > Tier: <roadmap | workstream | implementation-adjacent>
-> Parent plan: <agent-memory key, or "root / user-facing">
-> Externalized fit: <private, or GitHub tree root + parent issue + milestone + PR claim set>
+> Work-unit issue and parent grouping: <qualified GitHub references>
+> Placement: <tree root, parent issue and applicable milestone>
 
 ## Purpose / Observable Result
 - What someone can do or verify after this work:
@@ -460,11 +422,11 @@ Before saving or handing off a plan, verify:
 | Inherited checkmark | Old local status is treated as current public truth | Re-evaluate against current acceptance criteria and evidence |
 | Duplicate corroboration | One claim repeated in several artifacts becomes several progress signals | Collapse repeats into one claim and require independent evidence |
 | Evidence dumping | Commits, runs, logs, or artifacts are listed without a criterion | Map each witness to the obligation and false positive it rejects |
-| Chat-only plan | Work cannot survive context rollover | Save a durable plan artifact through the active plan/memory workflow |
+| Chat-only plan | Work cannot survive context rollover | Save the Spec Kit plan on its work-unit issue |
 | Frozen plan | Discoveries and decisions leave the artifact stale | Update progress, discoveries, decisions, and revision notes |
 | Implementation-defined success | Code determines its own acceptance after the fact | Lock acceptance and proof before implementation |
 | Premature institution | Plan invents roles, owners, gates, or doctrine before actors or a demonstrated failure exist | Plan controls only against a demonstrated failure mode, using the simplest standard mechanism |
-| Status in the product | Plan routes ephemeral status, MVP state, or roadmap into a README or user-facing doc | Keep work state in the plan record, issues, and milestones; keep docs task-facing |
+| Status in the product | Plan routes ephemeral status, MVP state, or roadmap into a README or user-facing doc | Keep work state on the owning issue and link to it from the milestone |
 | Bespoke-over-standard | Plan designs a custom system where a database, git, PR review, or issues already fit | Justify any bespoke mechanism against the standard tool it replaces, or use the standard tool |
 | Line-edit leash | Plan prescribes the exact diff or files to touch, doing the implementer's job and tracking nothing more auditable than the commits | Constrain the endpoint and acceptance as a rubric; leave the mechanism to the implementer |
 | Feedback-blind plan | A plan so high-level it could run without ever consulting the gathered feedback, licensing reinvention on fresh context | Coalesce the actual feedback into typed workstreams with counts, shared shape, and shared acceptance |
@@ -479,8 +441,7 @@ Before saving or handing off a plan, verify:
 - If no explicit instruction accompanies `/plan`, infer the task from the current
   conversation context.
 - If it is genuinely underspecified, ask a brief clarifying question instead of guessing.
-- After saving the plan, reply briefly with the saved memory key. Include a local export
-  path only when one was explicitly created.
+- Report the owning issue and the path of any explicitly requested design document.
 
 ## Plan Review Surface
 
@@ -515,4 +476,4 @@ Load on demand after the routing gate:
 
 - [[test-driven-development/SKILL|test-driven-development]] and [[test-guidelines/SKILL|test-guidelines]]: proof design for code changes.
 - [[git-guidelines/SKILL|git-guidelines]]: checkpoint, commit, PR, and review workflow.
-- [[agent-memory/SKILL|agent-memory]]: storage command surface for vault-owned plan records.
+- [[speckit-plan/SKILL|speckit-plan]]: generate the design for an itree work unit.

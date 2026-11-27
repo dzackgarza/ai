@@ -62,9 +62,5 @@ Use stable page names, backlinks, and local indexes so an agent can start from a
 page and find the related user stories, feature contracts, proof burdens, and execution
 artifacts.
 
-Plans belong in `agent-memory` plan records when the state must survive context windows
-inside the project.
-When a plan needs a public GitHub execution surface, load `git-guidelines` and use the
-GitHub issue/PR workflow guidance to turn it into milestones, issues, sub-issues, and
-draft PRs.
-Wiki pages may link to those canonical planning artifacts, but they do not replace them.
+Use itree to select the owning issue and Spec Kit to plan the work there.
+Wiki pages link to the issues that carry the current requirements, plans and tasks.
