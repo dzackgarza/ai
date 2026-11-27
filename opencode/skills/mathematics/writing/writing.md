@@ -36,6 +36,10 @@ See [DIA-9](policy/references/diagrams.md#dia-9-compose-the-relation-before-anno
 
 ### Worked mathematics from the literature
 
+Apply [CITE-10](policy/references/citations.md#cite-10-establish-credit-for-the-result-and-for-the-argument)
+to the theorem and its proof. Identify what the source proves, whose method
+the proof follows, and what the present deduction adds.
+
 Before choosing a figure, locate the result in the source and reconstruct
 the argument in its order of dependence. Identify the object computed, the
 coefficients, and the theorem that carries the computation to the conclusion.

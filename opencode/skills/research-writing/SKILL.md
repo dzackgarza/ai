@@ -4,6 +4,10 @@ description: "Use when writing a research paper or synthesizing research into a 
 ---
 # Research Writing
 
+For claims about the source, authorship, or novelty of a result or method,
+apply [[mathematics/writing/policy/references/citations|CITE-10]].
+Search beyond the local collection and credit the argument actually used.
+
 - [[research-writing/revision/revision|revision]] — revise an existing manuscript or integrate supplied sources while preserving its scope and conventions.
 
 - [[research-writing/synthesis/synthesis|synthesis]] — combine evidence-linked sources.

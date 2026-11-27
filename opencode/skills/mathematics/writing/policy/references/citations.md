@@ -227,3 +227,34 @@ C$ [@Hum90, §6.8]"; $\delta_L$ and $\operatorname{MM}(L)$ defined in the
 document's own definition block (`CITE-7`), the theorem stating the
 sequence in that notation, and [@MM09, Thm. V.5.1] cited for its
 exactness.
+
+## `CITE-10`: Establish credit for the result and for the argument
+
+When the source of a proposed result or argument is unclear, investigate
+before using it, including when the manuscript will say only “we prove.”
+Search for both the precise statement and the method under equivalent terminology. Search
+outside the project's references and the local library. Read the closest
+matches and follow their attributions to earlier work. Cite the best source
+for each claim through the bibliography (`CITE-1`), adding it when necessary.
+
+Credit a known result at its statement. Credit a borrowed proof or
+construction where the argument begins, even when rewriting it from memory,
+changing notation, or filling a gap. State which step the manuscript adapts
+and show the deduction. A textbook that verifies a premise may be cited for
+that premise. Finding it after drafting does not establish the origin of
+the proof or discharge a debt to a source whose argument was used.
+
+A model cannot identify the source of an argument from its generated text.
+Keep authorship and priority as separate claims: attributing work to a
+person requires evidence of that person's contribution; describing a proof
+as new requires a comparison of its method with prior proofs of the same
+result. A search miss establishes only what that search found. If the
+evidence stops at a derivation, give the derivation with its sources and
+omit the claim to originality. Apply the same rule in reports about the work.
+
+For example, in the proof of `lem:coble-product-picard` in
+`dzackgarza/research` at `57aa54b860`, the correspondence theorem
+[@BL04, Thm. 11.5.1] identifies the quotient by factor classes, and the
+Kummer isometry [@Mor84, Prop. 4.3(i)] gives the transcendental lattice
+of the cover. These locators let a reader check the deduction. Neither
+establishes who first combined the two results.

@@ -17,6 +17,7 @@ a different rule. New policies must be indexed here and in their owning file.
 | Policy IDs | Owner |
 | --- | --- |
 | `WRITE001`–`WRITE002` | This router |
+| `CITE-10` | [[mathematics/writing/policy/references/citations|Scholarly attribution and priority]] |
 | `CLARITY001`–`CLARITY019` | [[writing/clarity/clarity#policy-index|Clarity policy index]] |
 | `DOC001`–`DOC056` | [[writing/documentation/documentation#policy-index|Documentation policy index]] |
 | `AGENT001`–`AGENT023` | [[writing/agent-audiences/agent-audiences#policy-index|Agent-audience policy index]] |
@@ -24,6 +25,9 @@ a different rule. New policies must be indexed here and in their owning file.
 | `COPY001`–`COPY014` | [[writing/technical-copy/technical-copy#policy-index|Technical-copy policy index]] |
 
 ## Routing
+
+For scholarly prose and reports about research, apply `CITE-10` before
+assigning credit for a result, proof, or method.
 
 For lists embedded in prose, apply
 [[writing/technical-copy/technical-copy#lists-that-replace-explanation|COPY003: lists that replace explanation]].
