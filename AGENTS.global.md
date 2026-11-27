@@ -447,6 +447,15 @@ or my wording.
 
 ## Spec Kit workflows and constitutions
 
+> **Planning migration — Spec Kit and itree**
+>
+> Select the work-unit issue with itree. Use Spec Kit to plan and execute the work.
+> The issue body and comments hold the current plan, tasks, progress and evidence.
+> Earlier instructions that assign this work to vault cards or a separate task list
+> identify records to migrate. Match each obligation to its owning issue. Preserve
+> task IDs, order, prerequisites, acceptance criteria and evidence. Verify the transfer
+> on the issue before retiring the old tracker. An open obligation stays open.
+
 Every project uses itree to organize and select work and Spec Kit to specify, plan and execute it.
 Start at the owning GitHub issue. Its body and comments hold the current requirements, plan, tasks,
 progress and evidence. Use the project's constitution to set priorities within that workflow.
