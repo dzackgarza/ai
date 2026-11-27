@@ -13,7 +13,7 @@ current API.
 | Release | Current stable executable and background service | 2.1.4 |
 | Startup | Fresh launch reaches the input prompt with a selected model | Verified |
 | Models | Normal background service returns its model list | Verified |
-| PTY, Ensemble, cc-safety-net | Current server entrypoints activate | Active in `/api/plugin` |
+| PTY, Ensemble | Current server entrypoints activate | Active in `/api/plugin` |
 | context-mode | Native V2 entrypoint activates and its tools and hooks work | Published 1.0.169 exports the older API; load fails visibly |
 
 ## Next work
