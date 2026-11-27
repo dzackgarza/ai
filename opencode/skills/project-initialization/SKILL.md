@@ -146,9 +146,8 @@ Expected contents, when applicable:
 - small scripts used by those private recipes;
 - no loose durable process docs that should be typed project memories instead.
 
-Project memory binding is not a `.agents/` child. [[agent-memory/SKILL|agent-memory]] owns the binding
-through `.agent-memory.toml` at the repository root. Do not create or maintain
-memory directories by hand.
+[[agent-memory/SKILL|agent-memory]] binds the checkout by linking `.agents` and
+`.hermes` to the vault-owned project directory. Use its initializer to create the links.
 
 Create `.agents/` only when you know the project root. Do not scatter agent
 artifacts in source directories.
@@ -165,8 +164,8 @@ Check the project memory binding during initialization.
   If either exits before showing help because a required runtime dependency is
   missing, treat that as setup failure and use the [[agent-memory/SKILL|agent-memory]] skill plus the
   `/home/dzack/gitclones/agent-memory` checkout to provision dependencies.
-- Confirm the repository has a root `.agent-memory.toml` binding. If it is
-  missing and the project should keep reusable memories, run
+- Confirm that `.agents` and `.hermes` resolve to the project directory in the vault.
+  To initialize a checkout for reusable memories, run
   `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory init project --vault <vault>`,
   then `uvx --python 3.14 --from git+https://github.com/dzackgarza/agent-memory agent-memory doctor`.
 - Confirm the bound project directory exists under the configured vault. A repo
