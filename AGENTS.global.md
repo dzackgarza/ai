@@ -452,7 +452,7 @@ clarification, plans, tasks, analysis, implementation, convergence. Specs keep *
 stories, and acceptance tests are derived from them. The source-edit rule in **Bugs** applies
 to instruction and policy edits.
 
-Run `~/ai/scripts/speckit-prerequisites` from the project being checked. The global Specify CLI supplies the checker and its helpers. The project owns its feature selection and artifacts.
+Run `~/ai/scripts/speckit-prerequisites --step <plan|tasks|implement|converge|analyze> --json` from the project root for the corresponding step. The installed Specify CLI supplies the artifact checks and hook resolution; execute the hooks surfaced for the relevant stage, directly if necessary. The project owns its feature selection, artifacts and hook configuration.
 
 A Spec Kit constitution should normally include:
 

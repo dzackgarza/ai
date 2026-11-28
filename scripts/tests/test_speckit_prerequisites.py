@@ -18,6 +18,9 @@ class SpecKitPrerequisitesTest(unittest.TestCase):
             feature = root / "specs/001-example"
             feature.mkdir(parents=True)
             (root / ".specify").mkdir()
+            templates = root / ".specify/templates"
+            templates.mkdir()
+            (templates / "tasks-template.md").write_text("# Tasks: [FEATURE NAME]\n")
             (root / ".specify/feature.json").write_text(
                 json.dumps({"feature_directory": "specs/001-example"})
             )
