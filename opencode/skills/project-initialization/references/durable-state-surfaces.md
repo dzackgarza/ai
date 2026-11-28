@@ -2,9 +2,7 @@
 
 Every project should converge toward one organized state model:
 
-- `agent-memory` central vault: private or converging plans, phase state, queues,
-  residue ledgers, durable corrections, reusable decisions, traps, advice, and project
-  context.
+- The `agent-memory` vault holds reusable decisions, corrections, traps, advice and project context.
 - GitHub issue tree, GitHub Milestones, and PR claim maps: public execution state for
   nontrivial work, active user stories, roadmap nodes, feature contracts, proof burdens,
   long-running handoffs, accepted work contracts, and auditable progress.
@@ -18,30 +16,19 @@ Every project should converge toward one organized state model:
   delete or promote only that owned scratch. Pre-existing, concurrent, or provenance-unknown
   files are not scratch; preserve them and report any conflict.
 
-Work that requires public coordination or handoff must route through the GitHub execution
-model. This includes roadmap or PRD execution, multi-agent or long-running handoffs,
-review-track work, and proof-bearing work whose claims need public tracking.
-Implementation complexity by itself does not create that requirement. The route is:
-
-1. Use `project-initialization` to inspect existing wiki, issue tree, milestones, PRs,
-   draft PRs, and memory binding.
-2. Use `plan` and `agent-memory` while the plan is private or converging.
-3. Before implementation, use `plan/references/externalization.md` and `git-guidelines`
-   to place the work in the GitHub issue tree, select or create the GitHub Milestone
-   scope, and create the PR claim map when a branch claims work.
-4. Execute the plan only after the issue tree,
-   milestone scope, and PR claim set are known, unless the user explicitly requested a
-   diagnosis-only or audit-only pass.
+Select the work unit in the GitHub issue tree with itree. Use Spec Kit to write and
+revise its requirements, plan and tasks from the start. The issue body and comments
+carry current state and evidence. Use the project constitution for priorities.
+When transferring an existing plan, match it to the owning issue first. Preserve
+open obligations, acceptance criteria, order, dependencies and evidence.
 
 Direct commits are appropriate when the requested outcome has a bounded owner, can be
 verified locally, and needs no public coordination surface. This includes trivial edits
 and can include substantive but self-contained maintenance.
 
-Mixed-state repositories must be migrated only when the mixed state overlaps the requested
-work or prevents a safe handoff. Do not turn unrelated normalization into a prerequisite
-for a bounded task. When migration is in scope, classify each
+Correct planning instructions that send work outside the issue workflow at their source. Classify each
 local note, plan, TODO, scratchpad, wiki page, issue, PR, and memory record by durable
-owner. Preserve durable narrative in the wiki, private restart state in `agent-memory`,
+owner. Preserve durable narrative in the wiki, reusable lessons in `agent-memory`,
 and active execution state in GitHub issues, milestones, and PRs. Replace duplicate local
 status with links to the canonical surface. Delete only scratch this agent created and
 can prove has no continuing coordination value; unknown-origin artifacts require an

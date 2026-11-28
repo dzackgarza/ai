@@ -1,26 +1,19 @@
 ---
 name: research-project-workflow
-description: Use when reconciling research repo planning state, legacy root
-  `plans/` Nimbalyst tracker files, layer-gated decomposition, TODO triage,
-  retired cards, visual windows, or card metadata with agent-memory-owned
-  planning records.
+description: Use when reconciling existing research plans, task dependencies and review evidence with their owning itree issues.
 ---
 # Research Project Workflow
 
-This skill is the workflow authority for reconciling research repo planning with
-[[agent-memory/SKILL|agent-memory]]. Active planning state belongs in [[agent-memory/SKILL|agent-memory]]; Nimbalyst/root
-`plans/` files are legacy or projection artifacts unless the user explicitly asks to
-inspect or migrate them.
+Use itree to select research work and Spec Kit to specify, plan and execute the
+selected issue. Its body and comments carry the original mathematical obligation,
+plan, task state, decisions and review evidence.
 
-## Canonical source
+## Existing research plans
 
-The source of truth for active planning state is [[agent-memory/SKILL|agent-memory]] project [[plan/SKILL|plan]]
-records. Use this skill plus `references/project-workflow.md` only to interpret,
-audit, migrate, or project legacy tracker artifacts.
-
-Read `references/project-workflow.md` before migrating, normalizing, retiring, or
-interpreting root `plans/` tracker files. Do not create new canonical planning state
-there.
+Read existing vault cards through [[agent-memory/SKILL|agent-memory]]. Use the
+project’s card schemas to interpret Nimbalyst records. Match their contents to
+existing issues before creating work. Preserve source definitions, dependencies,
+task order, acceptance criteria and outstanding proof obligations.
 
 ## How to load repo-local skills
 
@@ -38,8 +31,7 @@ reference files live under `.agents/skills/<name>/references/<file>.md`.
 
 Every new session must:
 
-1. Retrieve the active goal, phase, queue, and residue records from [[agent-memory/SKILL|agent-memory]],
-   then read root `AGENTS.md`.
+1. Read the constitution and the selected issue, including its comments. Recover the active goal, open tasks and required evidence there.
 
 2. Load the matching local skills from `.agents/skills/` by reading their SKILL.md files
    — especially `research-state-machine` (for plan-to-execution routing and the review
@@ -52,7 +44,7 @@ Every new session must:
 4. If legacy `plans/` artifacts are relevant, read `plans/AGENTS.md` to interpret
    their structure before migration or audit.
 
-5. Use [[agent-memory/SKILL|agent-memory]] to load relevant project memory and planning records.
+5. Use [[agent-memory/SKILL|agent-memory]] to load relevant reusable knowledge.
 
 ## Task execution posture
 
@@ -90,44 +82,15 @@ It needs the 6-gate ordered protocol from
 
 Stop at the first failing gate.
 Outcome: complete/done, revision-required, or blocked.
-Document in a `## Review Log` section in the card body.
+Record the review against the original obligation in a comment on the owning issue.
 
 ## Core policy
 
-- [[agent-memory/SKILL|agent-memory]] is the active planning workspace.
-
-- Root `plans/` and Nimbalyst artifacts are legacy or generated/projection surfaces.
-  Do not create or update them as canonical planning state.
-
-- When interpreting legacy tracker files, use only registered standard tracker types
-  from `.nimbalyst/trackers/*.yaml`.
-
-- Represent feature/plan/phase/task hierarchy as [[agent-memory/SKILL|agent-memory]] planning records.
-  Tags are secondary grouping aids.
-
-- There is no separate backlog; active cards are the outstanding work set.
-
-- Completed feature trees should be recorded as completed in [[agent-memory/SKILL|agent-memory]]; move
-  legacy tracker files only when explicitly migrating or cleaning those artifacts.
-
-- Execute according to the DAG. Unmet declared dependencies mean a card remains
-  `unstarted`; `blocked` is reserved for ready leaves stopped by a prerequisite that is
-  not currently satisfiable through the DAG.
-
-- Work top-down through feature/spec, plan, phase, and task gates in [[agent-memory/SKILL|agent-memory]].
-  Do not create lower-layer cards before the owning layer is approved.
-
-- Plans are human + LLM collaborative artifacts and must be approved before
-  decomposition or execution.
-
-- Executable work belongs in [[agent-memory/SKILL|agent-memory]] planning records, not chat-only plans or
-  inline markers.
-
-- Decision cards are feature-level blockers only; do not leave unresolved decision
-  language inside feature, spec, plan, phase, or task bodies.
-
-- Validate planning migrations or generated projections with the repo-local recipe
-  and stage generated tag or DAG changes deliberately.
+Use real prerequisites to select ready work. Apply the project constitution to
+the order of eligible issues and tasks. Keep internal proof steps on the work
+unit and separately reviewable results under their grouping issue. Record the
+proof or source that discharges each obligation. Reconcile prior review findings
+before closing the owning issue.
 
 ## Hook auto-fix policy
 
@@ -162,7 +125,7 @@ are normal repo hygiene.
 
 ## Load with
 
-- Load `task` or `track` before creating individual tracker items.
+- Use Spec Kit tasks for steps within the selected issue.
 
 - Load `category-spec-workflow` for category-spec-specific planning, triage, priority,
   visuals, or retirement.

@@ -447,12 +447,34 @@ or my wording.
 
 ## Spec Kit workflows and constitutions
 
-Feature work in a project uses Spec Kit workflows, through the `speckit-*` skills: constitutions, specs,
+> **Planning migration — Spec Kit and itree**
+>
+> Select the work-unit issue with itree. Use Spec Kit to plan and execute the work.
+> The issue body and comments hold the current plan, tasks, progress and evidence.
+> Earlier instructions that assign this work to vault cards or a separate task list
+> identify records to migrate. Match each obligation to its owning issue. Preserve
+> task IDs, order, prerequisites, acceptance criteria and evidence. Verify the transfer
+> on the issue before retiring the old tracker. An open obligation stays open.
+
+Every project uses itree to organize and select work and Spec Kit to specify, plan and execute it.
+Start at the owning GitHub issue. Its body and comments hold the current requirements, plan, tasks,
+progress and evidence. Use the project's constitution to set priorities within that workflow.
+If instructions or tools send planning somewhere else, fix the source as soon as you find it.
+Preserve the original obligations, task order and evidence when you move existing work.
+
+Feature work uses the `speckit-*` skills: constitutions, specs,
 clarification, plans, tasks, analysis, implementation, convergence. Specs keep *real* user
 stories, and acceptance tests are derived from them. The source-edit rule in **Bugs** applies
 to instruction and policy edits.
 
-Run `~/ai/scripts/speckit-prerequisites --step <plan|tasks|implement|converge|analyze> --json` from the project root for the corresponding step. The installed Specify CLI supplies the artifact checks and hook resolution; execute the hooks surfaced for the relevant stage, directly if necessary. The project owns its feature selection, artifacts and hook configuration.
+Select the work unit with itree first. When an upstream stage needs files, materialize
+the issue in a temporary feature directory and set `SPECIFY_FEATURE_DIRECTORY` to
+that directory and `SPECIFY_FEATURE_NO_PERSIST=1`. Run
+`~/ai/scripts/speckit-prerequisites --step <plan|tasks|implement|converge|analyze> --json`
+from the project root for the corresponding step. The installed Specify CLI supplies
+artifact checks and hook resolution. Execute the hooks surfaced for the relevant
+stage, directly if necessary. Read the current issue before writing the stage
+result and confirm the result on the issue before advancing.
 
 A Spec Kit constitution should normally include:
 
@@ -614,8 +636,8 @@ references are progressive disclosure, not new triggers.
 | labels on an issue or PR in an ai-review-ci repo | `label-routing` |
 | an error message, tool, library, API, or diagnostic owned by an external project | `known-solution-first` |
 | a tool or dependency to install | `tool-provisioning-and-environment-hygiene`, `system-conventions` |
-| the agent-memory CLI, the vault, or a plan record | `agent-memory`; `vault-maintenance` when a command fails |
-| an implementation plan | `plan` |
+| the agent-memory CLI or the memory vault | `agent-memory`; `vault-maintenance` when a command fails |
+| an implementation plan | `speckit-plan` for the itree work unit; `plan` for plan quality |
 | a Spec Kit constitution, specification, task list, or implementation workflow | the corresponding `speckit-*` skill; constitution defaults are in **Spec Kit workflows and constitutions** |
 | a CLI agent session transcript | `reading-transcripts` |
 | a ChatGPT conversation recorded by Chat On Steroids | the `just` recipes in `/home/dzack/gitclones/chat-on-steroids` |
@@ -701,7 +723,7 @@ is only for a user-scoped automation contract with a real observable boundary.
 
 ## Memory
 
-Durable memory and plan state live in the central `agent-memory` vault, through the
+Durable lessons and reusable context live in the central `agent-memory` vault, through the
 `agent-memory` CLI only. Write a memory when I ask, or when I state a durable expectation --
 and write it in my terms. A decision that changes a project's public direction also goes to
 the owning GitHub issue or wiki page.

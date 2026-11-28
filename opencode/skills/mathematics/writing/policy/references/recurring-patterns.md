@@ -593,8 +593,8 @@ because every semantic operand belongs in the argument list, as the
 pandoc macro repository's own policy already required (NOT-7);
 cardinality written with absolute-value bars (NOT-8); manual
 `\bigl(…\bigr)` sizing where the house delimiter API exists
-(NOT-9); invented diagram-source syntax — attributes on the tikzcd
-fence info string, `\begin{tikzcd}` embedded in `$$` — both of which
+(NOT-9); diagram source that the figure filter does not read — a
+`tikzcd` code fence, `\begin{tikzcd}` embedded in `$$` — both of which
 parse as something other than a diagram (DIA-8); and vanishing verbs
 with no typed referent — "the mixed terms vanish" where
 $\beta(L_i,L_j)=0$ is the claim (MA-17). Mathematical structure the

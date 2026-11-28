@@ -447,8 +447,8 @@ Load these patterns into context as one-shot demonstrations of the exact style e
 - [ ] Display math only where visual structure matters — signatures and
   one-line identities inline, complete exact and fiber sequences always
   displayed (`PR-75`); statement blocks lead with the claim and proofs build
-  the witness (`SEC-16`, `SEC-18`); diagram source in the accepted fence or
-  raw form (`DIA-8`)
+  the witness (`SEC-16`, `SEC-18`); diagram source as a raw `tikzcd` block or
+  `\input`, with no fence and no packages in the figure (`DIA-8`)
 
 - [ ] No reader-facing audit or dependency metadata fences (`SEC-17`);
   internal results and displayed mathematical objects use stable resolver

@@ -127,9 +127,12 @@ construction is compatible with base change" with no square; a
 "let $f\colon L\to M$ be a morphism" says the same.
 
 **Preferred:** the triangle or square, drawn once, referenced thereafter:
-```tikzcd
+
+```latex
+\begin{tikzcd}
 & S \arrow[dl,"\iota_1"'] \arrow[dr,"\iota_2"] & \\
 M_1 \arrow[rr,"\varphi"'] && M_2
+\end{tikzcd}
 ```
 
 The same mechanism writes a factorization in prose, writes a commuting
@@ -157,29 +160,44 @@ $j^\#$.
 
 ## `DIA-8`: A diagram is authored in the accepted source form, with its metadata where the renderer reads it
 
-A `tikzcd` diagram is authored in one of the accepted source forms —
-a fenced `tikz`/`tikzcd` code block whose info string is bare, a raw
-`\begin{tikzcd} … \end{tikzcd}` block, or an `\input{...}` of a shared
-diagram file — never in an invented form. Two invented forms are
-banned as recurring: attributes on the fence's info string, and the
-environment embedded inside `$$` display math. Both break silently:
-an info string with attributes turns the fence into ordinary inline
-code, so the diagram renders as literal text and no compiler error is
-raised; `$$\begin{tikzcd} … \end{tikzcd}$$` parses as display *math*,
-so the diagram source reaches the math renderer instead of the
-diagram compiler. A figure that needs an ID, title, or
-cross-reference carries them where the renderer reads them: a Pandoc
-attribute block on the fence, or a fenced figure div around the
-diagram, per the house's syntax.
+A diagram compiles through the figure template of pandoc-config:
+`~/.pandoc/filters/tikzcd.lua` puts it into
+`~/.pandoc/templates/standalone-tikz.tex`, which loads `dzg-tikz.sty`
+with the TikZ libraries, the styles, and the same macro tiers that
+MathJax reads. The accepted source forms are the forms that filter
+reads: a raw block that starts with `\begin{tikzcd}` or
+`\begin{tikzpicture}` at column 0, with a blank line before and after
+it, or an `\input{...}` of a `.tikz` or `.tikzcd` file. The figure
+holds only the diagram. It never loads a package, a TikZ library or a
+style, and never defines a macro; a missing one goes into
+pandoc-config, where every document gets it.
 
-**Banned:** ```` ```tikzcd id="main-square" ```` and any other
-attribute on the fence info string; `$$\begin{tikzcd} ... \end{tikzcd}$$`
-in place of the fence or raw block.
+Every other form breaks without an error. A ```` ```tikzcd ```` fence,
+with or without attributes, is an ordinary code block: the filter
+compiles no fence of class `tikzcd`, so the page shows the TikZ source.
+A ```` ```{.tikz} ```` fence with `%%|` options goes to the separate
+Quarto `tikz` extension, which compiles it with its own preamble, so the
+figure needs bespoke packages and its macros can differ from the
+prose. `$$\begin{tikzcd} … \end{tikzcd}$$` parses as display *math*,
+so the diagram source reaches the math renderer instead of the diagram
+compiler. A figure that needs an ID, title, or cross-reference carries
+them in a fenced figure div around the raw block, per the house's
+syntax.
 
-**Preferred:** a bare ```` ```tikzcd ```` fence (or the raw
-environment, or `\input{diagrams/example.tikzcd}`); metadata in the
-house's accepted form — `::: {#fig-square caption="…"}` around the
-diagram — where the cross-reference resolver finds it (`XREF-1`).
+Observed in `dzackgarza/research` before `f5ce30a98f`: 24
+```` ```tikzcd ```` fences that the book showed as source, and 16
+```` ```{.tikz} ```` figures that each loaded packages through
+`additionalPackages`.
+
+**Banned:** ```` ```tikzcd ```` with any info string;
+```` ```{.tikz} ```` with `%%| additionalPackages`; `\usepackage`,
+`\usetikzlibrary`, `\tikzset` or `\newcommand` inside a figure;
+`$$\begin{tikzcd} ... \end{tikzcd}$$`.
+
+**Preferred:** the raw environment, or
+`\input{diagrams/example.tikzcd}`; metadata in the house's accepted
+form — `::: {#fig-square caption="…"}` around the diagram — where the
+cross-reference resolver finds it (`XREF-1`).
 
 ## DIA-9: Compose the relation before annotating it
 
