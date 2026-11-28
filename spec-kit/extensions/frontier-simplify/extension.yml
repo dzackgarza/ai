@@ -1,0 +1,39 @@
+schema_version: "1.0"
+
+extension:
+  id: frontier-simplify
+  name: Frontier Simplify
+  version: "1.0.0"
+  description: Keep Spec Kit planning and delivery focused on the product using the upstream Frontier Simplify skills.
+  repository: https://github.com/MongLong0214/frontier-simplify
+  license: MIT
+
+requires:
+  speckit_version: ">=1.4.4"
+
+provides:
+  commands:
+    - name: speckit.frontier-simplify.plan
+      file: commands/speckit.frontier-simplify.plan.md
+      description: Apply Frontier Simplify to the current plan or task list.
+    - name: speckit.frontier-simplify.audit
+      file: commands/speckit.frontier-simplify.audit.md
+      description: Inspect product delivery and supporting machinery at a milestone or when work stalls.
+
+hooks:
+  before_plan:
+    command: speckit.frontier-simplify.plan
+    optional: false
+    description: Apply Frontier Simplify before choosing the implementation design.
+  after_tasks:
+    command: speckit.frontier-simplify.plan
+    optional: false
+    description: Simplify unnecessary infrastructure and support-first task sequences.
+  before_implement:
+    command: speckit.frontier-simplify.audit
+    optional: false
+    description: Review delivery and support growth if due; use any current review.
+  before_converge:
+    command: speckit.frontier-simplify.audit
+    optional: false
+    description: Challenge unsuccessful designs before adding further remediation work.
