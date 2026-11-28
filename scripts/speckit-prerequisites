@@ -1,13 +1,64 @@
 #!/usr/bin/env bash
-# Run the checker shipped in the uv-installed Specify CLI, keeping the caller's cwd.
-# `just install` in ~/ai installs that CLI as the uv tool `specify-cli`.
 set -euo pipefail
 tools_dir=$(uv tool dir)
 exec "$tools_dir/specify-cli/bin/python" -c '
-from importlib.resources import files
-import os
+import argparse
+import json
+import subprocess
 import sys
+from importlib.resources import files
+from pathlib import Path
 
-checker = files("specify_cli").joinpath("core_pack/scripts/bash/check-prerequisites.sh")
-os.execvp("bash", ["bash", str(checker), *sys.argv[1:]])
+from specify_cli.extensions import HookExecutor
+
+parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+parser.add_argument("--step", choices=("plan", "tasks", "implement", "converge", "analyze"))
+options, args = parser.parse_known_args()
+scripts = files("specify_cli").joinpath("core_pack/scripts/bash")
+step = options.step
+if "--help" in args or "-h" in args:
+    print("  --step {plan,tasks,implement,converge,analyze}  Select the Spec Kit step and surface its configured hooks.", file=sys.stderr)
+
+def run_script(name, arguments, *, capture=False):
+    result = subprocess.run(
+        ["bash", str(scripts.joinpath(name)), *arguments],
+        text=True,
+        stdout=subprocess.PIPE if capture else None,
+    )
+    if result.returncode:
+        sys.exit(result.returncode)
+    return result.stdout
+
+if step == "plan":
+    if "--help" not in args and "-h" not in args:
+        paths = json.loads(run_script("check-prerequisites.sh", ["--json", "--paths-only"], capture=True))
+        if not Path(paths["FEATURE_SPEC"]).is_file():
+            sys.exit("ERROR: spec.md not found. Run speckit-specify first.")
+    run_script("setup-plan.sh", args)
+elif step == "tasks":
+    run_script("setup-tasks.sh", args)
+else:
+    if step in ("implement", "converge", "analyze"):
+        for flag in ("--require-spec", "--require-tasks", "--include-tasks"):
+            if flag not in args:
+                args.append(flag)
+    run_script("check-prerequisites.sh", args)
+
+if "--help" in args or "-h" in args or "--paths-only" in args:
+    sys.exit(0)
+
+if step:
+    events = (f"before_{step}", f"after_{step}")
+elif "--require-tasks" in args:
+    events = ("before_implement", "after_implement", "before_converge", "after_converge")
+else:
+    events = ()
+
+executor = HookExecutor(Path.cwd())
+messages = [executor.check_hooks_for_event(event)["message"] for event in events]
+if any(messages):
+    print("Apply required hooks at the named workflow stage. If executing directly, read and apply the named skill.", file=sys.stderr)
+    for message in messages:
+        if message:
+            print(message, file=sys.stderr)
 ' "$@"

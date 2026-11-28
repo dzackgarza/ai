@@ -476,10 +476,14 @@ clarification, plans, tasks, analysis, implementation, convergence. Specs keep *
 stories, and acceptance tests are derived from them. The source-edit rule in **Bugs** applies
 to instruction and policy edits.
 
-Run `~/ai/scripts/speckit-prerequisites` from the project being checked. The global Specify CLI supplies the checker and its helpers. Select the work unit with itree first. When an upstream stage needs files, materialize
+Select the work unit with itree first. When an upstream stage needs files, materialize
 the issue in a temporary feature directory and set `SPECIFY_FEATURE_DIRECTORY` to
-that directory and `SPECIFY_FEATURE_NO_PERSIST=1`. Read the current issue before
-writing the stage result and confirm the result on the issue before advancing.
+that directory and `SPECIFY_FEATURE_NO_PERSIST=1`. Run
+`~/ai/scripts/speckit-prerequisites --step <plan|tasks|implement|converge|analyze> --json`
+from the project root for the corresponding step. The installed Specify CLI supplies
+artifact checks and hook resolution. Execute the hooks surfaced for the relevant
+stage, directly if necessary. Read the current issue before writing the stage
+result and confirm the result on the issue before advancing.
 
 A Spec Kit constitution should normally include:
 
