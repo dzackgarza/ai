@@ -469,12 +469,12 @@ to instruction and policy edits.
 
 Select the work unit with itree first. When an upstream stage needs files, materialize
 the issue in a temporary feature directory and set `SPECIFY_FEATURE_DIRECTORY` to
-that directory and `SPECIFY_FEATURE_NO_PERSIST=1`. Run
-`~/ai/scripts/speckit-prerequisites --step <plan|tasks|implement|converge|analyze> --json`
-from the project root for the corresponding step. The installed Specify CLI supplies
-artifact checks and hook resolution. Execute the hooks surfaced for the relevant
-stage, directly if necessary. Read the current issue before writing the stage
-result and confirm the result on the issue before advancing.
+that directory and `SPECIFY_FEATURE_NO_PERSIST=1`. Use the official `specify` CLI,
+its native workflows and the corresponding `speckit-*` skills, including extension
+hooks. Install the shared Frontier Simplify extension as described in
+[[project-initialization/SKILL|project-initialization]]; it supplies planning and
+delivery reviews. Read the current issue before writing the stage result and
+confirm the result on the issue before advancing.
 
 A Spec Kit constitution should normally include:
 

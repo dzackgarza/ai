@@ -115,6 +115,30 @@ Load the repository's own instructions before editing.
 - If instructions conflict, direct user instructions win; then prefer the most
   local repo instructions over broader AGENTS.md/global skill guidance.
 
+### Native Spec Kit
+
+For substantive feature work, use the installed Specify CLI and the shared
+Frontier Simplify extension. In a project already initialized for Spec Kit:
+
+```sh
+specify extension list
+specify extension add --dev ~/ai/spec-kit/extensions/frontier-simplify
+```
+
+Install only if absent; use the same native add command with `--force` to update
+the shared extension when needed. For new projects, add
+`--extension ~/ai/spec-kit/extensions/frontier-simplify` to `specify init`
+with the appropriate agent integration. Do not reinitialize an existing feature.
+
+Use `specify workflow run speckit --input spec="..."` for a complete new-feature
+workflow when a supported agent integration is available. For work already
+underway, follow the native skill for the current step and its configured hooks;
+in a remote session, read and execute the installed hook command file directly
+if there is no slash-command harness. The native artifact prerequisites still apply.
+The shared `speckit-prerequisites` script only calls the upstream checker.
+The extension owns the review instructions; no separate review workflow or
+approval gate is needed.
+
 ### Durable Surface Convergence
 
 When repo-local docs, scratchpads, plans, TODO files, or agent process notes already

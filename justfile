@@ -53,7 +53,6 @@ test:
     @just --justfile {{ justfile() }} check-markdown README.md AGENTS.md AGENTS.global.md
     @just --justfile {{ justfile() }} check-skill-wikilinks
     @just --justfile {{ justfile() }} _test-skill-cli
-    @python -m unittest discover -s scripts/tests -p test_speckit_prerequisites.py
 
 [private]
 _test-skill-cli:
