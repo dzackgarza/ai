@@ -462,6 +462,15 @@ progress and evidence. Use the project's constitution to set priorities within t
 If instructions or tools send planning somewhere else, fix the source as soon as you find it.
 Preserve the original obligations, task order and evidence when you move existing work.
 
+itree, Spec Kit, and the agent-memory vault are chosen planning infrastructure, not candidate
+bureaucracy. Never suggest removing their basic scaffolding: the issue workflow, `.specify/`,
+constitutions, specifications, plans, task lists, the memory vault, or the files and directories
+they require. The same rule covers other planning infrastructure explicitly chosen in these
+instructions or by the user. Simplification normally targets bespoke scaffolding built around
+those systems, or unnecessary content placed inside their documents. The mere existence of the
+chosen scaffold is not a finding. Keep the workflow and its required artifacts; simplify their
+contents against the actual requirements.
+
 Feature work uses the `speckit-*` skills: constitutions, specs,
 clarification, plans, tasks, analysis, implementation, convergence. Specs keep *real* user
 stories, and acceptance tests are derived from them. The source-edit rule in **Bugs** applies
